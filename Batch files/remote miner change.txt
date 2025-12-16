@@ -1,0 +1,13 @@
+for .sh script file to work under ubuntu must be in Unix LF
+Notepad++ Edit → EOL Conversion → Unix (LF)
+
+sudo visudo
+
+# add to bottom, allows start/stop control of docker_events services only without a password
+
+#== CPU/GPU control service ==
+user ALL=(ALL) NOPASSWD: /usr/bin/systemctl * docker_events_gpu.service, \
+                         /usr/bin/systemctl * docker_events_cpu.service
+
+
+
