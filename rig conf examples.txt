@@ -1,12 +1,13 @@
 # -- rig conf examples... --
 
-# -- %WORKER_NAME%           rig hostname in ARGS, WALLET, PASS, POOL  --
-# -- %WARTHOG_TARGET%        WARTHOG_TARGET in ARGS                    --
-# -- %CPU_THREADS%           cpu total threads -1 and affinity in ARGS --
-# -- SCREEN_NAME 0 "miner"   different screen name than miner name     --
-# -- CUSTOM_MINER 0 "path"   custom binary file                        --
+# -- %WORKER_NAME%           rig hostname in ARGS, WALLET, PASS, POOL                        --
+# -- %WARTHOG_TARGET%        WARTHOG_TARGET in ARGS                                          --
+# -- %CPU_THREADS%           cpu total threads -1 and affinity in ARGS see 'cpu threads.txt' --
+# -- SCREEN_NAME 0 "miner"   different screen name than miner name                           --
+# -- CUSTOM_MINER 0 "path"   custom binary file                                              --
 
-#========================================================================================================
+** keep as none sudo tee so they can be overwritten using putty/ssh **
+
 #========================================================================================================
 
 # -- write octa rig-gpu.conf --
@@ -34,7 +35,6 @@ ARGS 0 "-w %WORKER_NAME% -p x --lock-cclock 2190 --cclock 300 --lock-mclock X --
 EOF
 
 #========================================================================================================
-#========================================================================================================
 
 # -- write octa rig-cpu.conf --
 
@@ -60,7 +60,6 @@ PASS 0 "%WORKER_NAME%"
 ARGS 0 "-t %CPU_THREADS% --tls -k"
 EOF
 
-#========================================================================================================
 #========================================================================================================
 
 # -- write clore rig-cpu.conf --
@@ -88,7 +87,6 @@ ARGS 0 "-t %CPU_THREADS% --tls -k --tls-fingerprint 420c7850****"
 EOF
 
 #========================================================================================================
-#========================================================================================================
 
 # -- write clore rig-gpu.conf --
 
@@ -114,7 +112,6 @@ PASS 0 "x"
 ARGS 0 "-r %WORKER_NAME% --cpu_threads %CPU_THREADS% --warthog_verus_hr_target %WARTHOG_TARGET% --nc 0 --nvidia 1 --amd 0"
 EOF
 
-#========================================================================================================
 #========================================================================================================
 
 # -- write octa rig-gpu.conf --
