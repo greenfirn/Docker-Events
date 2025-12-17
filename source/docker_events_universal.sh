@@ -1,15 +1,3 @@
-# stop old services
-sudo systemctl stop docker_events_gpu.service
-sudo systemctl stop docker_events_cpu.service
-sudo systemctl stop docker_events.service
-
-# disable so it doesnt run on reboot
-sudo systemctl disable docker_events_gpu.service
-sudo systemctl disable docker_events_cpu.service
-sudo systemctl disable docker_events.service
-
-#========================================================================================================
-#========================================================================================================
 
 # -- write docker_events_universal script --
 #sudo tee /usr/local/bin/docker_events_universal.sh > /dev/null <<'EOF'
@@ -200,26 +188,3 @@ done
 #EOF
 
 # service makes executable on start
-
-#========================================================================================================
-#========================================================================================================
-
-# let daemon know about changes
-sudo systemctl daemon-reload
-
-# enable so it starts on boot, start service
-sudo systemctl enable docker_events_gpu.service
-sudo systemctl start docker_events_gpu.service
-
-# follow service logs
-sudo journalctl -u docker_events_gpu.service -f
-
-
-sudo systemctl enable docker_events_cpu.service
-sudo systemctl start docker_events_cpu.service
-
-sudo journalctl -u docker_events_cpu.service -f
-
-# check service status
-sudo systemctl status docker_events_gpu.service
-sudo systemctl status docker_events_cpu.service
