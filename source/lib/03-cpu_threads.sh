@@ -1,3 +1,5 @@
+# supossed to replicate putting [0,2,...] cores in config, idk if this is done correctly for sure
+
 TOTAL_THREADS=$(nproc)
 CPU_THREADS=$((TOTAL_THREADS - 1))
 
