@@ -18,13 +18,13 @@ sudo systemctl disable docker_events.service
 set -Eeuo pipefail
 shopt -s inherit_errexit
 
+# Where miners are installed
+BASE_DIR="/home/user/miners"
+readonly BASE_DIR
+
 # Where THIS script and lib/ live
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
-
-# Where miners are installed (INTENTIONAL)
-BASE_DIR="/home/user/miners"
-readonly BASE_DIR
 
 echo "[init] SCRIPT_DIR=$SCRIPT_DIR"
 echo "[init] BASE_DIR=$BASE_DIR"
