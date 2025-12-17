@@ -22,7 +22,7 @@ DIRECTORY LAYOUT
 
 The following layout is REQUIRED.
 
-<install_dir>/
+source/
 ├── docker_events_universal.sh
 ├── lib/
 │   ├── 00-get_rig_conf.sh
@@ -30,9 +30,6 @@ The following layout is REQUIRED.
 │   ├── 02-load_configs.sh
 │   ├── 03-cpu_threads.sh
 │   └── 04-algo_config.sh
-
-Recommended install directory:
-  /usr/local/bin/rigcloud/
 
 ======================================================================
 
