@@ -121,22 +121,6 @@ echo "[miner] $MINER_BIN"
 ALGO=$(get_rig_conf "ALGO" "0")
 ARGS=$(get_rig_conf "ARGS" "0")
 
-
-
-if [[ "$ALGO" == "warthog" ]]; then
-    echo "Using warthog settings"
-    # Compute Warthog target
-    if [ "$TOTAL_THREADS" -ge 32 ]; then
-        WARTHOG_TARGET=47000000
-    elif [ "$TOTAL_THREADS" -ge 24 ]; then
-        WARTHOG_TARGET=37000000
-    else
-        WARTHOG_TARGET=30000000
-    fi
-	
-	ARGS="${ARGS//%WARTHOG_TARGET%/$WARTHOG_TARGET}"
-fi
-
 ###############################################
 #  MINER SETTINGS
 ###############################################
@@ -144,21 +128,3 @@ fi
 POOL=$(get_rig_conf "POOL" "0")
 WALLET=$(get_rig_conf "WALLET" "0")
 PASS=$(get_rig_conf "PASS" "0")
-
-# Replace %WORKER_NAME% placeholder in ARGS, WALLET, PASS, POOL
-ARGS="${ARGS//%WORKER_NAME%/$WORKER_NAME}"
-WALLET="${WALLET//%WORKER_NAME%/$WORKER_NAME}"
-PASS="${PASS//%WORKER_NAME%/$WORKER_NAME}"
-POOL="${POOL//%WORKER_NAME%/$WORKER_NAME}"
-
-
-
-START_CMD=$(get_start_cmd "$MINER_NAME")
-
-# Load from rig.conf
-SCREEN_NAME=$(get_rig_conf "SCREEN_NAME" "0")
-
-# If SCREEN_NAME is empty (""), ignore and use miner name
-if [[ -z "$SCREEN_NAME" ]]; then
-    SCREEN_NAME="$MINER_NAME"
-fi

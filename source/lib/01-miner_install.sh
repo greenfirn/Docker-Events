@@ -1,5 +1,3 @@
-#tee miners.sh > /dev/null <<'EOF'
-#!/bin/bash
 
 ###############################################
 #  MINER INSTALL
@@ -214,4 +212,4 @@ echo "Miner paths saved to: $BASE_DIR/miner_paths.env"
 echo "Load them with: source $BASE_DIR/miner_paths.env"
 
 source $BASE_DIR/miner_paths.env
-#EOF
+

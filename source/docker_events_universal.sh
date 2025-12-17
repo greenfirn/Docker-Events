@@ -1,7 +1,9 @@
 # maybe add kill by pid in case some rare miner crash doesnt close with screen session
 
 # -- write docker_events_universal script --
-#sudo tee /usr/local/bin/docker_events_universal.sh > /dev/null <<'EOF'
+mkdir -v /usr/local/bin/lib
+
+sudo tee /usr/local/bin/docker_events_universal.sh > /dev/null <<'EOF'
 #!/bin/bash
 
 set -Eeuo pipefail
@@ -31,6 +33,38 @@ do
     source "$f"
 done
 
+
+# ---------------------------------------------------------
+# FINAL PLACEHOLDER SUBSTITUTION (ONE TIME ONLY)
+# ---------------------------------------------------------
+
+# CPU threads
+if [[ -n "$AUTOFILL_CPU" ]]; then
+    ARGS="${ARGS//%CPU_THREADS%/$AUTOFILL_CPU}"
+else
+    ARGS="${ARGS//%CPU_THREADS%/$CPU_THREADS}"
+fi
+
+# Warthog target
+if [[ -n "$WARTHOG_TARGET" ]]; then
+    ARGS="${ARGS//%WARTHOG_TARGET%/$WARTHOG_TARGET}"
+fi
+
+# Replace %WORKER_NAME% placeholder in ARGS, WALLET, PASS, POOL
+ARGS="${ARGS//%WORKER_NAME%/$WORKER_NAME}"
+WALLET="${WALLET//%WORKER_NAME%/$WORKER_NAME}"
+PASS="${PASS//%WORKER_NAME%/$WORKER_NAME}"
+POOL="${POOL//%WORKER_NAME%/$WORKER_NAME}"
+
+START_CMD=$(get_start_cmd "$MINER_NAME")
+
+# Load from rig.conf
+SCREEN_NAME=$(get_rig_conf "SCREEN_NAME" "0")
+
+# If SCREEN_NAME is empty (""), ignore and use miner name
+if [[ -z "$SCREEN_NAME" ]]; then
+    SCREEN_NAME="$MINER_NAME"
+fi
 
 ###############################################
 #  FUNCTIONS
@@ -186,6 +220,6 @@ while read type action name image; do
         esac
     fi
 done
-#EOF
+EOF
 
-# service makes executable on start
+# service makes sh executable on start
