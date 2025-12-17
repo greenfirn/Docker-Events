@@ -8,4 +8,6 @@
 
 - use "ubuntu:24.04" on Clore / Octaspace as idle job with no options ... or set something different in .conf
 
+- pause stop idle job and watch logs to test 'sudo journalctl -u docker_events_cpu.service -f' or 'sudo journalctl -u docker_events_gpu.service -f'
+
 - see rig conf examples...
