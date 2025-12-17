@@ -12,3 +12,5 @@
 
 - if you dont use %CPU_THREADS% in your .conf then auto cpu threads/affinity will not get added to the final cmd
 - see rig conf examples...
+
+Some portions of this project were developed with assistance from ChatGPT.
