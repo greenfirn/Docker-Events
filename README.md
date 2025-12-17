@@ -4,6 +4,6 @@
 
 - batch files can be used to send new .conf files to a list of rigs from windows pc
 
-- see rig conf examples... 
-
 - services assume .conf files are in /home/user/ and named rig-cpu.conf or rig-gpu.conf
+
+- see rig conf examples...
