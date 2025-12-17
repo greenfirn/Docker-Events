@@ -1,0 +1,26 @@
+systemctl stop docker_events_gpu
+sleep 2
+tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
+XMRIG_VERSION        ALL "6.24.0"
+BZMINER_VERSION      ALL "v23.0.2"
+WILDRIG_VERSION      ALL "0.47.8"
+SRBMINER_VERSION     ALL "3.0.6"
+RIGEL_VERSION        ALL "1.23.0"
+LOLMINER_VERSION     ALL "1.98"
+ONEZEROMINER_VERSION ALL "1.7.2"
+GMINER_VERSION       ALL "3.44"
+TARGET_IMAGE 0 "ubuntu:24.04"
+TARGET_NAME 0 "octa_idle_job"
+RESET_OC 0 "true"
+SCREEN_NAME 0 "gpu"
+CUSTOM_MINER 0 ""
+MINER 0 "rigel"
+ALGO 0 "xelishashv3"
+POOL 0 "stratum+ssl://ca.xelis.herominers.com:1225 -o stratum+ssl://us2.xelis.herominers.com:1225"
+WALLET 0 "wallet-address"
+PASS 0 "x"
+ARGS 0 "-w %WORKER_NAME% -p x --lock-cclock 2190 --cclock 300 --lock-mclock X --mclock 1000"
+EOF
+sleep 2
+systemctl start docker_events_gpu
+sudo journalctl -u docker_events_gpu -n 20 -f
