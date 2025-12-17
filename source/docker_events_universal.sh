@@ -14,25 +14,21 @@ sudo systemctl disable docker_events.service
 # -- write docker_events_universal script --
 #sudo tee /usr/local/bin/docker_events_universal.sh > /dev/null <<'EOF'
 #!/bin/bash
+set -Eeuo pipefail
+shopt -s inherit_errexit
 
 BASE_DIR="/home/user/miners"
 mkdir -p "$BASE_DIR"
 
-# Load includes in strict order
 for f in \
-    "$BASE_DIR/lib/00-get_rig_conf" \
-    "$BASE_DIR/lib/01-miner_install" \
-    "$BASE_DIR/lib/02-load_configs" \
-	"$BASE_DIR/lib/03-cpu_threads.sh" \
-	"$BASE_DIR/lib/04-algo_config.sh"
+    "$BASE_DIR/lib/00-get_rig_conf.sh" \
+    "$BASE_DIR/lib/01-miner_install.sh" \
+    "$BASE_DIR/lib/02-load_configs.sh" \
+    "$BASE_DIR/lib/03-cpu_threads.sh" \
+    "$BASE_DIR/lib/04-algo_config.sh"
 do
-    [[ -f "$f" ]] || { echo "Missing include: $f"; exit 1; }
     source "$f"
 done
-
-main "$@"
-
-
 
 ###############################################
 #  FUNCTIONS
