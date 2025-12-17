@@ -1,14 +1,3 @@
-
-# let daemon know about changes
-sudo systemctl daemon-reload
-
-# enable so it starts on boot, start service
-sudo systemctl enable docker_events_gpu.service
-sudo systemctl start docker_events_gpu.service
-
-#========================================================================================================
-#========================================================================================================
-
 # -- write GPU service --
 
 sudo tee /etc/systemd/system/docker_events_gpu.service > /dev/null <<'EOF'
@@ -31,9 +20,6 @@ Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 [Install]
 WantedBy=multi-user.target
 EOF
-
-#========================================================================================================
-#========================================================================================================
 
 # -- write CPU service --
 
@@ -60,3 +46,10 @@ EOF
 
 #========================================================================================================
 #========================================================================================================
+
+# let daemon know about changes
+sudo systemctl daemon-reload
+
+# enable so it starts on boot, start service
+# sudo systemctl enable docker_events_gpu.service
+# sudo systemctl start docker_events_gpu.service
