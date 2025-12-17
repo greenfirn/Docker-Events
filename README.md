@@ -6,4 +6,6 @@
 
 - services assume .conf files are in /home/user/ and named rig-cpu.conf or rig-gpu.conf
 
+- use "ubuntu:24.04" on Clore/Octaspace as idle job or set something different in .conf
+
 - see rig conf examples...
