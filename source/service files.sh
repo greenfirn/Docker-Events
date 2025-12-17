@@ -1,3 +1,11 @@
+
+# let daemon know about changes
+sudo systemctl daemon-reload
+
+# enable so it starts on boot, start service
+sudo systemctl enable docker_events_gpu.service
+sudo systemctl start docker_events_gpu.service
+
 #========================================================================================================
 #========================================================================================================
 
