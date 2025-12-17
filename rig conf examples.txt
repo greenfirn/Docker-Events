@@ -1,3 +1,5 @@
+# ALGO 0 "" ... number for gpu specific in future
+
 # -- rig conf examples... --
 
 # -- %WORKER_NAME%           rig hostname in ARGS, WALLET, PASS, POOL                        --
