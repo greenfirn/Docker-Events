@@ -1,3 +1,4 @@
+# maybe add kill by pid in case some rare miner crash doesnt close with screen session
 
 # -- write docker_events_universal script --
 #sudo tee /usr/local/bin/docker_events_universal.sh > /dev/null <<'EOF'
