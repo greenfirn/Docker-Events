@@ -4,4 +4,4 @@ if you dont use %CPU_THREADS% in your .conf then auto cpu threads/affinity will 
 
 batch files can be used to send new .conf files to a list of rigs from windows pc
 
-see rig conf examples...
+see rig conf examples... scripts assume .conf files are in /home/user/
