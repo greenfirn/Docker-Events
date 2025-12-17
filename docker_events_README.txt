@@ -1,4 +1,4 @@
-RigCloud docker_events_universal Script – Installation & Layout Guide
+docker_events_universal Script – Installation & Layout Guide
 
 This document describes how to install and operate the modularized
 docker_events_universal script used by RigCloud to automatically start and stop
