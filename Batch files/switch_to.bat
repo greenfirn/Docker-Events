@@ -16,7 +16,7 @@ set "RIGS=10.10.0.100 10.10.0.101 10.10.0.102"
 echo Choose service mode:
 echo   1^) CPU only
 echo   2^) GPU only
-echo   3^) BOTH (combined)
+:: echo   3^) BOTH (combined)
 echo   4^) Stop all services
 echo.
 
@@ -25,7 +25,7 @@ set /p MODESEL="Choose 1-4: "
 
 if "%MODESEL%"=="1" set "MODE=CPU"
 if "%MODESEL%"=="2" set "MODE=GPU"
-if "%MODESEL%"=="3" set "MODE=BOTH"
+:: if "%MODESEL%"=="3" set "MODE=BOTH"
 if "%MODESEL%"=="4" set "MODE=STOP"
 
 if not defined MODE (
