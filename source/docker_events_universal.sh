@@ -26,6 +26,9 @@ readonly SCRIPT_DIR
 BASE_DIR="/home/user/miners"
 readonly BASE_DIR
 
+echo "[init] SCRIPT_DIR=$SCRIPT_DIR"
+echo "[init] BASE_DIR=$BASE_DIR"
+
 mkdir -p "$BASE_DIR"
 
 for f in \
