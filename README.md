@@ -8,7 +8,7 @@
 - 'sudo journalctl -u docker_events_cpu.service -f' or 'sudo journalctl -u docker_events_gpu.service -f'
 
 - miners load in screen session...
-- attach using .. sudo screen -r 'screen name from config/miner name by default'
+- attach using .. sudo screen -r 'miner name by default'
 
 - if you dont use %CPU_THREADS% in your .conf then auto cpu threads/affinity will not get added to the final cmd
 - see rig conf examples...
