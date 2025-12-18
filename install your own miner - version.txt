@@ -13,6 +13,7 @@ TARGET_NAME="clore-default-"
 SCREEN_NAME="miner"
 
 START_CMD=""
+ARGS=""
 
 RESET_OC="false"
 
@@ -28,9 +29,8 @@ fi
 # Function to start miner
 start_miner() {
     if ! screen -list | grep -q "$SCREEN_NAME"; then
-	    echo "$(date): Starting $SCREEN_NAME..."
-		echo "$SCREEN_NAME" $START_CMD
-		screen -dmS "$SCREEN_NAME" bash -c "$START_CMD"
+	echo "$(date): Starting $SCREEN_NAME..."
+	screen -dmS "$SCREEN_NAME" bash -c "$START_CMD $ARGS"
         echo "Miner started in screen session: $SCREEN_NAME"
         echo "To view miner output: sudo screen -r $SCREEN_NAME"
     else
