@@ -59,7 +59,7 @@ ALGO 0 "rx/0"
 POOL 0 "pool.supportxmr.com:9000"
 WALLET 0 "wallet-address"
 PASS 0 "%WORKER_NAME%"
-ARGS 0 "-t %CPU_THREADS% --tls -k"
+ARGS 0 "-t %CPU_THREADS% --tls -k --http-host=127.0.0.1 --http-port=18080"
 EOF
 
 #========================================================================================================
@@ -85,7 +85,7 @@ ALGO 0 "rx/0"
 POOL 0 "usa.hashvault.pro:443"
 WALLET 0 "wallet-address"
 PASS 0 "%WORKER_NAME%"
-ARGS 0 "-t %CPU_THREADS% --tls -k --tls-fingerprint 420c7850****"
+ARGS 0 "-t %CPU_THREADS% --tls -k --tls-fingerprint 420c7850**** --http-host=127.0.0.1 --http-port=18080"
 EOF
 
 #========================================================================================================
