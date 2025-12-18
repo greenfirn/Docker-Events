@@ -13,7 +13,6 @@ TARGET_NAME="clore-default-"
 SCREEN_NAME="miner"
 
 START_CMD=""
-ARGS=""
 
 RESET_OC="false"
 
@@ -33,7 +32,6 @@ start_miner() {
 		echo "$SCREEN_NAME" $START_CMD
 		screen -dmS "$SCREEN_NAME" bash -c "$START_CMD"
         echo "Miner started in screen session: $SCREEN_NAME"
-        echo "ARGS/OCS: $ARGS"
         echo "To view miner output: sudo screen -r $SCREEN_NAME"
     else
         echo "$(date): Miner already running in screen session: $SCREEN_NAME"
