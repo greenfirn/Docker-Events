@@ -1,3 +1,5 @@
+* this is only for testing, setup
+
 script files copied from windows to work under ubuntu must be in Unix LF
 Notepad++ Edit → EOL Conversion → Unix (LF)
 
@@ -7,7 +9,5 @@ sudo visudo
 
 #== CPU/GPU control service ==
 user ALL=(ALL) NOPASSWD: /usr/bin/systemctl * docker_events_gpu.service, \
-                         /usr/bin/systemctl * docker_events_cpu.service
-
-
-
+                         /usr/bin/systemctl * docker_events_cpu.service, \
+                         /usr/bin/systemctl * docker_events.service
