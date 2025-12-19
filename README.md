@@ -1,18 +1,23 @@
 -- Docker Events watcher --
 - install scripts in source folder 
 
-- start/stop mining when idle job active Clore / Octaspace --
+- start/stop mining with active idle job Clore / Octaspace
 - batch files can be used to send new .conf files to a list of rigs from windows pc
 - services assume .conf files are in /home/user/ and named rig-cpu.conf or rig-gpu.conf
-- use "ubuntu:24.04" on Clore / Octaspace as placeholder idle job ... or set something different in .conf
+- use image "ubuntu:24.04" on Clore / Octaspace as placeholder idle job or set something different in .conf
 
-- pause/stop idle job and watch logs to test...
-- 'sudo journalctl -u docker_events_cpu.service -f' or 'sudo journalctl -u docker_events_gpu.service -f'
+- start/stop/pause idle job and watch logs to test...
+- sudo journalctl -u docker_events_cpu.service -f
+- sudo journalctl -u docker_events_gpu.service -f
 
-- miners load in screen session...
-- attach using .. sudo screen -r miner
+- miners load in screen session by name of miner by default
+- sudo screen -ls to list active sessions
+- sudo screen -r name to re-open session
+- ctrl a+d to leave session with miner runnning
+- ctrl c to stop miner
+- exit to close screen session
 
-- if you dont use %CPU_THREADS% in your .conf then auto cpu threads/affinity will not get added to the final cmd
+- if you dont want to use auto cpu threads -1 and affinity then dont add %CPU_THREADS% to your args
 - see rig conf examples...
 
 Some portions of this project were developed with assistance from ChatGPT.
