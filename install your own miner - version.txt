@@ -1,6 +1,6 @@
-# -- write docker_events_universal script --
+# -- write docker_events_gpu script --
 
-sudo tee /usr/local/bin/docker_events_universal.sh > /dev/null <<'EOF'
+sudo tee /usr/local/bin/docker_events_gpu.sh > /dev/null <<'EOF'
 #!/bin/bash
 
 set -euo pipefail
@@ -159,8 +159,8 @@ Requires=docker.service
 
 [Service]
 User=root
-ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
-ExecStart=/usr/local/bin/docker_events_universal.sh
+ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_gpu.sh
+ExecStart=/usr/local/bin/docker_events_gpu.sh
 Restart=always
 RestartSec=2
 Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
