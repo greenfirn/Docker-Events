@@ -189,6 +189,7 @@ done
 echo "[GPU-RESET] Complete."
 EOF
 
+# make it executable
 sudo chmod +x /usr/local/bin/gpu_reset_poststop.sh
 
 #========================================================================================================
@@ -261,4 +262,6 @@ sudo systemctl daemon-reload
 # sudo systemctl disable docker_events_gpu.service
 # sudo systemctl disable docker_events_cpu.service
 
+# watch logs
 sudo journalctl -u docker_events_gpu.service -f
+sudo journalctl -u docker_events_cpu.service -f
