@@ -1,4 +1,4 @@
-for .sh script file to work under ubuntu must be in Unix LF
+script files copied from windows to work under ubuntu must be in Unix LF
 Notepad++ Edit → EOL Conversion → Unix (LF)
 
 sudo visudo
