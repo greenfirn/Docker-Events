@@ -263,5 +263,5 @@ sudo systemctl daemon-reload
 # sudo systemctl disable docker_events_cpu.service
 
 # watch logs
-sudo journalctl -u docker_events_gpu.service -f
-sudo journalctl -u docker_events_cpu.service -f
+# sudo journalctl -u docker_events_gpu.service -f
+# sudo journalctl -u docker_events_cpu.service -f
