@@ -3,7 +3,7 @@ Notepad++ Edit → EOL Conversion → Unix (LF)
 
 sudo visudo
 
-# add to bottom, allows start/stop control of docker_events services only without a password
+# add to bottom, allows start,stop,etc control of below services only without a password
 
 #== CPU/GPU control service ==
 user ALL=(ALL) NOPASSWD: /usr/bin/systemctl * docker_events_gpu.service, \
