@@ -1,10 +1,11 @@
 -- Docker Events watcher --
-- main build install scripts in source folder
-
 - start/stop mining with active idle job Clore / Octaspace
+
+- main build install scripts in source folder
+- for ubuntu server 24.04 use image "ubuntu:24.04" as placeholder idle job
+- on Clore / Octaspace or set something different in .conf
 - batch files can be used to send new .conf files to a list of rigs from windows pc
 - services assume .conf files are in /home/user/ and named rig-cpu.conf or rig-gpu.conf
-- use image "ubuntu:24.04" on Clore / Octaspace as placeholder idle job or set something different in .conf
 
 - start/stop/pause idle job and watch logs to test...
 - sudo journalctl -u docker_events_cpu.service -f
