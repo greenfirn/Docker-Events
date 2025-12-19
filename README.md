@@ -1,5 +1,5 @@
 -- Docker Events watcher --
-- install scripts in source folder 
+- main build install scripts in source folder
 
 - start/stop mining with active idle job Clore / Octaspace
 - batch files can be used to send new .conf files to a list of rigs from windows pc
