@@ -12,6 +12,35 @@
 
 #========================================================================================================
 
+# -- write clore rig-cpu.conf --
+
+sudo systemctl stop docker_events_cpu
+tee /home/user/rig-cpu.conf > /dev/null <<'EOF'
+XMRIG_VERSION        ALL "6.24.0"
+BZMINER_VERSION      ALL "v23.0.2"
+WILDRIG_VERSION      ALL "0.47.8"
+SRBMINER_VERSION     ALL "3.0.6"
+RIGEL_VERSION        ALL "1.23.0"
+LOLMINER_VERSION     ALL "1.98"
+ONEZEROMINER_VERSION ALL "1.7.2"
+GMINER_VERSION       ALL "3.44"
+TARGET_IMAGE 0 "ubuntu:24.04"
+TARGET_NAME 0 "clore-default-"
+RESET_OC 0 "false"
+SCREEN_NAME 0 "cpu"
+CUSTOM_MINER 0 ""
+MINER 0 "srbminer"
+ALGO 0 "xelishashv3"
+POOL 0 "stratum+ssl://ca.xelis.herominers.com:1225, stratum+ssl://us2.xelis.herominers.com:1225"
+WALLET 0 "***************"
+PASS 0 "x"
+ARGS 0 "--api-enable --tls true --worker %WORKER_NAME% --password x"
+EOF
+sudo systemctl restart docker_events_cpu
+sudo systemctl is-active docker_events_cpu
+
+#========================================================================================================
+
 # -- write octa rig-gpu.conf --
 
 tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
