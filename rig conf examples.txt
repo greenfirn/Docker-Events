@@ -1,14 +1,14 @@
 # ALGO 0 "" ... number for gpu specific in future
 
-# -- rig conf examples...                                                                      --
-# -- algo, pool, wallet, password get added to miner args from conf                            --
-# -- worker name is left to manualy add with wallet or where ever the pool wants it            --
+# -- rig conf examples...                                                                                   --
+# -- algo, pool, wallet, password get added to miner args from conf                                         --
+# -- worker name is left to manualy add with wallet or where ever the pool wants it                         --
 
-# -- %WORKER_NAME%           rig hostname in ARGS, WALLET, PASS, POOL                          --
-# -- %WARTHOG_TARGET%        WARTHOG_TARGET in ARGS                                            --
-# -- %CPU_THREADS%           cpu total threads -1 and affinity in ARGS see '03-cpu_threads.sh' --
-# -- SCREEN_NAME 0 "gpu"     different screen name than miner name                             --
-# -- CUSTOM_MINER 0 "path"   custom binary file                                                --
+# -- %WORKER_NAME%           rig hostname in ARGS, WALLET, PASS, POOL                                       --
+# -- %WARTHOG_TARGET%        WARTHOG_TARGET in ARGS                                                         --
+# -- %CPU_THREADS%           cpu total threads -1 (and affinity when xmrig) in ARGS see '03-cpu_threads.sh' --
+# -- SCREEN_NAME 0 "gpu"     different screen name than miner name                                          --
+# -- CUSTOM_MINER 0 "path"   custom binary file                                                             --
 
 ** keep as none sudo tee so they can be overwritten using putty/ssh **
 
