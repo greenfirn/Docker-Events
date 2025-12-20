@@ -548,35 +548,35 @@ get_start_cmd() {
     case "$name" in
 
         bzminer)
-            cmd="$MINER_BIN -a $ALGO -w $WALLET -p $POOL $ARGS"
+            cmd="$MINER_BIN -a $ALGO -p $POOL -w $WALLET --pool_password $PASS $ARGS"
             ;;
 
         wildrig)
-            cmd="$MINER_BIN --algo $ALGO --user $WALLET --url $POOL --pass $PASS $ARGS"
+            cmd="$MINER_BIN --algo $ALGO --url $POOL --user $WALLET --pass $PASS $ARGS"
             ;;
 
         xmrig)
-            cmd="$MINER_BIN -a $ALGO -u $WALLET -o $POOL -p $PASS $ARGS"
+            cmd="$MINER_BIN -a $ALGO -o $POOL -u $WALLET -p $PASS $ARGS"
             ;;
 
         srbminer)
-            cmd="$MINER_BIN --algorithm $ALGO --pool $POOL --wallet $WALLET $ARGS"
+            cmd="$MINER_BIN --algorithm $ALGO --pool $POOL --wallet $WALLET --password $PASS $ARGS"
             ;;
 
         rigel)
-            cmd="$MINER_BIN -a $ALGO -o $POOL -u $WALLET $ARGS"
+            cmd="$MINER_BIN -a $ALGO -o $POOL -u $WALLET -p $PASS $ARGS"
             ;;
 
         lolminer)
-            cmd="$MINER_BIN --algo $ALGO --pool $POOL --user $WALLET $ARGS"
+            cmd="$MINER_BIN --algo $ALGO --pool $POOL --user $WALLET --pass $PASS $ARGS"
             ;;
 
         onezerominer)
-            cmd="$MINER_BIN --algo $ALGO --server $POOL --user $WALLET $ARGS"
+            cmd="$MINER_BIN --algo $ALGO --pool $POOL --wallet $WALLET --pass $PASS $ARGS"
             ;;
 
         gminer)
-            cmd="$MINER_BIN --algo $ALGO --server $POOL --user $WALLET $ARGS"
+            cmd="$MINER_BIN --algo $ALGO --server $POOL --user $WALLET --pass $PASS $ARGS"
             ;;
         *)
             echo "[ERROR] Unknown miner: $name" >&2
@@ -620,6 +620,7 @@ POOL=$(get_rig_conf "POOL" "0")
 WALLET=$(get_rig_conf "WALLET" "0")
 PASS=$(get_rig_conf "PASS" "0")
 EOF
+
 sudo tee /usr/local/bin/lib/03-cpu_threads.sh > /dev/null <<'EOF'
 TOTAL_THREADS=$(nproc)
 CPU_THREADS=$((TOTAL_THREADS - 1))
