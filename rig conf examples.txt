@@ -2,11 +2,11 @@
 
 # -- rig conf examples... --
 
-# -- %WORKER_NAME%           rig hostname in ARGS, WALLET, PASS, POOL                        --
-# -- %WARTHOG_TARGET%        WARTHOG_TARGET in ARGS                                          --
-# -- %CPU_THREADS%           cpu total threads -1 and affinity in ARGS see 'cpu threads.txt' --
-# -- SCREEN_NAME 0 "miner"   different screen name than miner name                           --
-# -- CUSTOM_MINER 0 "path"   custom binary file                                              --
+# -- %WORKER_NAME%           rig hostname in ARGS, WALLET, PASS, POOL                          --
+# -- %WARTHOG_TARGET%        WARTHOG_TARGET in ARGS                                            --
+# -- %CPU_THREADS%           cpu total threads -1 and affinity in ARGS see '03-cpu_threads.sh' --
+# -- SCREEN_NAME 0 "gpu"     different screen name than miner name                             --
+# -- CUSTOM_MINER 0 "path"   custom binary file                                                --
 
 ** keep as none sudo tee so they can be overwritten using putty/ssh **
 

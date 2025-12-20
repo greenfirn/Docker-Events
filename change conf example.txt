@@ -18,7 +18,7 @@ ALGO 0 "xelishashv3"
 POOL 0 "stratum+ssl://ca.xelis.herominers.com:1225 -o stratum+ssl://us2.xelis.herominers.com:1225"
 WALLET 0 "wallet-address"
 PASS 0 "x"
-ARGS 0 "-w %WORKER_NAME% -p x --lock-cclock 2190 --cclock 300 --lock-mclock X --mclock 1000"
+ARGS 0 "-w %WORKER_NAME% --lock-cclock 2190 --cclock 300 --lock-mclock X --mclock 1000"
 EOF
 sudo systemctl start docker_events_gpu
 # sudo journalctl -u docker_events_gpu -f
