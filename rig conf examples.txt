@@ -34,7 +34,7 @@ ALGO 0 "xelishashv3"
 POOL 0 "stratum+ssl://ca.xelis.herominers.com:1225, stratum+ssl://us2.xelis.herominers.com:1225"
 WALLET 0 "***************"
 PASS 0 "x"
-ARGS 0 "--api-enable --tls true --worker %WORKER_NAME% --password x"
+ARGS 0 "--api-enable --tls true --worker %WORKER_NAME%"
 EOF
 sudo systemctl restart docker_events_cpu
 sudo systemctl is-active docker_events_cpu
@@ -62,7 +62,7 @@ ALGO 0 "xelishashv3"
 POOL 0 "stratum+ssl://ca.xelis.herominers.com:1225 -o stratum+ssl://us2.xelis.herominers.com:1225"
 WALLET 0 "wallet-address"
 PASS 0 "x"
-ARGS 0 "-w %WORKER_NAME% -p x --lock-cclock 2190 --cclock 300 --lock-mclock X --mclock 1000 --api-bind 127.0.0.1:5000"
+ARGS 0 "--api-bind 127.0.0.1:5000 -w %WORKER_NAME% --lock-cclock 2190 --cclock 300 --lock-mclock X --mclock 1000"
 EOF
 
 #========================================================================================================
@@ -88,7 +88,7 @@ ALGO 0 "rx/0"
 POOL 0 "pool.supportxmr.com:9000"
 WALLET 0 "wallet-address"
 PASS 0 "%WORKER_NAME%"
-ARGS 0 "-t %CPU_THREADS% --tls -k --http-host=127.0.0.1 --http-port=18080"
+ARGS 0 "--http-host=127.0.0.1 --http-port=18080 -t %CPU_THREADS% --tls -k"
 EOF
 
 #========================================================================================================
@@ -114,7 +114,7 @@ ALGO 0 "rx/0"
 POOL 0 "usa.hashvault.pro:443"
 WALLET 0 "wallet-address"
 PASS 0 "%WORKER_NAME%"
-ARGS 0 "-t %CPU_THREADS% --tls -k --tls-fingerprint 420c7850**** --http-host=127.0.0.1 --http-port=18080"
+ARGS 0 "--http-host=127.0.0.1 --http-port=18080 -t %CPU_THREADS% --tls -k --tls-fingerprint 420c7850****"
 EOF
 
 #========================================================================================================
