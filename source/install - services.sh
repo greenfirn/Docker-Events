@@ -10,6 +10,7 @@ Requires=docker.service
 [Service]
 User=root
 Environment="OC_FILE=/home/user/rig-gpu.conf"
+Environment="MINER_CONF=/home/user/miner.conf"
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
 ExecStart=/usr/local/bin/docker_events_universal.sh
 #ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh
@@ -33,6 +34,7 @@ Requires=docker.service
 [Service]
 User=root
 Environment="OC_FILE=/home/user/rig-cpu.conf"
+Environment="MINER_CONF=/home/user/miner.conf"
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
 ExecStart=/usr/local/bin/docker_events_universal.sh
 #ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh

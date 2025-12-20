@@ -22,6 +22,40 @@ echo "[init] BASE_DIR=$BASE_DIR"
 
 mkdir -p "$BASE_DIR"
 
+# -------------------------------------------------
+# Default rig config resolution
+# -------------------------------------------------
+default_oc_file="/home/user/rig-cpu.conf"
+readonly default_oc_file
+
+if [[ -n "${oc_file:-}" ]]; then
+    cfg_file="$oc_file"
+elif [[ -n "${OC_FILE:-}" ]]; then
+    cfg_file="$OC_FILE"
+else
+    cfg_file="$default_oc_file"
+fi
+
+CFG_FILE="$cfg_file"
+export CFG_FILE
+
+[[ -f "$CFG_FILE" ]] || {
+    echo "Missing rig config: $CFG_FILE"
+    exit 1
+}
+
+# -------------------------------------------------
+# Miner config (required)
+# -------------------------------------------------
+: "${MINER_CONF:?MINER_CONF is not set}"
+[[ -f "$MINER_CONF" ]] || {
+    echo "Missing miner.conf: $MINER_CONF"
+    exit 1
+}
+
+# -------------------------------------------------
+# Source libraries
+# -------------------------------------------------
 for f in \
     "$SCRIPT_DIR/lib/00-get_rig_conf.sh" \
     "$SCRIPT_DIR/lib/01-miner_install.sh" \
@@ -32,6 +66,7 @@ do
     [[ -f "$f" ]] || { echo "Missing include: $f"; exit 1; }
     source "$f"
 done
+
 
 
 # ---------------------------------------------------------

@@ -7,15 +7,16 @@
 # CONFIG — Where all miners will be stored
 ###########################################
 
-# Load miner versions from rig.conf
-XMRIG_VERSION=$(get_rig_conf "XMRIG_VERSION" "0")
-BZMINER_VERSION=$(get_rig_conf "BZMINER_VERSION" "0")
-WILDRIG_VERSION=$(get_rig_conf "WILDRIG_VERSION" "0")
-SRBMINER_VERSION=$(get_rig_conf "SRBMINER_VERSION" "0")
-RIGEL_VERSION=$(get_rig_conf "RIGEL_VERSION" "0")
-LOLMINER_VERSION=$(get_rig_conf "LOLMINER_VERSION" "0")
-ONEZEROMINER_VERSION=$(get_rig_conf "ONEZEROMINER_VERSION" "0")
-GMINER_VERSION=$(get_rig_conf "GMINER_VERSION" "0")
+# Load miner versions from miner.conf
+XMRIG_VERSION=$(get_rig_conf "$MINER_CONF" "XMRIG_VERSION" "0")
+BZMINER_VERSION=$(get_rig_conf "$MINER_CONF" "BZMINER_VERSION" "0")
+WILDRIG_VERSION=$(get_rig_conf "$MINER_CONF" "WILDRIG_VERSION" "0")
+SRBMINER_VERSION=$(get_rig_conf "$MINER_CONF" "SRBMINER_VERSION" "0")
+RIGEL_VERSION=$(get_rig_conf "$MINER_CONF" "RIGEL_VERSION" "0")
+LOLMINER_VERSION=$(get_rig_conf "$MINER_CONF" "LOLMINER_VERSION" "0")
+ONEZEROMINER_VERSION=$(get_rig_conf "$MINER_CONF" "ONEZEROMINER_VERSION" "0")
+GMINER_VERSION=$(get_rig_conf "$MINER_CONF" "GMINER_VERSION" "0")
+
 
 echo ""
 echo "==============================================="

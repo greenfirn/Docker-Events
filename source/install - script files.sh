@@ -19,6 +19,40 @@ echo "[init] BASE_DIR=$BASE_DIR"
 
 mkdir -p "$BASE_DIR"
 
+# -------------------------------------------------
+# Default rig config resolution
+# -------------------------------------------------
+default_oc_file="/home/user/rig-cpu.conf"
+readonly default_oc_file
+
+if [[ -n "${oc_file:-}" ]]; then
+    cfg_file="$oc_file"
+elif [[ -n "${OC_FILE:-}" ]]; then
+    cfg_file="$OC_FILE"
+else
+    cfg_file="$default_oc_file"
+fi
+
+CFG_FILE="$cfg_file"
+export CFG_FILE
+
+[[ -f "$CFG_FILE" ]] || {
+    echo "Missing rig config: $CFG_FILE"
+    exit 1
+}
+
+# -------------------------------------------------
+# Miner config (required)
+# -------------------------------------------------
+: "${MINER_CONF:?MINER_CONF is not set}"
+[[ -f "$MINER_CONF" ]] || {
+    echo "Missing miner.conf: $MINER_CONF"
+    exit 1
+}
+
+# -------------------------------------------------
+# Source libraries
+# -------------------------------------------------
 for f in \
     "$SCRIPT_DIR/lib/00-get_rig_conf.sh" \
     "$SCRIPT_DIR/lib/01-miner_install.sh" \
@@ -29,7 +63,6 @@ do
     [[ -f "$f" ]] || { echo "Missing include: $f"; exit 1; }
     source "$f"
 done
-
 
 # ---------------------------------------------------------
 # FINAL PLACEHOLDER SUBSTITUTION (ONE TIME ONLY)
@@ -221,25 +254,34 @@ EOF
 
 sudo tee /usr/local/bin/lib/00-get_rig_conf.sh > /dev/null <<'EOF'
 get_rig_conf() {
-    local default_oc_file="/home/user/rig-cpu.conf"
 
-    # Safe checks under set -u
-    if [[ -n "${oc_file:-}" ]]; then
-        cfg_file="$oc_file"
-    elif [[ -n "${OC_FILE:-}" ]]; then
-        cfg_file="$OC_FILE"
+    local key=""
+    local gpu_id=""
+    local cfg_file=""
+
+    # -------------------------------------------------
+    # Signature normalization
+    #
+    # get_rig_conf KEY GPU
+    # get_rig_conf FILE KEY GPU
+    # -------------------------------------------------
+    if [[ $# -eq 2 ]]; then
+        cfg_file="$CFG_FILE"
+        key="$1"
+        gpu_id="$2"
+    elif [[ $# -eq 3 ]]; then
+        cfg_file="$1"
+        key="$2"
+        gpu_id="$3"
     else
-        cfg_file="$default_oc_file"
+        echo "[get_rig_conf] Invalid arguments" >&2
+        return 1
     fi
 
-    local key="$1"     # e.g., TARGET_IMAGE
-    local gpu_id="$2"  # usually "0" in your examples
-
-    # If file missing, return empty
-    [[ ! -f "$cfg_file" ]] && echo "" && return
+    [[ -f "$cfg_file" ]] || { echo ""; return; }
 
     local selected_value=""
-    local file_key file_gpu rest_of_line value
+    local file_key file_gpu rest value
 
     # Read key, gpu, and rest of line into rest_of_line
     while read -r file_key file_gpu rest_of_line; do
@@ -282,15 +324,15 @@ sudo tee /usr/local/bin/lib/01-miner_install.sh > /dev/null <<'EOF'
 # CONFIG — Where all miners will be stored
 ###########################################
 
-# Load miner versions from rig.conf
-XMRIG_VERSION=$(get_rig_conf "XMRIG_VERSION" "0")
-BZMINER_VERSION=$(get_rig_conf "BZMINER_VERSION" "0")
-WILDRIG_VERSION=$(get_rig_conf "WILDRIG_VERSION" "0")
-SRBMINER_VERSION=$(get_rig_conf "SRBMINER_VERSION" "0")
-RIGEL_VERSION=$(get_rig_conf "RIGEL_VERSION" "0")
-LOLMINER_VERSION=$(get_rig_conf "LOLMINER_VERSION" "0")
-ONEZEROMINER_VERSION=$(get_rig_conf "ONEZEROMINER_VERSION" "0")
-GMINER_VERSION=$(get_rig_conf "GMINER_VERSION" "0")
+# Load miner versions from miner.conf
+XMRIG_VERSION=$(get_rig_conf "$MINER_CONF" "XMRIG_VERSION" "0")
+BZMINER_VERSION=$(get_rig_conf "$MINER_CONF" "BZMINER_VERSION" "0")
+WILDRIG_VERSION=$(get_rig_conf "$MINER_CONF" "WILDRIG_VERSION" "0")
+SRBMINER_VERSION=$(get_rig_conf "$MINER_CONF" "SRBMINER_VERSION" "0")
+RIGEL_VERSION=$(get_rig_conf "$MINER_CONF" "RIGEL_VERSION" "0")
+LOLMINER_VERSION=$(get_rig_conf "$MINER_CONF" "LOLMINER_VERSION" "0")
+ONEZEROMINER_VERSION=$(get_rig_conf "$MINER_CONF" "ONEZEROMINER_VERSION" "0")
+GMINER_VERSION=$(get_rig_conf "$MINER_CONF" "GMINER_VERSION" "0")
 
 echo ""
 echo "==============================================="

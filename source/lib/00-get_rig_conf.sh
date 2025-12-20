@@ -1,23 +1,32 @@
 get_rig_conf() {
-    local default_oc_file="/home/user/rig-cpu.conf"
 
-    # Safe checks under set -u
-    if [[ -n "${oc_file:-}" ]]; then
-        cfg_file="$oc_file"
-    elif [[ -n "${OC_FILE:-}" ]]; then
-        cfg_file="$OC_FILE"
+    local key=""
+    local gpu_id=""
+    local cfg_file=""
+
+    # -------------------------------------------------
+    # Signature normalization
+    #
+    # get_rig_conf KEY GPU
+    # get_rig_conf FILE KEY GPU
+    # -------------------------------------------------
+    if [[ $# -eq 2 ]]; then
+        cfg_file="$CFG_FILE"
+        key="$1"
+        gpu_id="$2"
+    elif [[ $# -eq 3 ]]; then
+        cfg_file="$1"
+        key="$2"
+        gpu_id="$3"
     else
-        cfg_file="$default_oc_file"
+        echo "[get_rig_conf] Invalid arguments" >&2
+        return 1
     fi
 
-    local key="$1"     # e.g., TARGET_IMAGE
-    local gpu_id="$2"  # usually "0" in your examples
-
-    # If file missing, return empty
-    [[ ! -f "$cfg_file" ]] && echo "" && return
+    [[ -f "$cfg_file" ]] || { echo ""; return; }
 
     local selected_value=""
-    local file_key file_gpu rest_of_line value
+    local file_key file_gpu rest value
 
     # Read key, gpu, and rest of line into rest_of_line
     while read -r file_key file_gpu rest_of_line; do
