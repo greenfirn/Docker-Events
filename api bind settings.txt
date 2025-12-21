@@ -1,3 +1,5 @@
+only needs to be availible on rig itself for dashboard stats '127.0.0.1'
+
 xmrig --http-host=127.0.0.1 --http-port=18080
 rigel --api-bind 127.0.0.1:5000
 SRBMiner-MULTI --api-enable
