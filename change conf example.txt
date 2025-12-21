@@ -1,13 +1,5 @@
 sudo systemctl stop docker_events_gpu
 tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
-XMRIG_VERSION        ALL "6.24.0"
-BZMINER_VERSION      ALL "v23.0.2"
-WILDRIG_VERSION      ALL "0.47.8"
-SRBMINER_VERSION     ALL "3.0.6"
-RIGEL_VERSION        ALL "1.23.0"
-LOLMINER_VERSION     ALL "1.98"
-ONEZEROMINER_VERSION ALL "1.7.2"
-GMINER_VERSION       ALL "3.44"
 TARGET_IMAGE 0 "ubuntu:24.04"
 TARGET_NAME 0 "octa_idle_job"
 RESET_OC 0 "true"
