@@ -1,7 +1,12 @@
-bzminer default API_URL = "http://127.0.0.1:4014/status"
-
 xmrig --http-host=127.0.0.1 --http-port=18080
-
-SRBMiner-MULTI --api-enable
 rigel --api-bind 127.0.0.1:5000
+SRBMiner-MULTI --api-enable
 lolminer --apiport 8020 --apihost 127.0.0.1
+wildrig --api-port 4000
+gminer --api 10050
+
+
+running by default, not needed in command line
+
+bzminer --http_port 4014 --http_address 127.0.0.1
+onezerominer --api-port 3001
