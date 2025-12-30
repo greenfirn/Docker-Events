@@ -1,4 +1,4 @@
-# -- to update miner versions write miner.conf --
+# -- write miner.conf --
 
 sudo tee /home/user/miner.conf > /dev/null <<'EOF'
 XMRIG_VERSION        ALL "6.24.0"
