@@ -1,5 +1,3 @@
-# maybe add kill by pid in case some rare miner crash doesnt close with screen session
-
 # -- write docker_events_universal script --
 mkdir -v /usr/local/bin/lib
 
@@ -67,10 +65,109 @@ do
     source "$f"
 done
 
+# ---------------------------------------------------------
+# API SETTINGS - from API_CONF or default location
+# ---------------------------------------------------------
+# Use API_CONF environment variable if set, otherwise default
+: "${API_CONF:=/home/user/api.conf}"
+PORTS_CONF="$API_CONF"
 
+if [[ ! -f "$PORTS_CONF" ]]; then
+    echo "[api] WARNING: $PORTS_CONF not found, API disabled"
+    API_HOST="127.0.0.1"
+    API_PORT=0
+else
+    echo "[api] Loading API settings from $PORTS_CONF"
+    # Source ports.conf
+    source "$PORTS_CONF"
+    
+    # Get API settings for this specific miner
+    MINER_UPPER=$(echo "$MINER_NAME" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+    
+    # Look for miner-specific API_PORT (e.g., XMRIG_CPU_API_PORT)
+    MINER_API_PORT_VAR="${MINER_UPPER}_API_PORT"
+    if [[ -n "${!MINER_API_PORT_VAR:-}" ]]; then
+        API_PORT="${!MINER_API_PORT_VAR}"
+        echo "[api] Found specific API_PORT: $MINER_API_PORT_VAR=$API_PORT"
+    else
+        # Fallback to generic API_PORT
+        : "${API_PORT:=0}"
+        echo "[api] Using generic API_PORT: $API_PORT"
+    fi
+    
+    # Look for miner-specific API_HOST (e.g., XMRIG_CPU_API_HOST)
+    MINER_API_HOST_VAR="${MINER_UPPER}_API_HOST"
+    if [[ -n "${!MINER_API_HOST_VAR:-}" ]]; then
+        API_HOST="${!MINER_API_HOST_VAR}"
+        echo "[api] Found specific API_HOST: $MINER_API_HOST_VAR=$API_HOST"
+    else
+        # Fallback to generic API_HOST
+        : "${API_HOST:=127.0.0.1}"
+        echo "[api] Using generic API_HOST: $API_HOST"
+    fi
+fi
+
+echo "[api] Final API settings for $MINER_NAME:"
+echo "[api]   API_HOST=$API_HOST"
+echo "[api]   API_PORT=$API_PORT"
 
 # ---------------------------------------------------------
-# FINAL PLACEHOLDER SUBSTITUTION (ONE TIME ONLY)
+# MINER-SPECIFIC API COMMAND GENERATION
+# ---------------------------------------------------------
+add_api_flags() {
+    local miner_name="$1"
+    local api_host="$2"
+    local api_port="$3"
+    local current_args="$4"
+    
+    if [[ "$api_port" -eq 0 ]]; then
+        echo "$current_args"
+        return
+    fi
+    
+    case "$miner_name" in
+        "xmrig"|"xmrig-cpu"|"xmrig-gpu")
+            echo "$current_args --http-host=$api_host --http-port=$api_port"
+            ;;
+        "rigel")
+            echo "$current_args --api-bind $api_host:$api_port"
+            ;;
+        "srbminer"|"srbminer-cpu"|"srbminer-gpu"|"srbminer-multi")
+            echo "$current_args --api-enable --api-port $api_port"
+            ;;
+        "lolminer")
+            echo "$current_args --apiport $api_port --apihost $api_host"
+            ;;
+        "wildrig")
+            echo "$current_args --api-port $api_port"
+            ;;
+        "gminer")
+            echo "$current_args --api $api_port"
+            ;;
+        "bzminer")
+            echo "$current_args --http_port $api_port --http_address $api_host"
+            ;;
+        "onezerominer")
+            echo "$current_args --api-port $api_port"
+            ;;
+        "t-rex")
+            echo "$current_args --api-bind $api_host:$api_port"
+            ;;
+        "teamredminer")
+            echo "$current_args --api_listen=$api_host --api_port=$api_port"
+            ;;
+        "nbminer")
+            echo "$current_args --api $api_host:$api_port"
+            ;;
+        *)
+            # No API flags for unknown miners
+            echo "$current_args"
+            ;;
+    esac
+}
+
+# ---------------------------------------------------------
+# FINAL PLACEHOLDER SUBSTITUTION
 # ---------------------------------------------------------
 
 # CPU threads
@@ -91,6 +188,9 @@ WALLET="${WALLET//%WORKER_NAME%/$WORKER_NAME}"
 PASS="${PASS//%WORKER_NAME%/$WORKER_NAME}"
 POOL="${POOL//%WORKER_NAME%/$WORKER_NAME}"
 
+# Add miner-specific API flags
+ARGS=$(add_api_flags "$MINER_NAME" "$API_HOST" "$API_PORT" "$ARGS")
+
 START_CMD=$(get_start_cmd "$MINER_NAME")
 
 # Load from rig.conf
@@ -101,44 +201,204 @@ if [[ -z "$SCREEN_NAME" ]]; then
     SCREEN_NAME="$MINER_NAME"
 fi
 
-###############################################
-#  FUNCTIONS
-###############################################
+# ---------------------------------------------------------
+# API HEALTH CHECK FUNCTION
+# ---------------------------------------------------------
+check_api_health() {
+    if [[ "$API_PORT" -eq 0 ]]; then
+        return 0  # API not enabled, consider healthy
+    fi
+    
+    local url="http://$API_HOST:$API_PORT"
+    if [[ "$API_HOST" == "0.0.0.0" ]]; then
+        url="http://127.0.0.1:$API_PORT"
+    fi
+    
+    echo "$(date): Checking API health at $url..."
+    
+    # Try to reach the API endpoint
+    if curl -s --max-time 5 "$url" > /dev/null 2>&1; then
+        echo "$(date): API is responding"
+        return 0
+    else
+        echo "$(date): API is not responding"
+        return 1
+    fi
+}
+
+# ---------------------------------------------------------
+# PID-BASED KILL - Backup for crashed miners
+# ---------------------------------------------------------
+kill_by_pid() {
+    local pid_file="/tmp/${SCREEN_NAME}_miner.pid"
+    
+    if [[ -f "$pid_file" ]]; then
+        local miner_pid=$(cat "$pid_file")
+        
+        if ps -p "$miner_pid" > /dev/null 2>&1; then
+            echo "$(date): WARNING: Miner process still alive after screen quit - forcing kill (PID: $miner_pid)..."
+            
+            # Send SIGTERM first (graceful)
+            kill -15 "$miner_pid" 2>/dev/null
+            sleep 2
+            
+            # Force kill if still running
+            if ps -p "$miner_pid" > /dev/null 2>&1; then
+                echo "$(date): Miner not responding to SIGTERM - sending SIGKILL..."
+                kill -9 "$miner_pid" 2>/dev/null
+                sleep 1
+            fi
+            
+            # Kill any child processes
+            pkill -P "$miner_pid" 2>/dev/null 2>&1 || true
+            
+            echo "$(date): Miner process $miner_pid terminated (forcefully)"
+        fi
+        
+        # Clean up PID file
+        rm -f "$pid_file"
+    fi
+}
+
+# ---------------------------------------------------------
+# FUNCTIONS
+# ---------------------------------------------------------
 
 # Function to start miner
 start_miner() {
-    if ! screen -list | grep -q "$SCREEN_NAME"; then
-	    echo "$(date): Starting $SCREEN_NAME..."
-		echo "$SCREEN_NAME" $START_CMD
-		screen -dmS "$SCREEN_NAME" bash -c "$START_CMD"
-        echo "Miner started in screen session: $SCREEN_NAME"
-        echo "ARGS/OCS: $ARGS"
-        echo "To view miner output: sudo screen -r $SCREEN_NAME"
+    # Check for zombie sessions first
+    if screen -list | grep -q "$SCREEN_NAME"; then
+        echo "$(date): Screen session exists for $SCREEN_NAME - checking if miner is alive..."
+        
+        local pid_file="/tmp/${SCREEN_NAME}_miner.pid"
+        if [[ -f "$pid_file" ]]; then
+            local miner_pid=$(cat "$pid_file")
+            
+            if ! ps -p "$miner_pid" > /dev/null 2>&1; then
+                echo "$(date): Miner process is dead but screen session exists - cleaning up..."
+                stop_miner
+                echo "$(date): Starting fresh miner after cleanup..."
+            else
+                echo "$(date): Miner already running in screen session: $SCREEN_NAME"
+                echo "$(date): To view: sudo screen -r $SCREEN_NAME"
+                return
+            fi
+        fi
+    fi
+    
+    # Start fresh miner
+    echo "$(date): Starting $SCREEN_NAME..."
+    echo "$(date): API: $API_HOST:$API_PORT"
+    echo "$(date): Command: $START_CMD"
+    
+    # Create PID file directory
+    mkdir -p /tmp/miner_pids
+    
+    # Start in screen session
+    screen -dmS "$SCREEN_NAME" bash -c \
+        "echo 'Miner starting at \$(date)'; \
+         echo 'API: $API_HOST:$API_PORT'; \
+         echo '\$BASHPID' > '/tmp/${SCREEN_NAME}_miner.pid'; \
+         trap 'echo \"Miner exiting at \$(date)\"; rm -f \"/tmp/${SCREEN_NAME}_miner.pid\"' EXIT; \
+         $START_CMD"
+    
+    # Wait a moment for PID file creation
+    sleep 2
+    
+    # Verify startup
+    if screen -list | grep -q "$SCREEN_NAME"; then
+        echo "$(date): Miner started in screen session: $SCREEN_NAME"
+        
+        if [[ -f "/tmp/${SCREEN_NAME}_miner.pid" ]]; then
+            local miner_pid=$(cat "/tmp/${SCREEN_NAME}_miner.pid")
+            echo "$(date): Miner process PID: $miner_pid"
+        fi
+        
+        # Wait for API to come up if enabled
+        if [[ "$API_PORT" -gt 0 ]]; then
+            echo "$(date): Waiting for API to start (max 30 seconds)..."
+            local max_wait=30
+            local waited=0
+            
+            while [[ $waited -lt $max_wait ]]; do
+                if check_api_health; then
+                    echo "$(date): API is up and running"
+                    break
+                fi
+                sleep 1
+                ((waited++))
+            done
+            
+            if [[ $waited -ge $max_wait ]]; then
+                echo "$(date): WARNING: API did not respond after $max_wait seconds"
+            fi
+        fi
+        
+        echo "$(date): ARGS/OCS: $ARGS"
+        echo "$(date): To view miner output: sudo screen -r $SCREEN_NAME"
     else
-        echo "$(date): Miner already running in screen session: $SCREEN_NAME"
+        echo "$(date): ERROR: Failed to start screen session!"
+        return 1
     fi
 }
-# Function to stop miner
+
+# Function to stop miner (clean closure first)
 stop_miner() {
+    echo "$(date): Stopping $SCREEN_NAME miner (clean shutdown)..."
+    
+    # 1. FIRST ATTEMPT: Clean screen quit (let miner cleanup)
     if screen -list | grep -q "$SCREEN_NAME"; then
-        echo "$(date): Stopping $SCREEN_NAME miner..."
-        
-        # Kill the screen session cleanly
+        echo "$(date): Sending clean quit to screen session..."
         screen -S "$SCREEN_NAME" -X quit
-
-        echo "Sleeping 5 seconds to allow miner to exit..."
+        
+        echo "$(date): Waiting 5 seconds for miner cleanup..."
         sleep 5
-
-        if [[ "${RESET_OC,,}" == "true" ]]; then
-            echo "Resetting GPU clocks and power limits..."
-            /usr/local/bin/gpu_reset_poststop.sh
-        fi
     else
-        echo "$(date): No $SCREEN_NAME miner screen session found — nothing to stop."
+        echo "$(date): No $SCREEN_NAME screen session found."
     fi
-
-    echo "Final sleep 5 seconds..."
-    sleep 5
+    
+    # 2. CHECK: If miner process still exists after clean quit
+    local pid_file="/tmp/${SCREEN_NAME}_miner.pid"
+    if [[ -f "$pid_file" ]]; then
+        local miner_pid=$(cat "$pid_file")
+        
+        if ps -p "$miner_pid" > /dev/null 2>&1; then
+            echo "$(date): Miner still running after screen quit - using force cleanup..."
+            kill_by_pid
+        else
+            echo "$(date): Miner exited cleanly after screen quit."
+            rm -f "$pid_file"
+        fi
+    fi
+    
+    # 3. CLEANUP: Any leftover screen processes
+    local screen_pids=$(pgrep -f "SCREEN.*$SCREEN_NAME" 2>/dev/null || true)
+    if [[ -n "$screen_pids" ]]; then
+        echo "$(date): Cleaning up leftover screen processes..."
+        kill -15 $screen_pids 2>/dev/null
+        sleep 2
+        kill -9 $screen_pids 2>/dev/null 2>&1 || true
+    fi
+    
+    # 4. Reset GPU if configured
+    if [[ "${RESET_OC,,}" == "true" ]]; then
+        echo "$(date): Resetting GPU clocks and power limits..."
+        /usr/local/bin/gpu_reset_poststop.sh
+    fi
+    
+    # 5. Final verification
+    echo "$(date): Verifying cleanup..."
+    if screen -list | grep -q "$SCREEN_NAME"; then
+        echo "$(date): WARNING: Screen session still exists!"
+    else
+        echo "$(date): Screen session cleaned up successfully."
+    fi
+    
+    # Clean PID file if still exists
+    rm -f "$pid_file"
+    
+    echo "$(date): Final sleep 2 seconds..."
+    sleep 2
 }
 
 check_target_container() {
@@ -256,5 +516,8 @@ while read type action name image; do
     fi
 done
 EOF
+
+# Make the script executable
+sudo chmod +x /usr/local/bin/docker_events_universal.sh
 
 # service makes sh executable on start
