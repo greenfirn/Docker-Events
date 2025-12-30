@@ -265,7 +265,7 @@ kill_by_pid() {
 
 # Function to start miner
 start_miner() {
-    # Check for zombie sessions first
+    # Check if miner is already running
     if screen -list | grep -q "$SCREEN_NAME"; then
         echo "$(date): Screen session exists for $SCREEN_NAME - checking if miner is alive..."
         
@@ -273,15 +273,21 @@ start_miner() {
         if [[ -f "$pid_file" ]]; then
             local miner_pid=$(cat "$pid_file")
             
-            if ! ps -p "$miner_pid" > /dev/null 2>&1; then
+            if ps -p "$miner_pid" > /dev/null 2>&1; then
+                echo "$(date): Miner already running in screen session: $SCREEN_NAME"
+                echo "$(date): To view: sudo screen -r $SCREEN_NAME"
+                return 0  # Exit early - miner is already running
+            else
                 echo "$(date): Miner process is dead but screen session exists - cleaning up..."
                 stop_miner
                 echo "$(date): Starting fresh miner after cleanup..."
-            else
-                echo "$(date): Miner already running in screen session: $SCREEN_NAME"
-                echo "$(date): To view: sudo screen -r $SCREEN_NAME"
-                return
+                # Continue to start fresh miner
             fi
+        else
+            echo "$(date): Screen session exists but no PID file found - cleaning up..."
+            stop_miner
+            echo "$(date): Starting fresh miner after cleanup..."
+            # Continue to start fresh miner
         fi
     fi
     
@@ -295,11 +301,11 @@ start_miner() {
     
     # Start in screen session
     screen -dmS "$SCREEN_NAME" bash -c \
-        "echo 'Miner starting at \$(date)'; \
-         echo 'API: $API_HOST:$API_PORT'; \
-         echo '\$BASHPID' > '/tmp/${SCREEN_NAME}_miner.pid'; \
-         trap 'echo \"Miner exiting at \$(date)\"; rm -f \"/tmp/${SCREEN_NAME}_miner.pid\"' EXIT; \
-         $START_CMD"
+        'echo "Miner starting at $(date)"; \
+         echo "API: '"$API_HOST:$API_PORT"'"; \
+         echo "$$" > "'"/tmp/${SCREEN_NAME}_miner.pid"'"; \
+         trap '\''echo "Miner exiting at $(date)"; rm -f "'"/tmp/${SCREEN_NAME}_miner.pid"'"'\'' EXIT; \
+         '"$START_CMD"
     
     # Wait a moment for PID file creation
     sleep 2
@@ -335,6 +341,7 @@ start_miner() {
         
         echo "$(date): ARGS/OCS: $ARGS"
         echo "$(date): To view miner output: sudo screen -r $SCREEN_NAME"
+        return 0
     else
         echo "$(date): ERROR: Failed to start screen session!"
         return 1
@@ -343,18 +350,20 @@ start_miner() {
 
 # Function to stop miner (clean closure first)
 stop_miner() {
-    echo "$(date): Stopping $SCREEN_NAME miner (clean shutdown)..."
+    echo "$(date): Stopping $SCREEN_NAME miner..."
+    
+    # Check if screen session exists at all
+    if ! screen -list | grep -q "$SCREEN_NAME"; then
+        echo "$(date): No $SCREEN_NAME screen session found - nothing to stop."
+        return 0
+    fi
     
     # 1. FIRST ATTEMPT: Clean screen quit (let miner cleanup)
-    if screen -list | grep -q "$SCREEN_NAME"; then
-        echo "$(date): Sending clean quit to screen session..."
-        screen -S "$SCREEN_NAME" -X quit
-        
-        echo "$(date): Waiting 5 seconds for miner cleanup..."
-        sleep 5
-    else
-        echo "$(date): No $SCREEN_NAME screen session found."
-    fi
+    echo "$(date): Sending clean quit to screen session..."
+    screen -S "$SCREEN_NAME" -X quit
+    
+    echo "$(date): Waiting 5 seconds for miner cleanup..."
+    sleep 5
     
     # 2. CHECK: If miner process still exists after clean quit
     local pid_file="/tmp/${SCREEN_NAME}_miner.pid"
@@ -389,6 +398,7 @@ stop_miner() {
     echo "$(date): Verifying cleanup..."
     if screen -list | grep -q "$SCREEN_NAME"; then
         echo "$(date): WARNING: Screen session still exists!"
+        return 1
     else
         echo "$(date): Screen session cleaned up successfully."
     fi
