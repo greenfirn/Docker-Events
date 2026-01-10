@@ -15,7 +15,7 @@
 - ctrl a+d to leave session with miner runnning
 - ctrl c to stop miner
 - exit to close screen session
-- if you dont want to use auto cpu threads -1 and affinity then dont use %CPU_THREADS% to your args
+- if you dont want to use auto cpu threads -1 and affinity then dont use %CPU_THREADS% in your args
 - see rig conf examples...
 
 Some portions of this project were developed with assistance from ChatGPT.
