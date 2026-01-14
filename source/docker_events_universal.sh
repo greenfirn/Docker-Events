@@ -154,7 +154,7 @@ add_api_flags() {
             echo "$current_args --api-bind $api_host:$api_port"
             ;;
         "teamredminer")
-            echo "$current_args --api_listen=$api_host --api_port=$api_port"
+            echo "$current_args --api_listen=$api_host:$api_port"
             ;;
         "nbminer")
             echo "$current_args --api $api_host:$api_port"
@@ -526,7 +526,6 @@ while read type action name image; do
     fi
 done
 EOF
-
 # Make the script executable
 sudo chmod +x /usr/local/bin/docker_events_universal.sh
 

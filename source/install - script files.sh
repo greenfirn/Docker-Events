@@ -1,4 +1,4 @@
-mkdir -v /usr/local/bin/lib
+sudo mkdir -v /usr/local/bin/lib
 
 sudo tee /usr/local/bin/docker_events_universal.sh > /dev/null <<'EOF'
 #!/bin/bash
@@ -153,7 +153,7 @@ add_api_flags() {
             echo "$current_args --api-bind $api_host:$api_port"
             ;;
         "teamredminer")
-            echo "$current_args --api_listen=$api_host --api_port=$api_port"
+            echo "$current_args --api_listen=$api_host:$api_port"
             ;;
         "nbminer")
             echo "$current_args --api $api_host:$api_port"
@@ -215,14 +215,32 @@ check_api_health() {
     
     echo "$(date): Checking API health at $url..."
     
-    # Try to reach the API endpoint
+    # First try: Standard HTTP API
     if curl -s --max-time 5 "$url" > /dev/null 2>&1; then
-        echo "$(date): API is responding"
+        echo "$(date): API is responding (standard HTTP)"
         return 0
-    else
-        echo "$(date): API is not responding"
-        return 1
     fi
+    
+    # Second try: Try TeamRedMiner's HTTP/0.9 API
+    echo "$(date): Standard API failed, trying TeamRedMiner HTTP/0.9..."
+    
+    # Method 1: Try curl with --http0.9 flag
+    if curl --http0.9 -s --max-time 5 "$url" > /dev/null 2>&1; then
+        echo "$(date): API is responding (HTTP/0.9 via curl)"
+        return 0
+    fi
+    
+    # Method 2: Try with netcat (TeamRedMiner's preferred method)
+    echo "$(date): Trying netcat socket connection..."
+    if command -v nc > /dev/null 2>&1; then
+        if echo -e "summary\n" | timeout 3 nc "$API_HOST" "$API_PORT" > /dev/null 2>&1; then
+            echo "$(date): API is responding (netcat socket)"
+            return 0
+        fi
+    fi
+
+	echo "$(date): ERROR: API is not responding after multiple attempts"
+	return 1
 }
 
 # ---------------------------------------------------------
@@ -321,8 +339,10 @@ start_miner() {
         
         # Wait for API to come up if enabled
         if [[ "$API_PORT" -gt 0 ]]; then
-            echo "$(date): Waiting for API to start (max 30 seconds)..."
-            local max_wait=30
+            echo "$(date): Wait for miner to start..."
+			sleep 15
+			echo "$(date): Waiting for API to start (max 120 seconds)..."
+            local max_wait=120
             local waited=0
             
             while [[ $waited -lt $max_wait ]]; do
@@ -607,6 +627,7 @@ RIGEL_VERSION=$(get_rig_conf "$MINER_CONF" "RIGEL_VERSION" "0")
 LOLMINER_VERSION=$(get_rig_conf "$MINER_CONF" "LOLMINER_VERSION" "0")
 ONEZEROMINER_VERSION=$(get_rig_conf "$MINER_CONF" "ONEZEROMINER_VERSION" "0")
 GMINER_VERSION=$(get_rig_conf "$MINER_CONF" "GMINER_VERSION" "0")
+TEAMREDMINER_VERSION=$(get_rig_conf "$MINER_CONF" "TEAMREDMINER_VERSION" "0")
 
 echo ""
 echo "==============================================="
@@ -620,6 +641,7 @@ echo "  Rigel:        $RIGEL_VERSION"
 echo "  lolMiner:     $LOLMINER_VERSION"
 echo "  OneZeroMiner: $ONEZEROMINER_VERSION"
 echo "  GMiner:       $GMINER_VERSION"
+echo "  TeamRedMiner: $TEAMREDMINER_VERSION"
 echo "==============================================="
 echo ""
 
@@ -780,6 +802,13 @@ install_miner "gminer" "$GMINER_VERSION" \
   "https://github.com/develsoftware/GMinerRelease/releases/download/${GMINER_VERSION}/${GM_TAR}" \
   "$GM_TAR" "" "miner"
 
+###########################################
+# Install: TeamRedMiner
+###########################################
+TEAMRED_TAR="teamredminer-v${TEAMREDMINER_VERSION}-linux.tgz"
+install_miner "teamredminer" "$TEAMREDMINER_VERSION" \
+  "https://github.com/todxx/teamredminer/releases/download/v${TEAMREDMINER_VERSION}/${TEAMRED_TAR}" \
+  "$TEAMRED_TAR" "--strip-components=1" "teamredminer"
 
 ###########################################
 # Export paths
@@ -796,6 +825,7 @@ RIGEL_BIN="$BASE_DIR/rigel/current/rigel"
 LOLMINER_BIN="$BASE_DIR/lolminer/current/lolMiner"
 ONEZEROMINER_BIN="$BASE_DIR/onezerominer/current/onezerominer"
 GMINER_BIN="$BASE_DIR/gminer/current/miner"
+TEAMREDMINER_BIN="$BASE_DIR/teamredminer/current/teamredminer"
 EXPORTS
 
 echo ""
@@ -830,6 +860,7 @@ get_miner_bin() {
         lolminer)     echo "$LOLMINER_BIN" ;;
         onezerominer) echo "$ONEZEROMINER_BIN" ;;
         gminer)       echo "$GMINER_BIN" ;;
+        teamredminer) echo "$TEAMREDMINER_BIN" ;;
         *)
             echo "$(date): Unknown miner '$name' — defaulting to bzminer" >&2
             echo "$BZMINER_BIN"
@@ -893,6 +924,9 @@ get_start_cmd() {
 
         gminer)
             cmd="$MINER_BIN --algo $ALGO --server $POOL --user $WALLET --pass $PASS $ARGS"
+            ;;
+        teamredminer)
+            cmd="$MINER_BIN -a $ALGO -o $POOL -u $WALLET -p $PASS $ARGS"
             ;;
         *)
             echo "[ERROR] Unknown miner: $name" >&2

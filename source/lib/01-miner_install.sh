@@ -16,7 +16,7 @@ RIGEL_VERSION=$(get_rig_conf "$MINER_CONF" "RIGEL_VERSION" "0")
 LOLMINER_VERSION=$(get_rig_conf "$MINER_CONF" "LOLMINER_VERSION" "0")
 ONEZEROMINER_VERSION=$(get_rig_conf "$MINER_CONF" "ONEZEROMINER_VERSION" "0")
 GMINER_VERSION=$(get_rig_conf "$MINER_CONF" "GMINER_VERSION" "0")
-
+TEAMREDMINER_VERSION=$(get_rig_conf "$MINER_CONF" "TEAMREDMINER_VERSION" "0")
 
 echo ""
 echo "==============================================="
@@ -30,6 +30,7 @@ echo "  Rigel:        $RIGEL_VERSION"
 echo "  lolMiner:     $LOLMINER_VERSION"
 echo "  OneZeroMiner: $ONEZEROMINER_VERSION"
 echo "  GMiner:       $GMINER_VERSION"
+echo "  TeamRedMiner: $TEAMREDMINER_VERSION"
 echo "==============================================="
 echo ""
 
@@ -190,6 +191,13 @@ install_miner "gminer" "$GMINER_VERSION" \
   "https://github.com/develsoftware/GMinerRelease/releases/download/${GMINER_VERSION}/${GM_TAR}" \
   "$GM_TAR" "" "miner"
 
+###########################################
+# Install: TeamRedMiner
+###########################################
+TEAMRED_TAR="teamredminer-v${TEAMREDMINER_VERSION}-linux.tgz"
+install_miner "teamredminer" "$TEAMREDMINER_VERSION" \
+  "https://github.com/todxx/teamredminer/releases/download/v${TEAMREDMINER_VERSION}/${TEAMRED_TAR}" \
+  "$TEAMRED_TAR" "--strip-components=1" "teamredminer"
 
 ###########################################
 # Export paths
@@ -206,6 +214,7 @@ RIGEL_BIN="$BASE_DIR/rigel/current/rigel"
 LOLMINER_BIN="$BASE_DIR/lolminer/current/lolMiner"
 ONEZEROMINER_BIN="$BASE_DIR/onezerominer/current/onezerominer"
 GMINER_BIN="$BASE_DIR/gminer/current/miner"
+TEAMREDMINER_BIN="$BASE_DIR/teamredminer/current/teamredminer"
 EXPORTS
 
 echo ""

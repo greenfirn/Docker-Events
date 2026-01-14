@@ -23,6 +23,7 @@ get_miner_bin() {
         lolminer)     echo "$LOLMINER_BIN" ;;
         onezerominer) echo "$ONEZEROMINER_BIN" ;;
         gminer)       echo "$GMINER_BIN" ;;
+        teamredminer) echo "$TEAMREDMINER_BIN" ;;
         *)
             echo "$(date): Unknown miner '$name' — defaulting to bzminer" >&2
             echo "$BZMINER_BIN"
@@ -86,6 +87,9 @@ get_start_cmd() {
 
         gminer)
             cmd="$MINER_BIN --algo $ALGO --server $POOL --user $WALLET --pass $PASS $ARGS"
+            ;;
+        teamredminer)
+            cmd="$MINER_BIN -a $ALGO -o $POOL -u $WALLET -p $PASS $ARGS"
             ;;
         *)
             echo "[ERROR] Unknown miner: $name" >&2
