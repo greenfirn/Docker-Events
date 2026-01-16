@@ -216,14 +216,32 @@ check_api_health() {
     
     echo "$(date): Checking API health at $url..."
     
-    # Try to reach the API endpoint
+    # First try: Standard HTTP API
     if curl -s --max-time 5 "$url" > /dev/null 2>&1; then
-        echo "$(date): API is responding"
+        echo "$(date): API is responding (standard HTTP)"
         return 0
-    else
-        echo "$(date): API is not responding"
-        return 1
     fi
+    
+    # Second try: Try TeamRedMiner's HTTP/0.9 API
+    echo "$(date): Standard API failed, trying TeamRedMiner HTTP/0.9..."
+    
+    # Method 1: Try curl with --http0.9 flag
+    if curl --http0.9 -s --max-time 5 "$url" > /dev/null 2>&1; then
+        echo "$(date): API is responding (HTTP/0.9 via curl)"
+        return 0
+    fi
+    
+    # Method 2: Try with netcat (TeamRedMiner's preferred method)
+    echo "$(date): Trying netcat socket connection..."
+    if command -v nc > /dev/null 2>&1; then
+        if echo -e "summary\n" | timeout 3 nc "$API_HOST" "$API_PORT" > /dev/null 2>&1; then
+            echo "$(date): API is responding (netcat socket)"
+            return 0
+        fi
+    fi
+
+	echo "$(date): ERROR: API is not responding after multiple attempts"
+	return 1
 }
 
 # ---------------------------------------------------------
@@ -293,7 +311,14 @@ start_miner() {
     fi
     
     # Start fresh miner
-    echo "$(date): Starting $SCREEN_NAME..."
+	
+	# Apply GPU OC's if configured
+    if [[ "${APPLY_OC,,}" == "true" ]]; then
+        echo "$(date): Applying GPU clocks..."
+        /usr/local/bin/gpu_apply_ocs.sh
+    fi
+    
+	echo "$(date): Starting $SCREEN_NAME..."
     echo "$(date): API: $API_HOST:$API_PORT"
     echo "$(date): Command: $START_CMD"
     
@@ -322,10 +347,11 @@ start_miner() {
         
         # Wait for API to come up if enabled
         if [[ "$API_PORT" -gt 0 ]]; then
-            echo "$(date): Waiting for API to start (max 30 seconds)..."
-            local max_wait=30
+            echo "$(date): Wait for miner to start..."
+			sleep 15
+            echo "$(date): Waiting for API to start (max 120 seconds)..."
+            local max_wait=120
             local waited=0
-            
             while [[ $waited -lt $max_wait ]]; do
                 if check_api_health; then
                     echo "$(date): API is up and running"

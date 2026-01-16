@@ -109,6 +109,7 @@ WORKER_NAME="${WORKER_NAME//t/T}"
 TARGET_IMAGE=$(get_rig_conf "TARGET_IMAGE" "0")
 TARGET_NAME=$(get_rig_conf "TARGET_NAME" "0")
 
+APPLY_OC=$(get_rig_conf "APPLY_OC" "0")
 RESET_OC=$(get_rig_conf "RESET_OC" "0")
 
 MINER_NAME=$(get_rig_conf "MINER" "0")

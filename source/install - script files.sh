@@ -310,6 +310,13 @@ start_miner() {
     fi
     
     # Start fresh miner
+
+	# Apply GPU OC's if configured
+    if [[ "${APPLY_OC,,}" == "true" ]]; then
+        echo "$(date): Applying GPU clocks..."
+        /usr/local/bin/gpu_apply_ocs.sh
+    fi
+	
     echo "$(date): Starting $SCREEN_NAME..."
     echo "$(date): API: $API_HOST:$API_PORT"
     echo "$(date): Command: $START_CMD"
