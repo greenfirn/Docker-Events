@@ -24,6 +24,7 @@ echo "Done! Actual core speed will be ~1350MHz due to 69W power limit"
 # Check current states
 cat /sys/class/drm/card0/device/pp_dpm_sclk
 cat /sys/class/drm/card0/device/pp_dpm_mclk
+rocm-smi
 EOF
 
 # make it executable

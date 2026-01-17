@@ -31,3 +31,10 @@ sudo journalctl -u docker_events_cpu.service -f
 # check service status
 sudo systemctl status docker_events_gpu.service
 sudo systemctl status docker_events_cpu.service
+
+
+sudo systemctl stop docker_events_gpu.service
+sudo journalctl -u docker_events_gpu.service -f
+
+sudo systemctl start docker_events_gpu.service
+sudo journalctl -u docker_events_gpu.service -f
