@@ -18,7 +18,7 @@
 - ctrl a+d to leave session with miner runnning
 - ctrl c to stop miner
 - exit to close screen session
-- %CPU_THREADS% in args will add number of threads (total -1), with affinity for xmrig see 03-cpu_threads.sh in lib to customise
+- %CPU_THREADS% in args will add number of threads minus one (total -1), affinity will be added if using xmrig see 03-cpu_threads.sh in lib to customise
 - see rig conf examples...
 
 Some portions of this project were developed with assistance from ChatGPT.
