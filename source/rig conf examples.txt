@@ -5,12 +5,12 @@
 # -- worker name is left to manualy add with wallet or where ever the pool wants it                         --
 
 # -- %WORKER_NAME%           rig hostname in ARGS, WALLET, PASS, POOL                                       --
-# -- %WARTHOG_TARGET%        WARTHOG_TARGET in ARGS                                                         --
+# -- %WARTHOG_TARGET%        auto set WARTHOG_TARGET in ARGS                                                --
 # -- %CPU_THREADS%           cpu total threads -1 (and affinity when xmrig) in ARGS see '03-cpu_threads.sh' --
 # -- SCREEN_NAME 0 "gpu"     different screen name than miner name                                          --
 # -- CUSTOM_MINER 0 "path"   custom binary file                                                             --
 
-** keep as none sudo tee so they can be overwritten using putty/ssh **
+# -- rig-***.conf keep as 'tee' without sudo so they can be easily overwritten using putty/ssh              --
 
 #========================================================================================================
 
@@ -56,6 +56,7 @@ sudo systemctl stop docker_events_cpu
 tee /home/user/rig-cpu.conf > /dev/null <<'EOF'
 TARGET_IMAGE 0 "ubuntu:24.04"
 TARGET_NAME 0 "clore-default-"
+APPLY_OC 0 "false"
 RESET_OC 0 "false"
 SCREEN_NAME 0 "cpu"
 CUSTOM_MINER 0 ""
@@ -76,6 +77,7 @@ sudo systemctl is-active docker_events_cpu
 tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
 TARGET_IMAGE 0 "ubuntu:24.04"
 TARGET_NAME 0 "octa_idle_job"
+APPLY_OC 0 "false"
 RESET_OC 0 "true"
 SCREEN_NAME 0 "gpu"
 CUSTOM_MINER 0 ""
@@ -94,6 +96,7 @@ EOF
 tee /home/user/rig-cpu.conf > /dev/null <<'EOF'
 TARGET_IMAGE 0 "ubuntu:24.04"
 TARGET_NAME 0 "octa_idle_job"
+APPLY_OC 0 "false"
 RESET_OC 0 "false"
 SCREEN_NAME 0 "cpu"
 CUSTOM_MINER 0 ""
@@ -112,6 +115,7 @@ EOF
 tee /home/user/rig-cpu.conf > /dev/null <<'EOF'
 TARGET_IMAGE 0 "ubuntu:24.04"
 TARGET_NAME 0 "clore-default-"
+APPLY_OC 0 "false"
 RESET_OC 0 "false"
 SCREEN_NAME 0 "cpu"
 CUSTOM_MINER 0 ""
@@ -130,6 +134,7 @@ EOF
 tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
 TARGET_IMAGE 0 "ubuntu:24.04"
 TARGET_NAME 0 "clore-default-"
+APPLY_OC 0 "false"
 RESET_OC 0 "false"
 SCREEN_NAME 0 "gpu"
 CUSTOM_MINER 0 ""
@@ -148,6 +153,7 @@ EOF
 tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
 TARGET_IMAGE 0 "ubuntu:24.04"
 TARGET_NAME 0 "octa_idle_job"
+APPLY_OC 0 "false"
 RESET_OC 0 "true"
 SCREEN_NAME 0 "gpu"
 CUSTOM_MINER 0 ""
