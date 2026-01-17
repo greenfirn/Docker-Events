@@ -1,3 +1,5 @@
+# amd
+# sudo apt install -y rocm-smi
 sudo tee /usr/local/bin/gpu_reset_poststop.sh > /dev/null <<'EOF'
 #!/bin/bash
 
