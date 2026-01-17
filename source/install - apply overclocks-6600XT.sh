@@ -30,4 +30,4 @@ EOF
 # make it executable
 sudo chmod +x /usr/local/bin/gpu_apply_ocs.sh
 
-sudo /usr/local/bin/gpu_apply_ocs.sh
+# sudo /usr/local/bin/gpu_apply_ocs.sh
