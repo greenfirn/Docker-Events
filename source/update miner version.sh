@@ -10,3 +10,6 @@ LOLMINER_VERSION     ALL "1.98"
 ONEZEROMINER_VERSION ALL "1.7.3"
 GMINER_VERSION       ALL "3.44"
 EOF
+
+sudo systemctl restart docker_events_gpu.service
+# sudo systemctl restart docker_events_cpu.service
