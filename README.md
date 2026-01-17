@@ -6,6 +6,7 @@
 - main complete package is in source folder, see install-*** scripts,
 - using putty ssh or similar copy/paste contents of 'install - script files.sh' into rig console and press enter to write all the script files
 - copy/paste contents of other install-*** conf etc files to write thoughs
+- one of the gpu-reset scripts if needed, Nvidia,AMD
 - seperate script files in source/lib folder just to make easier to read
 - batch files can be used to send new .conf files to a list of rigs from windows pc
 - services assume .conf files are in /home/user/ and named rig-cpu.conf or rig-gpu.conf
