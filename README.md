@@ -1,6 +1,6 @@
 -- Docker Events watcher --
-- main complete package in source folder, see install-*** scripts
-
+- main complete package in source folder, see install-*** scripts,
+- seperate script files in source/lib folder just to make easier to read
 - start/stop mining with active idle job Clore / Octaspace
 - for ubuntu server 24.04 use image "ubuntu:24.04"
 - placeholder idle job on Clore / Octaspace
