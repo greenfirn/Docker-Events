@@ -1,12 +1,13 @@
 -- Docker Events watcher --
+- start/stop mining with active idle job Clore / Octaspace
+- for ubuntu server 24.04 rigs I use idle job image "ubuntu:24.04" as placeholder idle job on Clore / Octaspace
+- TARGET_IMAGE in cpu/gpu .conf files needs to match chosen idle job image name
+
+
 - main complete package in source folder, see install-*** scripts,
 - copy/paste contents of 'install - script files.sh' into ubuntu server console and press enter to write all the script files
 - copy/paste contents of other install-*** conf etc files to write thoughs
 - seperate script files in source/lib folder just to make easier to read
-- start/stop mining with active idle job Clore / Octaspace
-- for ubuntu server 24.04 use image "ubuntu:24.04"
-- placeholder idle job on Clore / Octaspace
-- or set something different in .conf
 - batch files can be used to send new .conf files to a list of rigs from windows pc
 - services assume .conf files are in /home/user/ and named rig-cpu.conf or rig-gpu.conf
 - start/stop/pause idle job and watch logs to test...
