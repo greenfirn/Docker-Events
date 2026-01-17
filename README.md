@@ -11,7 +11,7 @@
 - start/stop/pause idle job and watch logs to test...
 - sudo journalctl -u docker_events_cpu.service -f
 - sudo journalctl -u docker_events_gpu.service -f
-- miners load in a screen session by name of miner by default
+- miners load in a screen session by name of miner by default, or cpu/gpu from .conf examples
 - sudo screen -ls to list active sessions
 - sudo screen -r name to re-open/join session
 - ctrl a+d to leave session with miner runnning
