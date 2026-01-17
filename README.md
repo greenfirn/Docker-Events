@@ -2,7 +2,7 @@
 - start/stop mining with active idle job Clore / Octaspace
 - for ubuntu server 24.04 rigs I use idle job image "ubuntu:24.04" as placeholder idle job on Clore / Octaspace
 - TARGET_IMAGE in cpu/gpu .conf files needs to match chosen idle job image name
-- main complete package in source folder, see install-*** scripts,
+- main complete package is in source folder, see install-*** scripts,
 - copy/paste contents of 'install - script files.sh' into ubuntu server console and press enter to write all the script files
 - copy/paste contents of other install-*** conf etc files to write thoughs
 - seperate script files in source/lib folder just to make easier to read
