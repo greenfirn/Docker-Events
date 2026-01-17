@@ -1,5 +1,7 @@
 -- Docker Events watcher --
 - main complete package in source folder, see install-*** scripts,
+- copy/paste contents of 'install - script files.sh' into ubuntu server console and press enter to write all the script files
+- copy/paste contents of other install-*** conf etc files to write thoughs
 - seperate script files in source/lib folder just to make easier to read
 - start/stop mining with active idle job Clore / Octaspace
 - for ubuntu server 24.04 use image "ubuntu:24.04"
