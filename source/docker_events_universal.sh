@@ -189,7 +189,9 @@ PASS="${PASS//%WORKER_NAME%/$WORKER_NAME}"
 POOL="${POOL//%WORKER_NAME%/$WORKER_NAME}"
 
 # Add miner-specific API flags
-ARGS=$(add_api_flags "$MINER_NAME" "$API_HOST" "$API_PORT" "$ARGS")
+if [[ "$API_PORT" -ne 0 ]]; then
+        ARGS=$(add_api_flags "$MINER_NAME" "$API_HOST" "$API_PORT" "$ARGS")
+fi
 
 START_CMD=$(get_start_cmd "$MINER_NAME")
 
