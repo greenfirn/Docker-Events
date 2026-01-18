@@ -82,10 +82,11 @@ else
     
     # Get API settings for this specific miner
     MINER_UPPER=$(echo "$MINER_NAME" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
-    
+	
     # Look for miner-specific API_PORT (e.g., XMRIG_CPU_API_PORT)
     MINER_API_PORT_VAR="${MINER_UPPER}_API_PORT"
-    if [[ -n "${!MINER_API_PORT_VAR:-}" ]]; then
+
+	if [[ -n "${!MINER_API_PORT_VAR:-}" ]]; then
         API_PORT="${!MINER_API_PORT_VAR}"
         echo "[api] Found specific API_PORT: $MINER_API_PORT_VAR=$API_PORT"
     else
@@ -149,8 +150,8 @@ add_api_flags() {
         "onezerominer")
             echo "$current_args --api-port $api_port"
             ;;
-        "t-rex")
-            echo "$current_args --api-bind $api_host:$api_port"
+        "trex")
+            echo "$current_args --api-bind-http $api_host:$api_port"
             ;;
         "teamredminer")
             echo "$current_args --api_listen=$api_host:$api_port"
@@ -637,6 +638,7 @@ LOLMINER_VERSION=$(get_rig_conf "$MINER_CONF" "LOLMINER_VERSION" "0")
 ONEZEROMINER_VERSION=$(get_rig_conf "$MINER_CONF" "ONEZEROMINER_VERSION" "0")
 GMINER_VERSION=$(get_rig_conf "$MINER_CONF" "GMINER_VERSION" "0")
 TEAMREDMINER_VERSION=$(get_rig_conf "$MINER_CONF" "TEAMREDMINER_VERSION" "0")
+TREXMINER_VERSION=$(get_rig_conf "$MINER_CONF" "TREXMINER_VERSION" "0")
 
 echo ""
 echo "==============================================="
@@ -651,6 +653,7 @@ echo "  lolMiner:     $LOLMINER_VERSION"
 echo "  OneZeroMiner: $ONEZEROMINER_VERSION"
 echo "  GMiner:       $GMINER_VERSION"
 echo "  TeamRedMiner: $TEAMREDMINER_VERSION"
+echo "  T-Rex Miner:  $TREXMINER_VERSION"
 echo "==============================================="
 echo ""
 
@@ -820,6 +823,14 @@ install_miner "teamredminer" "$TEAMREDMINER_VERSION" \
   "$TEAMRED_TAR" "--strip-components=1" "teamredminer"
 
 ###########################################
+# Install: T-Rex Miner
+###########################################
+TREX_TAR="t-rex-${TREXMINER_VERSION}-linux.tar.gz"
+install_miner "trexminer" "$TREXMINER_VERSION" \
+  "https://github.com/trexminer/T-Rex/releases/download/${TREXMINER_VERSION}/${TREX_TAR}" \
+  "$TREX_TAR" "" "t-rex"
+
+###########################################
 # Export paths
 ###########################################
 cat <<EXPORTS > "$BASE_DIR/miner_paths.env"
@@ -835,6 +846,7 @@ LOLMINER_BIN="$BASE_DIR/lolminer/current/lolMiner"
 ONEZEROMINER_BIN="$BASE_DIR/onezerominer/current/onezerominer"
 GMINER_BIN="$BASE_DIR/gminer/current/miner"
 TEAMREDMINER_BIN="$BASE_DIR/teamredminer/current/teamredminer"
+TREXMINER_BIN="$BASE_DIR/trexminer/current/t-rex"
 EXPORTS
 
 echo ""
@@ -870,6 +882,7 @@ get_miner_bin() {
         onezerominer) echo "$ONEZEROMINER_BIN" ;;
         gminer)       echo "$GMINER_BIN" ;;
         teamredminer) echo "$TEAMREDMINER_BIN" ;;
+		trex)         echo "$TREXMINER_BIN" ;;
         *)
             echo "$(date): Unknown miner '$name' — defaulting to bzminer" >&2
             echo "$BZMINER_BIN"
@@ -935,6 +948,9 @@ get_start_cmd() {
             cmd="$MINER_BIN --algo $ALGO --server $POOL --user $WALLET --pass $PASS $ARGS"
             ;;
         teamredminer)
+            cmd="$MINER_BIN -a $ALGO -o $POOL -u $WALLET -p $PASS $ARGS"
+            ;;
+        trex)
             cmd="$MINER_BIN -a $ALGO -o $POOL -u $WALLET -p $PASS $ARGS"
             ;;
         *)

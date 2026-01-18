@@ -17,6 +17,7 @@ LOLMINER_VERSION=$(get_rig_conf "$MINER_CONF" "LOLMINER_VERSION" "0")
 ONEZEROMINER_VERSION=$(get_rig_conf "$MINER_CONF" "ONEZEROMINER_VERSION" "0")
 GMINER_VERSION=$(get_rig_conf "$MINER_CONF" "GMINER_VERSION" "0")
 TEAMREDMINER_VERSION=$(get_rig_conf "$MINER_CONF" "TEAMREDMINER_VERSION" "0")
+TREXMINER_VERSION=$(get_rig_conf "$MINER_CONF" "TREXMINER_VERSION" "0")
 
 echo ""
 echo "==============================================="
@@ -31,6 +32,7 @@ echo "  lolMiner:     $LOLMINER_VERSION"
 echo "  OneZeroMiner: $ONEZEROMINER_VERSION"
 echo "  GMiner:       $GMINER_VERSION"
 echo "  TeamRedMiner: $TEAMREDMINER_VERSION"
+echo "  TRex:         $TREXMINER_VERSION"
 echo "==============================================="
 echo ""
 
@@ -200,6 +202,14 @@ install_miner "teamredminer" "$TEAMREDMINER_VERSION" \
   "$TEAMRED_TAR" "--strip-components=1" "teamredminer"
 
 ###########################################
+# Install: T-Rex Miner
+###########################################
+TREX_TAR="t-rex-${TREXMINER_VERSION}-linux.tar.gz"
+install_miner "trexminer" "$TREXMINER_VERSION" \
+  "https://github.com/trexminer/T-Rex/releases/download/${TREXMINER_VERSION}/${TREX_TAR}" \
+  "$TREX_TAR" "" "t-rex"
+
+###########################################
 # Export paths
 ###########################################
 cat <<EXPORTS > "$BASE_DIR/miner_paths.env"
@@ -215,6 +225,7 @@ LOLMINER_BIN="$BASE_DIR/lolminer/current/lolMiner"
 ONEZEROMINER_BIN="$BASE_DIR/onezerominer/current/onezerominer"
 GMINER_BIN="$BASE_DIR/gminer/current/miner"
 TEAMREDMINER_BIN="$BASE_DIR/teamredminer/current/teamredminer"
+TREXMINER_BIN="$BASE_DIR/trexminer/current/t-rex"
 EXPORTS
 
 echo ""
