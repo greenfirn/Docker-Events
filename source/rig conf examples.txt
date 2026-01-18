@@ -14,18 +14,22 @@
 
 #========================================================================================================
 
-# -- to update miner versions write miner.conf --
+# -- to update miner versions write miner.conf and restart service --
 
-sudo tee /home/user/miner.conf > /dev/null <<'EOF'
-XMRIG_VERSION        ALL "6.24.0"
+tee /home/user/miner.conf > /dev/null <<'EOF'
+XMRIG_VERSION        ALL "6.25.0"
 BZMINER_VERSION      ALL "v23.0.2"
 WILDRIG_VERSION      ALL "0.47.9"
 SRBMINER_VERSION     ALL "3.0.6"
-RIGEL_VERSION        ALL "1.23.0"
+RIGEL_VERSION        ALL "1.23.1"
 LOLMINER_VERSION     ALL "1.98"
 ONEZEROMINER_VERSION ALL "1.7.3"
 GMINER_VERSION       ALL "3.44"
+TEAMREDMINER_VERSION ALL "0.10.21"
+TREXMINER_VERSION    ALL "0.26.8"
 EOF
+
+sudo systemctl restart docker_events_gpu
 
 #========================================================================================================
 
@@ -39,6 +43,26 @@ RESET_OC 0 "true"
 SCREEN_NAME 0 "gpu"
 CUSTOM_MINER 0 ""
 MINER 0 "teamredminer"
+ALGO 0 "kawpow"
+POOL 0 "stratum+ssl://ca.quai.herominers.com:1185"
+WALLET 0 "wallet*****.%WORKER_NAME%"
+PASS 0 "x"
+ARGS 0 ""
+EOF
+sudo systemctl restart docker_events_gpu
+sudo systemctl is-active docker_events_gpu
+
+#========================================================================================================
+
+# -- trex write clore rig-gpu.conf --
+
+tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
+TARGET_IMAGE 0 "ubuntu:24.04"
+TARGET_NAME 0 "clore-default-"
+RESET_OC 0 "false"
+SCREEN_NAME 0 "gpu"
+CUSTOM_MINER 0 ""
+MINER 0 "trex"
 ALGO 0 "kawpow"
 POOL 0 "stratum+ssl://ca.quai.herominers.com:1185"
 WALLET 0 "wallet*****.%WORKER_NAME%"
