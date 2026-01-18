@@ -1,6 +1,6 @@
 -- Docker Events watcher -- 
 - tested with 1 gpu rigs only
-- services assume .conf files are in /home/user/ and named rig-cpu.conf or rig-gpu.conf
+- services assume .conf files are in /home/user/ and named rig-cpu.conf or rig-gpu.conf etc
 - scripts need absolute path '/home/user/' current user reference doesnt work
 - start/stop mining with active idle job Clore / Octaspace
 - for ubuntu server 24.04 rigs I use idle job image "ubuntu:24.04" as placeholder idle job on Clore / Octaspace
