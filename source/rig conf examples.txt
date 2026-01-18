@@ -14,7 +14,7 @@
 
 #========================================================================================================
 
-# -- to update miner versions write miner.conf and restart service --
+# -- to update miner version write miner.conf and restart service --
 
 tee /home/user/miner.conf > /dev/null <<'EOF'
 XMRIG_VERSION        ALL "6.25.0"
@@ -33,89 +33,7 @@ sudo systemctl restart docker_events_gpu
 
 #========================================================================================================
 
-# -- teamredminer write octa rig-gpu.conf --
-
-tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
-TARGET_IMAGE 0 "ubuntu:24.04"
-TARGET_NAME 0 "octa_idle_job"
-APPLY_OC 0 "true"
-RESET_OC 0 "true"
-SCREEN_NAME 0 "gpu"
-CUSTOM_MINER 0 ""
-MINER 0 "teamredminer"
-ALGO 0 "kawpow"
-POOL 0 "stratum+ssl://ca.quai.herominers.com:1185"
-WALLET 0 "wallet*****.%WORKER_NAME%"
-PASS 0 "x"
-ARGS 0 ""
-EOF
-sudo systemctl restart docker_events_gpu
-sudo systemctl is-active docker_events_gpu
-
-#========================================================================================================
-
-# -- trex write clore rig-gpu.conf --
-
-tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
-TARGET_IMAGE 0 "ubuntu:24.04"
-TARGET_NAME 0 "clore-default-"
-RESET_OC 0 "false"
-SCREEN_NAME 0 "gpu"
-CUSTOM_MINER 0 ""
-MINER 0 "trex"
-ALGO 0 "kawpow"
-POOL 0 "stratum+ssl://ca.quai.herominers.com:1185"
-WALLET 0 "wallet*****.%WORKER_NAME%"
-PASS 0 "x"
-ARGS 0 ""
-EOF
-sudo systemctl restart docker_events_gpu
-sudo systemctl is-active docker_events_gpu
-
-#========================================================================================================
-
-# -- write clore rig-cpu.conf --
-
-sudo systemctl stop docker_events_cpu
-tee /home/user/rig-cpu.conf > /dev/null <<'EOF'
-TARGET_IMAGE 0 "ubuntu:24.04"
-TARGET_NAME 0 "clore-default-"
-APPLY_OC 0 "false"
-RESET_OC 0 "false"
-SCREEN_NAME 0 "cpu"
-CUSTOM_MINER 0 ""
-MINER 0 "srbminer"
-ALGO 0 "xelishashv3"
-POOL 0 "stratum+ssl://ca.xelis.herominers.com:1225, stratum+ssl://us2.xelis.herominers.com:1225"
-WALLET 0 "***************"
-PASS 0 "x"
-ARGS 0 "--tls true --worker %WORKER_NAME%"
-EOF
-sudo systemctl restart docker_events_cpu
-sudo systemctl is-active docker_events_cpu
-
-#========================================================================================================
-
-# -- write octa rig-gpu.conf --
-
-tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
-TARGET_IMAGE 0 "ubuntu:24.04"
-TARGET_NAME 0 "octa_idle_job"
-APPLY_OC 0 "false"
-RESET_OC 0 "true"
-SCREEN_NAME 0 "gpu"
-CUSTOM_MINER 0 ""
-MINER 0 "rigel"
-ALGO 0 "xelishashv3"
-POOL 0 "stratum+ssl://ca.xelis.herominers.com:1225 -o stratum+ssl://us2.xelis.herominers.com:1225"
-WALLET 0 "wallet-address"
-PASS 0 "x"
-ARGS 0 "-w %WORKER_NAME% --lock-cclock 2190 --cclock 300 --lock-mclock X --mclock 1000"
-EOF
-
-#========================================================================================================
-
-# -- write octa rig-cpu.conf --
+# -- xmrig write octa rig-cpu.conf --
 
 tee /home/user/rig-cpu.conf > /dev/null <<'EOF'
 TARGET_IMAGE 0 "ubuntu:24.04"
@@ -134,7 +52,7 @@ EOF
 
 #========================================================================================================
 
-# -- write clore rig-cpu.conf --
+# -- xmrig write clore rig-cpu.conf --
 
 tee /home/user/rig-cpu.conf > /dev/null <<'EOF'
 TARGET_IMAGE 0 "ubuntu:24.04"
@@ -153,7 +71,68 @@ EOF
 
 #========================================================================================================
 
-# -- write clore rig-gpu.conf --
+# -- trex write clore rig-gpu.conf --
+
+tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
+TARGET_IMAGE 0 "ubuntu:24.04"
+TARGET_NAME 0 "clore-default-"
+RESET_OC 0 "false"
+SCREEN_NAME 0 "gpu"
+CUSTOM_MINER 0 ""
+MINER 0 "trex"
+ALGO 0 "kawpow"
+POOL 0 "stratum+ssl://ca.quai.herominers.com:1185"
+WALLET 0 "wallet-address.%WORKER_NAME%"
+PASS 0 "x"
+ARGS 0 ""
+EOF
+sudo systemctl restart docker_events_gpu
+sudo systemctl is-active docker_events_gpu
+
+#========================================================================================================
+
+# -- srbminer write clore rig-cpu.conf --
+
+sudo systemctl stop docker_events_cpu
+tee /home/user/rig-cpu.conf > /dev/null <<'EOF'
+TARGET_IMAGE 0 "ubuntu:24.04"
+TARGET_NAME 0 "clore-default-"
+APPLY_OC 0 "false"
+RESET_OC 0 "false"
+SCREEN_NAME 0 "cpu"
+CUSTOM_MINER 0 ""
+MINER 0 "srbminer"
+ALGO 0 "xelishashv3"
+POOL 0 "stratum+ssl://ca.xelis.herominers.com:1225, stratum+ssl://us2.xelis.herominers.com:1225"
+WALLET 0 "wallet-address"
+PASS 0 "x"
+ARGS 0 "--tls true --worker %WORKER_NAME%"
+EOF
+sudo systemctl restart docker_events_cpu
+sudo systemctl is-active docker_events_cpu
+
+#========================================================================================================
+
+# -- rigel write octa rig-gpu.conf --
+
+tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
+TARGET_IMAGE 0 "ubuntu:24.04"
+TARGET_NAME 0 "octa_idle_job"
+APPLY_OC 0 "false"
+RESET_OC 0 "true"
+SCREEN_NAME 0 "gpu"
+CUSTOM_MINER 0 ""
+MINER 0 "rigel"
+ALGO 0 "xelishashv3"
+POOL 0 "stratum+ssl://ca.xelis.herominers.com:1225 -o stratum+ssl://us2.xelis.herominers.com:1225"
+WALLET 0 "wallet-address"
+PASS 0 "x"
+ARGS 0 "-w %WORKER_NAME% --lock-cclock 2190 --cclock 300 --lock-mclock X --mclock 1000"
+EOF
+
+#========================================================================================================
+
+# -- bzminer write clore rig-gpu.conf --
 
 tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
 TARGET_IMAGE 0 "ubuntu:24.04"
@@ -172,7 +151,7 @@ EOF
 
 #========================================================================================================
 
-# -- write octa rig-gpu.conf --
+# -- bzminer write octa rig-gpu.conf --
 
 tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
 TARGET_IMAGE 0 "ubuntu:24.04"
@@ -188,3 +167,24 @@ WALLET 0 "wallet-address"
 PASS 0 "x"
 ARGS 0 "-r %WORKER_NAME% --oc_lock_core_clock 1455 --oc_core_clock_offset 255 --oc_lock_memory_clock 810 --oc_memory_clock_offset 0 --cpu_threads %CPU_THREADS% --warthog_verus_hr_target %WARTHOG_TARGET% --nc 0 --nvidia 1 --amd 0"
 EOF
+
+#========================================================================================================
+
+# -- teamredminer write octa rig-gpu.conf --
+
+tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
+TARGET_IMAGE 0 "ubuntu:24.04"
+TARGET_NAME 0 "octa_idle_job"
+APPLY_OC 0 "true"
+RESET_OC 0 "true"
+SCREEN_NAME 0 "gpu"
+CUSTOM_MINER 0 ""
+MINER 0 "teamredminer"
+ALGO 0 "kawpow"
+POOL 0 "stratum+ssl://ca.quai.herominers.com:1185"
+WALLET 0 "wallet-address.%WORKER_NAME%"
+PASS 0 "x"
+ARGS 0 ""
+EOF
+sudo systemctl restart docker_events_gpu
+sudo systemctl is-active docker_events_gpu
