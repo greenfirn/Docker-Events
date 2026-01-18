@@ -1,26 +1,34 @@
--- Docker Events watcher --
+-- Docker Events watcher -- 
 - start/stop mining with active idle job Clore / Octaspace
+- main complete package in source folder
+- tested with 1 gpu rigs only
+- for easiest setup install ubuntu server with username user
+- services assume .conf files are in /home/user/ and named rig-cpu.conf or rig-gpu.conf etc
+- scripts need absolute path '/home/user/' current user reference doesnt work
 - for ubuntu server 24.04 rigs I use idle job image "ubuntu:24.04" as placeholder idle job on Clore / Octaspace
 - I use ubuntu server 22.04 for my AMD gpu rig, better driver/overclock compatible
 - TARGET_IMAGE in cpu/gpu .conf files needs to match chosen idle job image name
-- main complete package is in source folder, see install-*** scripts,
-- using putty ssh or similar copy/paste contents of 'install - script files.sh' into rig console and press enter to write all the script files
-- copy/paste contents of other install-*** conf etc files to write thoughs and
-- one of the gpu-reset scripts if needed, Nvidia,AMD
+- using putty ssh or similar copy/paste contents of 'install - script files.sh' into rig console and
+- press enter to write all the script files, lists files at the end to see files were created
+- copy/paste press enter contents of other install-*** conf etc files
+- include api.conf if using miner api and one of the gpu-reset scripts if needed, Nvidia, AMD
 - seperate script files in source/lib folder just to make easier to read
 - batch files can be used to send new .conf files to a list of rigs from windows pc
-- services assume .conf files are in /home/user/ and named rig-cpu.conf or rig-gpu.conf
 - start/stop/pause idle job and watch logs to test...
 - sudo journalctl -u docker_events_cpu.service -f
 - sudo journalctl -u docker_events_gpu.service -f
+- 'sudo journalctl -u docker_events_gpu.service -e' show more history
+- ctrl+c to leave logs
+- if miner isnt starting copy the actual command being run from logs to test ... command:
 - 'sudo docker ps' shows current running images/containers
-- miners load in a screen session by name of miner by default, or cpu/gpu from .conf examples
+- miners load in a screen session by name of miner by default, or SCREEN_NAME set in cpu/gpu .conf
 - sudo screen -ls to list active sessions
 - sudo screen -r name to re-open/join session
 - ctrl a+d to leave session with miner runnning
 - ctrl c to stop miner
 - exit to close screen session
-- %CPU_THREADS% in args will add number of threads minus one (total -1), affinity will be added if using xmrig see 03-cpu_threads.sh in lib to customise
+- %CPU_THREADS% in args will add number of threads minus one (total -1),
+- affinity will be added with threads for xmrig miner see 03-cpu_threads.sh in 'install - script files.sh' to customise
 - see rig conf examples...
 
 Some portions of this project were developed with assistance from ChatGPT.
