@@ -4,15 +4,15 @@
 # -- algo, pool, wallet, password get added to miner args from conf                                         --
 # -- worker name is left to manualy add with wallet or where ever the pool wants it                         --
 
-# -- %WORKER_NAME%           rigs hostname in ARGS, WALLET, PASS, POOL                                       --
-# -- %WARTHOG_TARGET%        auto set WARTHOG_TARGET in ARGS                                                --
+# -- %WORKER_NAME%           rigs hostname in ARGS, WALLET, PASS, POOL                                      --
+# -- %WARTHOG_TARGET%        auto set WARTHOG_TARGET in ARGS (24/32 thread CPU)                             --
 # -- %CPU_THREADS%           cpu total threads -1 (and affinity when xmrig) in ARGS see '03-cpu_threads.sh' --
 # -- SCREEN_NAME 0 "gpu"     different screen name than miner name                                          --
 # -- CUSTOM_MINER 0 "path"   custom binary file                                                             --
 
-# -- rig-***.conf keep as 'tee' without sudo so they can be easily overwritten using putty/ssh              --
-
-#========================================================================================================
+# -- conf files keep as 'tee' without sudo so they can be easily overwritten in home folder using ssh       --
+# -- if write error,change owner back to user: sudo chown $USER:$USER *.conf or sudo chown user:user *.conf --
+#=============================================================================================================
 
 # -- to update miner version write miner.conf and restart service --
 
