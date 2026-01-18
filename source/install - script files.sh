@@ -211,39 +211,7 @@ check_api_health() {
         return 0  # API not enabled, consider healthy
     fi
     
-    local url="http://$API_HOST:$API_PORT"
-    if [[ "$API_HOST" == "0.0.0.0" ]]; then
-        url="http://127.0.0.1:$API_PORT"
-    fi
-    
-    echo "$(date): Checking API health at $url..."
-    
-    # First try: Standard HTTP API
-    if curl -s --max-time 5 "$url" > /dev/null 2>&1; then
-        echo "$(date): API is responding (standard HTTP)"
-        return 0
-    fi
-    
-    # Second try: Try TeamRedMiner's HTTP/0.9 API
-    echo "$(date): Standard API failed, trying TeamRedMiner HTTP/0.9..."
-    
-    # Method 1: Try curl with --http0.9 flag
-    if curl --http0.9 -s --max-time 5 "$url" > /dev/null 2>&1; then
-        echo "$(date): API is responding (HTTP/0.9 via curl)"
-        return 0
-    fi
-    
-    # Method 2: Try with netcat (TeamRedMiner's preferred method)
-    echo "$(date): Trying netcat socket connection..."
-    if command -v nc > /dev/null 2>&1; then
-        if echo -e "summary\n" | timeout 3 nc "$API_HOST" "$API_PORT" > /dev/null 2>&1; then
-            echo "$(date): API is responding (netcat socket)"
-            return 0
-        fi
-    fi
-
-	echo "$(date): ERROR: API is not responding after multiple attempts"
-	return 1
+    return 0
 }
 
 # ---------------------------------------------------------

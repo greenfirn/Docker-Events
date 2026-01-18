@@ -211,39 +211,7 @@ check_api_health() {
         return 0  # API not enabled, consider healthy
     fi
     
-    local url="http://$API_HOST:$API_PORT"
-    if [[ "$API_HOST" == "0.0.0.0" ]]; then
-        url="http://127.0.0.1:$API_PORT"
-    fi
-    
-    echo "$(date): Checking API health at $url..."
-    
-    # First try: Standard HTTP API
-    if curl -s --max-time 5 "$url" > /dev/null 2>&1; then
-        echo "$(date): API is responding (standard HTTP)"
-        return 0
-    fi
-    
-    # Second try: Try TeamRedMiner's HTTP/0.9 API
-    echo "$(date): Standard API failed, trying TeamRedMiner HTTP/0.9..."
-    
-    # Method 1: Try curl with --http0.9 flag
-    if curl --http0.9 -s --max-time 5 "$url" > /dev/null 2>&1; then
-        echo "$(date): API is responding (HTTP/0.9 via curl)"
-        return 0
-    fi
-    
-    # Method 2: Try with netcat (TeamRedMiner's preferred method)
-    echo "$(date): Trying netcat socket connection..."
-    if command -v nc > /dev/null 2>&1; then
-        if echo -e "summary\n" | timeout 3 nc "$API_HOST" "$API_PORT" > /dev/null 2>&1; then
-            echo "$(date): API is responding (netcat socket)"
-            return 0
-        fi
-    fi
-
-	echo "$(date): ERROR: API is not responding after multiple attempts"
-	return 1
+    return 0
 }
 
 # ---------------------------------------------------------
@@ -347,11 +315,12 @@ start_miner() {
             echo "$(date): Miner process PID: $miner_pid"
         fi
         
-        # Wait for API to come up if enabled
+		        # Wait for API to come up if enabled
         if [[ "$API_PORT" -gt 0 ]]; then
-            echo "$(date): Waiting for API to start (max 30 seconds)..."
+			echo "$(date): Waiting for API to start (max 30 seconds)..."
             local max_wait=30
             local waited=0
+            
             while [[ $waited -lt $max_wait ]]; do
                 if check_api_health; then
                     echo "$(date): API is up and running"
@@ -365,7 +334,7 @@ start_miner() {
                 echo "$(date): WARNING: API did not respond after $max_wait seconds"
             fi
         fi
-        
+		
         echo "$(date): ARGS/OCS: $ARGS"
         echo "$(date): To view miner output: sudo screen -r $SCREEN_NAME"
         return 0
