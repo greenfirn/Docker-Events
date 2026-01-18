@@ -50,6 +50,26 @@ sudo systemctl is-active docker_events_gpu
 
 #========================================================================================================
 
+# -- trex write clore rig-gpu.conf --
+
+tee /home/user/rig-gpu.conf > /dev/null <<'EOF'
+TARGET_IMAGE 0 "ubuntu:24.04"
+TARGET_NAME 0 "clore-default-"
+RESET_OC 0 "false"
+SCREEN_NAME 0 "gpu"
+CUSTOM_MINER 0 ""
+MINER 0 "trex"
+ALGO 0 "kawpow"
+POOL 0 "stratum+ssl://ca.quai.herominers.com:1185"
+WALLET 0 "wallet*****.%WORKER_NAME%"
+PASS 0 "x"
+ARGS 0 ""
+EOF
+sudo systemctl restart docker_events_gpu
+sudo systemctl is-active docker_events_gpu
+
+#========================================================================================================
+
 # -- write clore rig-cpu.conf --
 
 sudo systemctl stop docker_events_cpu
