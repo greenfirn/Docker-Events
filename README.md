@@ -13,6 +13,7 @@
 - start/stop/pause idle job and watch logs to test...
 - sudo journalctl -u docker_events_cpu.service -f
 - sudo journalctl -u docker_events_gpu.service -f
+- ctrl+c to leave logs
 - if miner isnt starting copy the actual command being run from logs to test ... command:
 - 'sudo docker ps' shows current running images/containers
 - miners load in a screen session by name of miner by default, or cpu/gpu from .conf examples
