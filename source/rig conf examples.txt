@@ -4,7 +4,7 @@
 # -- algo, pool, wallet, password get added to miner args from conf                                         --
 # -- worker name is left to manualy add with wallet or where ever the pool wants it                         --
 
-# -- %WORKER_NAME%           rig hostname in ARGS, WALLET, PASS, POOL                                       --
+# -- %WORKER_NAME%           rigs hostname in ARGS, WALLET, PASS, POOL                                       --
 # -- %WARTHOG_TARGET%        auto set WARTHOG_TARGET in ARGS                                                --
 # -- %CPU_THREADS%           cpu total threads -1 (and affinity when xmrig) in ARGS see '03-cpu_threads.sh' --
 # -- SCREEN_NAME 0 "gpu"     different screen name than miner name                                          --
