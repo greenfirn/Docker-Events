@@ -21,6 +21,8 @@
 - ctrl+c to leave logs
 - if miner isnt starting test the actual command being run from the logs ... command:
 - some miners need libpocl2 for cpu: sudo apt install -y libpocl2
+- nvidia gpus nvtop : sudo apt install -y nvtop
+- amd gpus rocm-smi : sudo apt install -y rocm-smi
 - 'sudo docker ps' shows current running images/containers
 - miners load in a screen session by name of miner by default, or SCREEN_NAME set in cpu/gpu .conf
 - sudo screen -ls to list active sessions
