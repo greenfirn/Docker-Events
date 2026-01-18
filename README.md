@@ -1,13 +1,13 @@
 -- Docker Events watcher -- 
+- start/stop mining with active idle job Clore / Octaspace
+- main complete package in source folder
 - tested with 1 gpu rigs only
 - for easiest setup install ubuntu server with username user
 - services assume .conf files are in /home/user/ and named rig-cpu.conf or rig-gpu.conf etc
 - scripts need absolute path '/home/user/' current user reference doesnt work
-- start/stop mining with active idle job Clore / Octaspace
 - for ubuntu server 24.04 rigs I use idle job image "ubuntu:24.04" as placeholder idle job on Clore / Octaspace
 - I use ubuntu server 22.04 for my AMD gpu rig, better driver/overclock compatible
 - TARGET_IMAGE in cpu/gpu .conf files needs to match chosen idle job image name
-- main complete package is in source folder, see install-*** scripts,
 - using putty ssh or similar copy/paste contents of 'install - script files.sh' into rig console and press enter to write all the script files
 - copy/paste press enter contents of other install-*** conf etc files
 - include api.conf if using miner api and one of the gpu-reset scripts if needed, Nvidia,AMD
