@@ -28,7 +28,7 @@
 - ctrl c to stop miner
 - exit to close screen session
 - %CPU_THREADS% in args will add number of threads minus one (total -1),
-- affinity will be added with threads for xmrig miner see 03-cpu_threads.sh in 'install - script files.sh' or lib to customise
+- affinity will be added with threads for xmrig miner see 03-cpu_threads.sh in 'install - script files.sh' to customise
 - see rig conf examples...
 
 Some portions of this project were developed with assistance from ChatGPT.
