@@ -349,10 +349,8 @@ start_miner() {
         
         # Wait for API to come up if enabled
         if [[ "$API_PORT" -gt 0 ]]; then
-            echo "$(date): Wait for miner to start..."
-			sleep 15
-			echo "$(date): Waiting for API to start (max 120 seconds)..."
-            local max_wait=120
+			echo "$(date): Waiting for API to start (max 30 seconds)..."
+            local max_wait=30
             local waited=0
             
             while [[ $waited -lt $max_wait ]]; do
