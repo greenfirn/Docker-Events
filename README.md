@@ -20,7 +20,7 @@
 - ctrl+c to leave logs
 - if miner isnt starting copy the actual command being run from logs to test ... command:
 - 'sudo docker ps' shows current running images/containers
-- miners load in a screen session by name of miner by default, or cpu/gpu from .conf examples
+- miners load in a screen session by name of miner by default, or SCREEN_NAME set in cpu/gpu .conf
 - sudo screen -ls to list active sessions
 - sudo screen -r name to re-open/join session
 - ctrl a+d to leave session with miner runnning
