@@ -1,4 +1,7 @@
--- Docker Events watcher -- tested with 1 gpu rigs only
+-- Docker Events watcher -- 
+- * tested with 1 gpu rigs only
+- * services assume .conf files are in /home/user/ and named rig-cpu.conf or rig-gpu.conf
+- scripts need absolute path '/home/user/' current user reference doesnt work
 - start/stop mining with active idle job Clore / Octaspace
 - for ubuntu server 24.04 rigs I use idle job image "ubuntu:24.04" as placeholder idle job on Clore / Octaspace
 - I use ubuntu server 22.04 for my AMD gpu rig, better driver/overclock compatible
@@ -9,7 +12,6 @@
 - include api.conf if using miner api and one of the gpu-reset scripts if needed, Nvidia,AMD
 - seperate script files in source/lib folder just to make easier to read
 - batch files can be used to send new .conf files to a list of rigs from windows pc
-- services assume .conf files are in /home/user/ and named rig-cpu.conf or rig-gpu.conf
 - start/stop/pause idle job and watch logs to test...
 - sudo journalctl -u docker_events_cpu.service -f
 - sudo journalctl -u docker_events_gpu.service -f
