@@ -19,7 +19,7 @@
 - sudo journalctl -u docker_events_gpu.service -f
 - 'sudo journalctl -u docker_events_gpu.service -e' show more history
 - ctrl+c to leave logs
-- if miner isnt starting copy the actual command being run from logs to test ... command:
+- if miner isnt starting test the actual command being run from the logs ... command:
 - 'sudo docker ps' shows current running images/containers
 - miners load in a screen session by name of miner by default, or SCREEN_NAME set in cpu/gpu .conf
 - sudo screen -ls to list active sessions
