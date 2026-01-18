@@ -1,5 +1,6 @@
 -- Docker Events watcher -- 
 - tested with 1 gpu rigs only
+- for easiest setup install ubuntu server with username user
 - services assume .conf files are in /home/user/ and named rig-cpu.conf or rig-gpu.conf etc
 - scripts need absolute path '/home/user/' current user reference doesnt work
 - start/stop mining with active idle job Clore / Octaspace
