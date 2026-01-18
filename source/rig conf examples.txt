@@ -14,7 +14,7 @@
 
 #========================================================================================================
 
-# -- to update miner versions write miner.conf --
+# -- to update miner versions write miner.conf and restart service --
 
 tee /home/user/miner.conf > /dev/null <<'EOF'
 XMRIG_VERSION        ALL "6.25.0"
@@ -28,6 +28,8 @@ GMINER_VERSION       ALL "3.44"
 TEAMREDMINER_VERSION ALL "0.10.21"
 TREXMINER_VERSION    ALL "0.26.8"
 EOF
+
+sudo systemctl restart docker_events_gpu
 
 #========================================================================================================
 
