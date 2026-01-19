@@ -1,4 +1,4 @@
-# -- write docker_events_universal script --
+# -- write docker_events_cpu script --
 sudo mkdir -v /usr/local/bin
 
 sudo tee /usr/local/bin/docker_events_cpu.sh > /dev/null <<'EOF'
