@@ -36,4 +36,10 @@
 - affinity will be added with threads for xmrig miner see 03-cpu_threads.sh in 'install - script files.sh' to customise
 - see rig conf examples...
 
+Octa Idle job:
+![Dashboard Screenshot](images/Screenshot-Octa.png)
+
+Clore Idle job:
+![Dashboard Screenshot](images/Screenshot-Clore.png)
+
 Some portions of this project were developed with assistance from ChatGPT.
