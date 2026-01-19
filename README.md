@@ -1,5 +1,5 @@
 -- Docker Events watcher -- 
-- start/stop mining with active idle job Clore / Octaspace
+- == start/stop mining with active idle job Clore / Octaspace ==
 - copy/paste press enter contents of docker_events_gpu.sh, docker_events_cpu.sh to write script files with your mining settings into ubuntu server console
 - copy/paste press enter contents of docker_events-services.sh to create services, enable, start service's etc
 - 'gpu_reset - Nvidia.sh' if needed
