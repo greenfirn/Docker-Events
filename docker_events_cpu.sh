@@ -103,7 +103,7 @@ start_miner() {
     fi
     
 	echo "$(date): Starting $SCREEN_NAME..."
-    echo "$(date): Command: $START_CMD"
+    echo "$(date): Command: $START_CMD $ARGS"
     
     # Create PID file directory
     mkdir -p /tmp/miner_pids
