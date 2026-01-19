@@ -14,9 +14,9 @@ TARGET_NAME="clore-default-"
 
 SCREEN_NAME="cpu"
 
-START_CMD=""
+START_CMD="/home/user/miners/xmrig/current/xmrig"
 
-ARGS=""
+ARGS="-a rx/0 -o pool.supportxmr.com:9000 -u wallet-address -p 5950X-2-3070 -t 31 --cpu-affinity=0xFFFFFFFD --tls -k --http-host=127.0.0.1 --http-port=18080"
 
 APPLY_OC="false"
 RESET_OC="false"
