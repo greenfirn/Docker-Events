@@ -2,7 +2,8 @@
 - start/stop mining with active idle job Clore / Octaspace
 - copy/paste press enter contents of docker_events_gpu.sh, docker_events_cpu.sh to write script files with your mining settings into ubuntu server console
 - copy/paste press enter contents of docker_events-services.sh to create services, enable, start service's etc
-- 'gpu_reset - Nvidia.sh' if needed, follow logs: sudo journalctl -u docker_events_gpu.service -f
+- 'gpu_reset - Nvidia.sh' if needed
+- follow logs: sudo journalctl -u docker_events_gpu.service -f
 - == main complete package in source folder ==
 - tested with 1 gpu rigs only
 - for easiest setup install ubuntu server with username user
