@@ -14,9 +14,9 @@ TARGET_NAME="clore-default-"
 
 SCREEN_NAME="gpu"
 
-START_CMD=""
+START_CMD="/home/user/miners/rigel/current/rigel"
 
-ARGS=""
+ARGS="-a kawpow -o stratum+ssl://ca.quai.herominers.com:1185 -o stratum+ssl://us2.quai.herominers.com:1185 -u wallet-address -p x -w 5950X-2-3070 --api-bind 127.0.0.1:5000"
 
 APPLY_OC="false"
 RESET_OC="false"
