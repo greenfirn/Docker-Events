@@ -8,12 +8,16 @@ set -euo pipefail
 
 #======= Miner Start Settings ================================================
 
-sudo mkdir -p /home/user/miners/rigel/current
-cd /home/user/miners/rigel
-
-wget https://github.com/rigelminer/rigel/releases/download/1.23.1/rigel-1.23.1-linux.tar.gz
-sudo tar -xvf rigel-1.23.1-linux.tar.gz --strip-components=1
-sudo cp -v rigel /home/user/miners/rigel/current
+if [ ! -f "/home/user/miners/rigel/current/rigel" ]; then
+    sudo mkdir -p /home/user/miners/rigel/current
+    cd /home/user/miners/rigel
+    
+    wget https://github.com/rigelminer/rigel/releases/download/1.23.1/rigel-1.23.1-linux.tar.gz
+    sudo tar -xvf rigel-1.23.1-linux.tar.gz --strip-components=1
+    sudo cp -v rigel /home/user/miners/rigel/current
+else
+    echo "rigel already exists in current directory"
+fi
 
 TARGET_IMAGE="ubuntu:24.04"
 TARGET_NAME="clore-default-"
