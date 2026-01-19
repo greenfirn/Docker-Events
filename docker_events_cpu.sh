@@ -112,7 +112,6 @@ start_miner() {
     # Start in screen session
     screen -dmS "$SCREEN_NAME" bash -c \
         'echo "Miner starting at $(date)"; \
-         echo "API: '"$API_HOST:$API_PORT"'"; \
          echo "$$" > "'"/tmp/${SCREEN_NAME}_miner.pid"'"; \
          trap '\''echo "Miner exiting at $(date)"; rm -f "'"/tmp/${SCREEN_NAME}_miner.pid"'"'\'' EXIT; \
          '"$START_CMD $ARGS"
@@ -129,26 +128,6 @@ start_miner() {
             echo "$(date): Miner process PID: $miner_pid"
         fi
         
-		        # Wait for API to come up if enabled
-        if [[ "$API_PORT" -gt 0 ]]; then
-			echo "$(date): Waiting for API to start (max 30 seconds)..."
-            local max_wait=30
-            local waited=0
-            
-            while [[ $waited -lt $max_wait ]]; do
-                if check_api_health; then
-                    echo "$(date): API is up and running"
-                    break
-                fi
-                sleep 1
-                ((waited++))
-            done
-            
-            if [[ $waited -ge $max_wait ]]; then
-                echo "$(date): WARNING: API did not respond after $max_wait seconds"
-            fi
-        fi
-		
         echo "$(date): ARGS/OCS: $ARGS"
         echo "$(date): To view miner output: sudo screen -r $SCREEN_NAME"
         return 0
