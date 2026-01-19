@@ -336,6 +336,6 @@ while read type action name image; do
 done
 EOF
 # Make the script executable
-sudo chmod +x /usr/local/bin/docker_events_universal.sh
+sudo chmod +x /usr/local/bin/docker_events_cpu.sh
 
 # service makes sh executable on start
