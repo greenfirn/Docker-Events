@@ -103,7 +103,6 @@ start_miner() {
     fi
     
 	echo "$(date): Starting $SCREEN_NAME..."
-    echo "$(date): API: $API_HOST:$API_PORT"
     echo "$(date): Command: $START_CMD"
     
     # Create PID file directory
