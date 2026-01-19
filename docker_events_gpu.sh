@@ -1,218 +1,32 @@
 # -- write docker_events_universal script --
-mkdir -v /usr/local/bin/lib
+mkdir -v /usr/local/bin
 
-sudo tee /usr/local/bin/docker_events_universal.sh > /dev/null <<'EOF'
+sudo tee /usr/local/bin/docker_events_gpu.sh > /dev/null <<'EOF'
 #!/bin/bash
 
-set -Eeuo pipefail
-shopt -s inherit_errexit
+set -euo pipefail
 
-# Where miners are installed
-BASE_DIR="/home/user/miners"
-readonly BASE_DIR
+#======= Miner Start Settings ================================================
 
-# Where THIS script and lib/ live
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly SCRIPT_DIR
+TARGET_IMAGE="ubuntu:24.04"
+TARGET_NAME="clore-default-"
+# TARGET_NAME="octa_idle_job"
 
-echo "[init] SCRIPT_DIR=$SCRIPT_DIR"
-echo "[init] BASE_DIR=$BASE_DIR"
+SCREEN_NAME="gpu"
 
-mkdir -p "$BASE_DIR"
+START_CMD=""
 
-# -------------------------------------------------
-# Default rig config resolution
-# -------------------------------------------------
-default_oc_file="/home/user/rig-cpu.conf"
-readonly default_oc_file
+ARGS=""
 
-if [[ -n "${oc_file:-}" ]]; then
-    cfg_file="$oc_file"
-elif [[ -n "${OC_FILE:-}" ]]; then
-    cfg_file="$OC_FILE"
-else
-    cfg_file="$default_oc_file"
+APPLY_OC="false"
+RESET_OC="false"
+
+#=============================================================================
+
+if [[ -z "$START_CMD" ]]; then
+    echo "$(date): START_CMD empty — refusing to start miner"
+    return
 fi
-
-CFG_FILE="$cfg_file"
-export CFG_FILE
-
-[[ -f "$CFG_FILE" ]] || {
-    echo "Missing rig config: $CFG_FILE"
-    exit 1
-}
-
-# -------------------------------------------------
-# Miner config (required)
-# -------------------------------------------------
-: "${MINER_CONF:?MINER_CONF is not set}"
-[[ -f "$MINER_CONF" ]] || {
-    echo "Missing miner.conf: $MINER_CONF"
-    exit 1
-}
-
-# -------------------------------------------------
-# Source libraries
-# -------------------------------------------------
-for f in \
-    "$SCRIPT_DIR/lib/00-get_rig_conf.sh" \
-    "$SCRIPT_DIR/lib/01-miner_install.sh" \
-    "$SCRIPT_DIR/lib/02-load_configs.sh" \
-    "$SCRIPT_DIR/lib/03-cpu_threads.sh" \
-    "$SCRIPT_DIR/lib/04-algo_config.sh"
-do
-    [[ -f "$f" ]] || { echo "Missing include: $f"; exit 1; }
-    source "$f"
-done
-
-# ---------------------------------------------------------
-# API SETTINGS - from API_CONF or default location
-# ---------------------------------------------------------
-# Use API_CONF environment variable if set, otherwise default
-: "${API_CONF:=/home/user/api.conf}"
-PORTS_CONF="$API_CONF"
-
-if [[ ! -f "$PORTS_CONF" ]]; then
-    echo "[api] WARNING: $PORTS_CONF not found, API disabled"
-    API_HOST="127.0.0.1"
-    API_PORT=0
-else
-    echo "[api] Loading API settings from $PORTS_CONF"
-    # Source ports.conf
-    source "$PORTS_CONF"
-    
-    # Get API settings for this specific miner
-    MINER_UPPER=$(echo "$MINER_NAME" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
-    
-    # Look for miner-specific API_PORT (e.g., XMRIG_CPU_API_PORT)
-    MINER_API_PORT_VAR="${MINER_UPPER}_API_PORT"
-    if [[ -n "${!MINER_API_PORT_VAR:-}" ]]; then
-        API_PORT="${!MINER_API_PORT_VAR}"
-        echo "[api] Found specific API_PORT: $MINER_API_PORT_VAR=$API_PORT"
-    else
-        # Fallback to generic API_PORT
-        : "${API_PORT:=0}"
-        echo "[api] Using generic API_PORT: $API_PORT"
-    fi
-    
-    # Look for miner-specific API_HOST (e.g., XMRIG_CPU_API_HOST)
-    MINER_API_HOST_VAR="${MINER_UPPER}_API_HOST"
-    if [[ -n "${!MINER_API_HOST_VAR:-}" ]]; then
-        API_HOST="${!MINER_API_HOST_VAR}"
-        echo "[api] Found specific API_HOST: $MINER_API_HOST_VAR=$API_HOST"
-    else
-        # Fallback to generic API_HOST
-        : "${API_HOST:=127.0.0.1}"
-        echo "[api] Using generic API_HOST: $API_HOST"
-    fi
-fi
-
-echo "[api] Final API settings for $MINER_NAME:"
-echo "[api]   API_HOST=$API_HOST"
-echo "[api]   API_PORT=$API_PORT"
-
-# ---------------------------------------------------------
-# MINER-SPECIFIC API COMMAND GENERATION
-# ---------------------------------------------------------
-add_api_flags() {
-    local miner_name="$1"
-    local api_host="$2"
-    local api_port="$3"
-    local current_args="$4"
-    
-    if [[ "$api_port" -eq 0 ]]; then
-        echo "$current_args"
-        return
-    fi
-    
-    case "$miner_name" in
-        "xmrig"|"xmrig-cpu"|"xmrig-gpu")
-            echo "$current_args --http-host=$api_host --http-port=$api_port"
-            ;;
-        "rigel")
-            echo "$current_args --api-bind $api_host:$api_port"
-            ;;
-        "srbminer"|"srbminer-cpu"|"srbminer-gpu"|"srbminer-multi")
-            echo "$current_args --api-enable --api-port $api_port"
-            ;;
-        "lolminer")
-            echo "$current_args --apiport $api_port --apihost $api_host"
-            ;;
-        "wildrig")
-            echo "$current_args --api-port $api_port"
-            ;;
-        "gminer")
-            echo "$current_args --api $api_port"
-            ;;
-        "bzminer")
-            echo "$current_args --http_port $api_port --http_address $api_host"
-            ;;
-        "onezerominer")
-            echo "$current_args --api-port $api_port"
-            ;;
-        "t-rex")
-            echo "$current_args --api-bind $api_host:$api_port"
-            ;;
-        "teamredminer")
-            echo "$current_args --api_listen=$api_host:$api_port"
-            ;;
-        "nbminer")
-            echo "$current_args --api $api_host:$api_port"
-            ;;
-        *)
-            # No API flags for unknown miners
-            echo "$current_args"
-            ;;
-    esac
-}
-
-# ---------------------------------------------------------
-# FINAL PLACEHOLDER SUBSTITUTION
-# ---------------------------------------------------------
-
-# CPU threads
-if [[ -n "$AUTOFILL_CPU" ]]; then
-    ARGS="${ARGS//%CPU_THREADS%/$AUTOFILL_CPU}"
-else
-    ARGS="${ARGS//%CPU_THREADS%/$CPU_THREADS}"
-fi
-
-# Warthog target
-if [[ -n "$WARTHOG_TARGET" ]]; then
-    ARGS="${ARGS//%WARTHOG_TARGET%/$WARTHOG_TARGET}"
-fi
-
-# Replace %WORKER_NAME% placeholder in ARGS, WALLET, PASS, POOL
-ARGS="${ARGS//%WORKER_NAME%/$WORKER_NAME}"
-WALLET="${WALLET//%WORKER_NAME%/$WORKER_NAME}"
-PASS="${PASS//%WORKER_NAME%/$WORKER_NAME}"
-POOL="${POOL//%WORKER_NAME%/$WORKER_NAME}"
-
-# Add miner-specific API flags
-if [[ "$API_PORT" -gt 0 ]]; then
-        ARGS=$(add_api_flags "$MINER_NAME" "$API_HOST" "$API_PORT" "$ARGS")
-fi
-
-START_CMD=$(get_start_cmd "$MINER_NAME")
-
-# Load from rig.conf
-SCREEN_NAME=$(get_rig_conf "SCREEN_NAME" "0")
-
-# If SCREEN_NAME is empty (""), ignore and use miner name
-if [[ -z "$SCREEN_NAME" ]]; then
-    SCREEN_NAME="$MINER_NAME"
-fi
-
-# ---------------------------------------------------------
-# API HEALTH CHECK FUNCTION
-# ---------------------------------------------------------
-check_api_health() {
-    if [[ "$API_PORT" -eq 0 ]]; then
-        return 0  # API not enabled, consider healthy
-    fi
-    # just return healthy...
-    return 0
-}
 
 # ---------------------------------------------------------
 # PID-BASED KILL - Backup for crashed miners
@@ -301,7 +115,7 @@ start_miner() {
          echo "API: '"$API_HOST:$API_PORT"'"; \
          echo "$$" > "'"/tmp/${SCREEN_NAME}_miner.pid"'"; \
          trap '\''echo "Miner exiting at $(date)"; rm -f "'"/tmp/${SCREEN_NAME}_miner.pid"'"'\'' EXIT; \
-         '"$START_CMD"
+         '"$START_CMD $ARGS"
     
     # Wait a moment for PID file creation
     sleep 2
