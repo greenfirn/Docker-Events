@@ -12,7 +12,7 @@ if [ ! -f "/home/user/miners/rigel/current/rigel" ]; then
     sudo mkdir -p /home/user/miners/rigel/current
     cd /home/user/miners/rigel
     
-    wget https://github.com/rigelminer/rigel/releases/download/1.23.1/rigel-1.23.1-linux.tar.gz
+    sudo wget https://github.com/rigelminer/rigel/releases/download/1.23.1/rigel-1.23.1-linux.tar.gz
     sudo tar -xvf rigel-1.23.1-linux.tar.gz --strip-components=1
     sudo cp -v rigel /home/user/miners/rigel/current
 else

@@ -12,7 +12,7 @@ if [ ! -f "/home/user/miners/xmrig/current/xmrig" ]; then
     sudo mkdir -p /home/user/miners/xmrig/current
     cd /home/user/miners/xmrig
     
-    wget https://github.com/xmrig/xmrig/releases/download/v6.25.0/xmrig-6.25.0-linux-static-x64.tar.gz
+    sudo wget https://github.com/xmrig/xmrig/releases/download/v6.25.0/xmrig-6.25.0-linux-static-x64.tar.gz
     sudo tar -xvf xmrig-6.25.0-linux-static-x64.tar.gz --strip-components=1
     sudo cp -v xmrig /home/user/miners/xmrig/current
 else
