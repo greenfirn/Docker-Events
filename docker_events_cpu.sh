@@ -8,6 +8,9 @@ set -euo pipefail
 
 #======= Miner Start Settings ================================================
 
+# remove xmrig to update
+# sudo rm -rv /home/user/miners/xmrig
+
 if [ ! -f "/home/user/miners/xmrig/current/xmrig" ]; then
     sudo mkdir -p /home/user/miners/xmrig/current
     cd /home/user/miners/xmrig

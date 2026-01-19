@@ -8,6 +8,9 @@ set -euo pipefail
 
 #======= Miner Start Settings ================================================
 
+# remove rigel to update
+# sudo rm -rv /home/user/miners/rigel
+
 if [ ! -f "/home/user/miners/rigel/current/rigel" ]; then
     sudo mkdir -p /home/user/miners/rigel/current
     cd /home/user/miners/rigel
