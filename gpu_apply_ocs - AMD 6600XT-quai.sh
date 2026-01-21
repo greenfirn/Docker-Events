@@ -22,7 +22,7 @@ echo 69000000 | sudo tee /sys/class/drm/card0/device/hwmon/hwmon*/power1_cap
 # Check current states
 cat /sys/class/drm/card0/device/pp_dpm_sclk
 cat /sys/class/drm/card0/device/pp_dpm_mclk
-rocm-smi
+sudo rocm-smi
 EOF
 
 # make it executable

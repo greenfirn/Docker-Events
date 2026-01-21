@@ -500,24 +500,88 @@ while read type action name image; do
     #########################################################
     if [[ "$image" == "$TARGET_IMAGE" && "$name_match" -eq 1 ]]; then
 
-        case "$action" in
+    case "$action" in
+        start|create|unpause)
+            echo "$(date): START event detected → Wait for start to complete"
+            retry_count=0
+            started=false
+            
+            while [ $retry_count -lt 10 ]; do  # Increased retries for start operations
+                sleep 0.2  # Slightly longer delay for start operations
+                
+                # Check if container exists and is running
+                if docker inspect --format '{{.State.Status}}' "$name" 2>/dev/null | grep -q "running"; then
+                    echo "$(date): Container confirmed running → start_miner"
+                    start_miner
+                    started=true
+                    break
+                fi
+                
+                retry_count=$((retry_count + 1))
+                echo "$(date): Start check attempt $retry_count: container not yet running"
+            done
+            
+            # Final check if loop completed without success
+            if [ "$started" = false ]; then
+                echo "$(date): WARNING: Container $name never reached 'running' state after $retry_count attempts"
+                # Optional: Check if container exists at all
+                if ! docker inspect "$name" &>/dev/null; then
+                    echo "$(date): Container $name no longer exists"
+                fi
+            fi
+            ;;
 
-            start|create|unpause)
-                echo "$(date): START event detected → start_miner"
-                start_miner
-                ;;
-
-            pause|kill|destroy|stop|die)
-                echo "$(date): STOP event detected → checking container"
-                if ! check_target_container; then
+        kill|destroy|stop|die)
+            echo "$(date): STOP event detected ($action) → stop_miner"
+            # Immediate action for destructive events
+            stop_miner
+            ;;
+            
+        pause)
+            echo "$(date): PAUSE event detected → Wait for pause to complete"
+            retry_count=0
+            
+            while [ $retry_count -lt 5 ]; do
+                sleep 0.1
+                status=$(docker inspect --format '{{.State.Status}}' "$name" 2>/dev/null || echo "not_found")
+                
+                case "$status" in
+                    "paused")
+                        echo "$(date): Container confirmed paused → stop_miner"
+                        stop_miner
+                        break
+                        ;;
+                    "not_found")
+                        echo "$(date): Container removed while pausing → stop_miner"
+                        stop_miner
+                        break
+                        ;;
+                    "exited"|"dead")
+                        echo "$(date): Container exited/died instead of pausing → stop_miner"
+                        stop_miner
+                        break
+                        ;;
+                esac
+                
+                retry_count=$((retry_count + 1))
+            done
+            
+            # Final check after loop
+            if [ $retry_count -eq 5 ]; then
+                echo "$(date): WARNING: Container $name never reached 'paused' state, checking current status"
+                final_status=$(docker inspect --format '{{.State.Status}}' "$name" 2>/dev/null || echo "not_found")
+                if [[ "$final_status" != "running" ]]; then
+                    echo "$(date): Container is $final_status → stop_miner"
                     stop_miner
                 fi
-                ;;
-
-            *)
-                # Ignore irrelevant Docker events
-                ;;
-        esac
+            fi
+            ;;
+            
+        *)
+            # Ignore irrelevant Docker events
+            echo "$(date): DEBUG: Unhandled action: $action for $name"
+            ;;
+    esac
     fi
 done
 EOF
