@@ -1,19 +1,19 @@
 -- Docker Events watcher -- 
 - == start/stop mining with active idle job Clore / Octaspace ==
 - 'sudo docker ps' shows current running images/containers
+- start/stop/pause idle job and watch logs to test, confirm all working as expected
+- follow logs: sudo journalctl -u docker_events_gpu.service -f
+- show more history: sudo journalctl -u docker_events_gpu.service -e
+- ctrl+c to leave logs
+- nvidia gpus nvtop : sudo apt install -y nvtop
+- amd gpus rocm-smi : sudo apt install -y rocm-smi
 - ubuntu server 24.04 rigs I use idle job image "ubuntu:24.04" as placeholder idle job on Clore / Octaspace
 - ubuntu server 22.04 for AMD gpu rig, better driver/overclock compatible
 - copy/paste press enter contents of docker_events_gpu.sh, docker_events_cpu.sh to write script files with your mining settings into ubuntu server console
 - copy/paste press enter contents of docker_events-services.sh to create services, enable, start service's etc
 - 'gpu_reset - Nvidia.sh' if needed
-- start/stop/pause idle job and watch logs to test...
-- follow logs: sudo journalctl -u docker_events_gpu.service -f
-- show more history: sudo journalctl -u docker_events_gpu.service -e
-- ctrl+c to leave logs
 - if miner isnt starting test the actual command being run from the logs ... command:
 - some miners need libpocl2 for cpu: sudo apt install -y libpocl2
-- nvidia gpus nvtop : sudo apt install -y nvtop
-- amd gpus rocm-smi : sudo apt install -y rocm-smi
 - miners load in a screen session by name of SCREEN_NAME
 - sudo screen -ls to list active sessions
 - sudo screen -r name to re-open/join session
