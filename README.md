@@ -1,7 +1,7 @@
 -- Docker Events watcher -- 
 - == start/stop mining with active idle job Clore / Octaspace ==
 - 'sudo docker ps' shows current running images/containers
-- start/stop/pause idle job and watch logs to test...
+- start/stop/pause idle job and watch logs to test, confirm all working as expected
 - follow logs: sudo journalctl -u docker_events_gpu.service -f
 - show more history: sudo journalctl -u docker_events_gpu.service -e
 - ctrl+c to leave logs
