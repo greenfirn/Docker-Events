@@ -28,4 +28,5 @@ EOF
 # make it executable
 sudo chmod +x /usr/local/bin/gpu_apply_ocs.sh
 
+# manual test
 sudo /usr/local/bin/gpu_apply_ocs.sh

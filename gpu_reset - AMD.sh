@@ -1,9 +1,6 @@
 # -- ** gpu_reset not used for clore when using oc profiles ** --
 # -- leave commented out in service ... #ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh
 
-# amd
-sudo apt install -y rocm-smi
-
 # -- write gpu reset script --
 
 sudo tee /usr/local/bin/gpu_reset_poststop.sh > /dev/null <<'EOF'
@@ -128,7 +125,11 @@ else
 fi
 
 echo "[GPU-RESET] Complete."
+rocm-smi
 EOF
 
 # Make it executable
 sudo chmod +x /usr/local/bin/gpu_reset_poststop.sh
+
+# test proper power limit etc is applied
+sudo /usr/local/bin/gpu_reset_poststop.sh
