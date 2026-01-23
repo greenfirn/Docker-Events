@@ -6,7 +6,7 @@
 - show more history: sudo journalctl -u docker_events_gpu.service -e
 - ctrl+c to leave logs
 - nvidia gpus nvtop : sudo apt install -y nvtop
-- amd gpus rocm-smi : sudo apt install -y rocm-smi
+- amd gpus rocm-smi
 - ubuntu server 24.04 rigs I use idle job image "ubuntu:24.04" as placeholder idle job on Clore / Octaspace
 - ubuntu server 22.04 for AMD gpu rig, better driver/overclock compatible
 - copy/paste press enter contents of docker_events_gpu.sh, docker_events_cpu.sh to write script files with your mining settings into ubuntu server console
