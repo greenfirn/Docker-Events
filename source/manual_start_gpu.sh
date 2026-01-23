@@ -349,8 +349,7 @@ start_miner() {
 # ---------------------------------------------------------
 # MAIN START LOGIC
 # ---------------------------------------------------------
-echo "Starting miner in 3 seconds... (Press Ctrl+C to cancel)"
-sleep 3
+echo "Starting miner..."
 start_miner
 EOF
 
