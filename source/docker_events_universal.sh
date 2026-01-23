@@ -585,6 +585,7 @@ while read type action name image; do
     fi
 done
 EOF
+
 # Make the script executable
 sudo chmod +x /usr/local/bin/docker_events_universal.sh
 
