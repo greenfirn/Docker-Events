@@ -1,3 +1,12 @@
+# stop old services
+sudo systemctl stop docker_events_gpu.service
+sudo systemctl stop docker_events_cpu.service
+
+# disable so it doesnt run on boot
+sudo systemctl disable docker_events_gpu.service
+sudo systemctl disable docker_events_cpu.service
+
+
 # -- write docker_events_cpu script --
 sudo mkdir -v /usr/local/bin
 
