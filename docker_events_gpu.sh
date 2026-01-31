@@ -410,7 +410,7 @@ sudo chmod +x /usr/local/bin/docker_events_gpu.sh
 
 # -- write GPU service --
 
-sudo tee /etc/systemd/system/docker-events-gpu.service > /dev/null <<'EOF'
+sudo tee /etc/systemd/system/docker_events_gpu.service > /dev/null <<'EOF'
 [Unit]
 Description=docker_events_gpu Watchdog
 After=docker.service
@@ -432,17 +432,17 @@ EOF
 
 # Reload systemd and enable service
 sudo systemctl daemon-reload
-sudo systemctl enable docker-events-gpu.service
+sudo systemctl enable docker_events_gpu.service
 
 # Start/Stop Service
-sudo systemctl start docker-events-gpu.service
-sudo systemctl stop docker-events-gpu.service
+sudo systemctl start docker_events_gpu.service
+sudo systemctl stop docker_events_gpu.service
 
 # check status
-sudo systemctl status docker-events-gpu.service
+sudo systemctl status docker_events_gpu.service
 
 # follow logs
-sudo journalctl -u docker-events-gpu.service -f
+sudo journalctl -u docker_events_gpu.service -f
 
 # disable so it doesnt start on boot
-sudo systemctl disable docker-events-gpu.service
+sudo systemctl disable docker_events_gpu.service

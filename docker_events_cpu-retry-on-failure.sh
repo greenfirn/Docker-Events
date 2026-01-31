@@ -468,7 +468,7 @@ EOF
 sudo chmod +x /usr/local/bin/docker_events_cpu.sh
 
 # Create systemd service for proper management
-sudo tee /etc/systemd/system/docker-events-cpu.service > /dev/null <<'EOF'
+sudo tee /etc/systemd/system/docker_events_cpu.service > /dev/null <<'EOF'
 [Unit]
 Description=Docker Events CPU Miner Monitor
 After=docker.service
@@ -497,17 +497,17 @@ EOF
 
 # Reload systemd and enable service
 sudo systemctl daemon-reload
-sudo systemctl enable docker-events-cpu.service
+sudo systemctl enable docker_events_cpu.service
 
 # Start/Stop Service
-sudo systemctl start docker-events-cpu.service
-sudo systemctl stop docker-events-cpu.service
+sudo systemctl start docker_events_cpu.service
+sudo systemctl stop docker_events_cpu.service
 
 # check status
-sudo systemctl status docker-events-cpu.service
+sudo systemctl status docker_events_cpu.service
 
 # follow logs
-sudo journalctl -u docker-events-cpu.service -f
+sudo journalctl -u docker_events_cpu.service -f
 
 # disable so it doesnt start on boot
-sudo systemctl disable docker-events-cpu.service
+sudo systemctl disable docker_events_cpu.service
