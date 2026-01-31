@@ -54,8 +54,6 @@ fi
 # GLOBAL VARIABLES FOR SIGNAL HANDLING
 # ---------------------------------------------------------
 SHUTDOWN_REQUESTED=0
-DOCKER_EVENTS_PID=""
-TIMEOUT_PID=""
 
 # ---------------------------------------------------------
 # SIGNAL HANDLER
@@ -66,24 +64,12 @@ handle_signal() {
     
     SHUTDOWN_REQUESTED=1
     
-    # Kill docker events process if running
-    if [[ -n "$DOCKER_EVENTS_PID" ]] && kill -0 "$DOCKER_EVENTS_PID" 2>/dev/null; then
-        echo "$(date): Terminating docker events process (PID: $DOCKER_EVENTS_PID)..."
-        kill -TERM "$DOCKER_EVENTS_PID" 2>/dev/null
-        
-        # Wait for docker events to exit
-        wait "$DOCKER_EVENTS_PID" 2>/dev/null || true
-    fi
-    
-    # Kill timeout process if running
-    if [[ -n "$TIMEOUT_PID" ]] && kill -0 "$TIMEOUT_PID" 2>/dev/null; then
-        echo "$(date): Terminating timeout process (PID: $TIMEOUT_PID)..."
-        kill -TERM "$TIMEOUT_PID" 2>/dev/null 2>&1 || true
-    fi
-    
     # Ensure miner is stopped
     echo "$(date): Stopping miner if running..."
     stop_miner
+    
+    # Kill any docker events process
+    pkill -f "docker events" 2>/dev/null || true
     
     exit 0
 }
@@ -329,55 +315,41 @@ echo "$(date): Starting Docker event monitor..."
 while [[ $SHUTDOWN_REQUESTED -eq 0 ]]; do
     echo "$(date): Connecting to Docker events stream..."
     
-    # Use timeout to prevent hanging
-    timeout --foreground 86400 docker events --format "{{.Type}} {{.Action}} {{.Actor.Attributes.name}} {{.Actor.Attributes.image}}" &
-    DOCKER_EVENTS_PID=$!
-    TIMEOUT_PID=$!
+    # Create a named pipe for docker events output
+    PIPE_FILE="/tmp/docker_events_gpu_pipe_$$"
+    mkfifo "$PIPE_FILE" 2>/dev/null || true
     
-    # Wait for the docker events process
-    if wait $DOCKER_EVENTS_PID; then
-        # Normal exit (timeout reached - restart to refresh connection)
-        echo "$(date): Docker events stream timed out after 24 hours - restarting monitor..."
-        sleep 2
-        continue
-    else
-        exit_code=$?
-        
-        # Check if shutdown was requested
-        if [[ $SHUTDOWN_REQUESTED -eq 1 ]]; then
-            echo "$(date): Shutdown requested, exiting..."
-            break
+    # Start docker events with timestamp suppression
+    docker events --format "{{.Type}} {{.Action}} {{.Actor.Attributes.name}} {{.Actor.Attributes.image}}" 2>&1 | \
+        grep -v "^[A-Z][a-z][a-z] [A-Z][a-z][a-z] [0-9]" > "$PIPE_FILE" &
+    
+    DOCKER_EVENTS_PID=$!
+    
+    # Process events from the pipe
+    while [[ $SHUTDOWN_REQUESTED -eq 0 ]]; do
+        if ! read -r type action name image < "$PIPE_FILE" 2>/dev/null; then
+            # Read failed, check if process is still running
+            if ! kill -0 "$DOCKER_EVENTS_PID" 2>/dev/null; then
+                echo "$(date): Docker events process terminated"
+                break
+            fi
+            sleep 1
+            continue
         fi
         
-        case $exit_code in
-            124)  # Timeout
-                echo "$(date): Docker events stream timed out - restarting monitor..."
-                sleep 2
-                ;;
-            1)    # General error
-                echo "$(date): ERROR: Docker events command failed with exit code $exit_code"
-                echo "$(date): Waiting 10 seconds before retry..."
-                sleep 10
-                ;;
-            *)
-                echo "$(date): Docker events stream ended unexpectedly with exit code $exit_code"
-                echo "$(date): Restarting monitor in 5 seconds..."
-                sleep 5
-                ;;
-        esac
-        continue
-    fi | while read -r type action name image; do
-        # Check for shutdown request
-        if [[ $SHUTDOWN_REQUESTED -eq 1 ]]; then
-            echo "$(date): Shutdown requested, breaking event loop..."
-            break
+        # Check if line contains actual event data (not error messages or timestamps)
+        if [[ -z "$type" ]] || [[ "$type" == *"error"* ]] || [[ "$type" == *"Error"* ]] || \
+           [[ "$action" =~ ^[0-9] ]] || [[ "$name" =~ ^[0-9] ]] || [[ "$image" =~ ^[0-9] ]]; then
+            # Skip error messages or malformed lines
+            echo "$(date): Skipping malformed line or error: $type $action $name $image"
+            continue
         fi
         
         # Log the event
         echo "$(date): Docker event - Type: $type, Action: $action, Name: $name, Image: $image"
 
         # Skip non-container events
-        if [ "$type" != "container" ]; then
+        if [[ "$type" != "container" ]]; then
             echo "$(date): Skipping non-container event"
             continue
         fi
@@ -482,9 +454,14 @@ while [[ $SHUTDOWN_REQUESTED -eq 0 ]]; do
         fi
     done
     
-    # Reset PIDs
-    DOCKER_EVENTS_PID=""
-    TIMEOUT_PID=""
+    # Clean up the pipe
+    rm -f "$PIPE_FILE" 2>/dev/null || true
+    
+    # Kill docker events process if still running
+    if kill -0 "$DOCKER_EVENTS_PID" 2>/dev/null; then
+        kill -TERM "$DOCKER_EVENTS_PID" 2>/dev/null
+        wait "$DOCKER_EVENTS_PID" 2>/dev/null || true
+    fi
     
     # Check if shutdown was requested
     if [[ $SHUTDOWN_REQUESTED -eq 1 ]]; then
@@ -492,9 +469,16 @@ while [[ $SHUTDOWN_REQUESTED -eq 0 ]]; do
         break
     fi
     
-    # Inner while loop exited - log and restart
-    echo "$(date): Docker events stream ended, restarting monitor in 3 seconds..."
-    sleep 3
+    # Check if docker is running
+    if ! docker ps > /dev/null 2>&1; then
+        echo "$(date): ERROR: Docker daemon not responding. Waiting 30 seconds..."
+        sleep 30
+        continue
+    fi
+    
+    # Wait before retrying
+    echo "$(date): Docker events stream ended, restarting monitor in 5 seconds..."
+    sleep 5
 done
 
 # Final cleanup before exit
