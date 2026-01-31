@@ -7,13 +7,6 @@ set -Eeuo pipefail
 shopt -s inherit_errexit
 
 # ---------------------------------------------------------
-# CONTAINER DETECTION SETTINGS (CRITICAL - WAS MISSING!)
-# ---------------------------------------------------------
-TARGET_IMAGE="ubuntu:24.04"
-TARGET_NAME="clore-default-"
-# TARGET_NAME="octa_idle_job"
-
-# ---------------------------------------------------------
 # GLOBAL VARIABLES FOR SIGNAL HANDLING
 # ---------------------------------------------------------
 SHUTDOWN_REQUESTED=0
