@@ -7,6 +7,35 @@ sudo tee /usr/local/bin/docker_events_universal.sh > /dev/null <<'EOF'
 set -Eeuo pipefail
 shopt -s inherit_errexit
 
+# ---------------------------------------------------------
+# GLOBAL VARIABLES FOR SIGNAL HANDLING
+# ---------------------------------------------------------
+SHUTDOWN_REQUESTED=0
+
+# ---------------------------------------------------------
+# SIGNAL HANDLER
+# ---------------------------------------------------------
+handle_signal() {
+    local sig=$1
+    echo "$(date): Received signal $sig - initiating graceful shutdown..."
+    
+    SHUTDOWN_REQUESTED=1
+    
+    # Ensure miner is stopped
+    echo "$(date): Stopping miner if running..."
+    stop_miner
+    
+    # Kill any docker events process
+    pkill -f "docker events" 2>/dev/null || true
+    
+    exit 0
+}
+
+# Setup signal handlers
+trap 'handle_signal TERM' TERM
+trap 'handle_signal INT' INT
+trap 'handle_signal HUP' HUP
+
 # Where miners are installed
 BASE_DIR="/home/user/miners"
 readonly BASE_DIR
@@ -463,130 +492,186 @@ else
 fi
 
 ###############################################
-#  DOCKER EVENT LOOP
+#  DOCKER EVENT LOOP WITH RETRY
 ###############################################
 
-echo "$(date): Starting Docker event monitor..."
+echo "$(date): Starting Docker event monitor with auto-restart..."
 
-docker events --format "{{.Type}} {{.Action}} {{.Actor.Attributes.name}} {{.Actor.Attributes.image}}" | \
-while read type action name image; do
+# Main monitoring loop with restart on failure
+while [[ $SHUTDOWN_REQUESTED -eq 0 ]]; do
+    echo "$(date): Connecting to Docker events stream..."
+    
+    # Create a named pipe for docker events output
+    PIPE_FILE="/tmp/docker_events_universal_pipe_$$"
+    mkfifo "$PIPE_FILE" 2>/dev/null || true
+    
+    # Start docker events with timestamp suppression
+    docker events --format "{{.Type}} {{.Action}} {{.Actor.Attributes.name}} {{.Actor.Attributes.image}}" 2>&1 | \
+        grep -v "^[A-Z][a-z][a-z] [A-Z][a-z][a-z] [0-9]" > "$PIPE_FILE" &
+    
+    DOCKER_EVENTS_PID=$!
+    
+    # Process events from the pipe
+    while [[ $SHUTDOWN_REQUESTED -eq 0 ]]; do
+        if ! read -r type action name image < "$PIPE_FILE" 2>/dev/null; then
+            # Read failed, check if process is still running
+            if ! kill -0 "$DOCKER_EVENTS_PID" 2>/dev/null; then
+                echo "$(date): Docker events process terminated"
+                break
+            fi
+            sleep 1
+            continue
+        fi
+        
+        # Check if line contains actual event data (not error messages or timestamps)
+        if [[ -z "$type" ]] || [[ "$type" == *"error"* ]] || [[ "$type" == *"Error"* ]] || \
+           [[ "$action" =~ ^[0-9] ]] || [[ "$name" =~ ^[0-9] ]] || [[ "$image" =~ ^[0-9] ]]; then
+            # Skip error messages or malformed lines
+            echo "$(date): Skipping malformed line or error: $type $action $name $image"
+            continue
+        fi
+        
+        # Log the event
+        echo "$(date): Docker event - Type: $type, Action: $action, Name: $name, Image: $image"
 
-    if [ "$type" != "container" ]; then
-        echo "$(date): non-container event: Type: $type, Action: $action, Name: $name"
+        # Skip non-container events
+        if [[ "$type" != "container" ]]; then
+            echo "$(date): Skipping non-container event"
+            continue
+        fi
+
+        # Name matching logic
+        name_match=0
+        
+        # Exact match
+        if [[ "$name" == "$TARGET_NAME" ]]; then
+            name_match=1
+        # Starts-with, check digit suffix
+        elif [[ "$name" == ${TARGET_NAME}* ]]; then
+            suffix="${name#${TARGET_NAME}}"
+            if [[ "$suffix" =~ ^[0-9]+$ ]]; then
+                name_match=1
+            fi
+        fi
+
+        # Process only if image AND name match
+        if [[ "$image" == "$TARGET_IMAGE" && "$name_match" -eq 1 ]]; then
+            # Get actual container status for debugging
+            actual_status=$(docker inspect --format '{{.State.Status}}' "$name" 2>/dev/null || echo "not_found")
+            echo "$(date): Current container status: $actual_status"
+
+            case "$action" in
+                start|create|unpause)
+                    echo "$(date): START event detected → Wait for start to complete"
+                    retry_count=0
+                    started=false
+                    
+                    while [[ $retry_count -lt 10 && $SHUTDOWN_REQUESTED -eq 0 ]]; do
+                        sleep 0.2
+                        
+                        # Check if container exists and is running
+                        if docker inspect --format '{{.State.Status}}' "$name" 2>/dev/null | grep -q "running"; then
+                            echo "$(date): Container confirmed running → start_miner"
+                            start_miner
+                            started=true
+                            break
+                        fi
+                        
+                        retry_count=$((retry_count + 1))
+                        echo "$(date): Start check attempt $retry_count: container not yet running"
+                    done
+                    
+                    if [[ "$started" = false && $SHUTDOWN_REQUESTED -eq 0 ]]; then
+                        echo "$(date): WARNING: Container $name never reached 'running' state after $retry_count attempts"
+                        if ! docker inspect "$name" &>/dev/null; then
+                            echo "$(date): Container $name no longer exists"
+                        fi
+                    fi
+                    ;;
+
+                kill|destroy|stop|die)
+                    echo "$(date): STOP event detected ($action) → stop_miner"
+                    stop_miner
+                    ;;
+                    
+                pause)
+                    echo "$(date): PAUSE event detected → Wait for pause to complete"
+                    retry_count=0
+                    
+                    while [[ $retry_count -lt 5 && $SHUTDOWN_REQUESTED -eq 0 ]]; do
+                        sleep 0.1
+                        status=$(docker inspect --format '{{.State.Status}}' "$name" 2>/dev/null || echo "not_found")
+                        
+                        case "$status" in
+                            "paused")
+                                echo "$(date): Container confirmed paused → stop_miner"
+                                stop_miner
+                                break
+                                ;;
+                            "not_found")
+                                echo "$(date): Container removed while pausing → stop_miner"
+                                stop_miner
+                                break
+                                ;;
+                            "exited"|"dead")
+                                echo "$(date): Container exited/died instead of pausing → stop_miner"
+                                stop_miner
+                                break
+                                ;;
+                        esac
+                        
+                        retry_count=$((retry_count + 1))
+                    done
+                    
+                    if [[ $retry_count -eq 5 && $SHUTDOWN_REQUESTED -eq 0 ]]; then
+                        echo "$(date): WARNING: Container $name never reached 'paused' state, checking current status"
+                        final_status=$(docker inspect --format '{{.State.Status}}' "$name" 2>/dev/null || echo "not_found")
+                        if [[ "$final_status" != "running" ]]; then
+                            echo "$(date): Container is $final_status → stop_miner"
+                            stop_miner
+                        fi
+                    fi
+                    ;;
+                    
+                *)
+                    echo "$(date): DEBUG: Unhandled action: $action for $name"
+                    ;;
+            esac
+        fi
+    done
+    
+    # Clean up the pipe
+    rm -f "$PIPE_FILE" 2>/dev/null || true
+    
+    # Kill docker events process if still running
+    if kill -0 "$DOCKER_EVENTS_PID" 2>/dev/null; then
+        kill -TERM "$DOCKER_EVENTS_PID" 2>/dev/null
+        wait "$DOCKER_EVENTS_PID" 2>/dev/null || true
+    fi
+    
+    # Check if shutdown was requested
+    if [[ $SHUTDOWN_REQUESTED -eq 1 ]]; then
+        echo "$(date): Shutdown requested, exiting main loop..."
+        break
+    fi
+    
+    # Check if docker is running
+    if ! docker ps > /dev/null 2>&1; then
+        echo "$(date): ERROR: Docker daemon not responding. Waiting 30 seconds..."
+        sleep 30
         continue
     fi
-
-    echo "$(date): Container event detected - Action: $action, Name: $name, Image: $image"
-
-    #########################################################
-    # NAME MATCHING — Exact, or Starts-With + DIGIT SUFFIX
-    #########################################################
-    name_match=0
-
-    # Exact match
-    if [[ "$name" == "$TARGET_NAME" ]]; then
-        name_match=1
-
-    # Starts-with, check digit suffix
-    elif [[ "$name" == ${TARGET_NAME}* ]]; then
-        suffix="${name#${TARGET_NAME}}"
-        if [[ "$suffix" =~ ^[0-9]+$ ]]; then
-            name_match=1
-        fi
-    fi
-
-    #########################################################
-    # Process only if image AND name match
-    #########################################################
-    if [[ "$image" == "$TARGET_IMAGE" && "$name_match" -eq 1 ]]; then
-
-    case "$action" in
-        start|create|unpause)
-            echo "$(date): START event detected → Wait for start to complete"
-            retry_count=0
-            started=false
-            
-            while [ $retry_count -lt 10 ]; do  # Increased retries for start operations
-                sleep 0.2  # Slightly longer delay for start operations
-                
-                # Check if container exists and is running
-                if docker inspect --format '{{.State.Status}}' "$name" 2>/dev/null | grep -q "running"; then
-                    echo "$(date): Container confirmed running → start_miner"
-                    start_miner
-                    started=true
-                    break
-                fi
-                
-                retry_count=$((retry_count + 1))
-                echo "$(date): Start check attempt $retry_count: container not yet running"
-            done
-            
-            # Final check if loop completed without success
-            if [ "$started" = false ]; then
-                echo "$(date): WARNING: Container $name never reached 'running' state after $retry_count attempts"
-                # Optional: Check if container exists at all
-                if ! docker inspect "$name" &>/dev/null; then
-                    echo "$(date): Container $name no longer exists"
-                fi
-            fi
-            ;;
-
-        kill|destroy|stop|die)
-            echo "$(date): STOP event detected ($action) → stop_miner"
-            # Immediate action for destructive events
-            stop_miner
-            ;;
-            
-        pause)
-            echo "$(date): PAUSE event detected → Wait for pause to complete"
-            retry_count=0
-            
-            while [ $retry_count -lt 5 ]; do
-                sleep 0.1
-                status=$(docker inspect --format '{{.State.Status}}' "$name" 2>/dev/null || echo "not_found")
-                
-                case "$status" in
-                    "paused")
-                        echo "$(date): Container confirmed paused → stop_miner"
-                        stop_miner
-                        break
-                        ;;
-                    "not_found")
-                        echo "$(date): Container removed while pausing → stop_miner"
-                        stop_miner
-                        break
-                        ;;
-                    "exited"|"dead")
-                        echo "$(date): Container exited/died instead of pausing → stop_miner"
-                        stop_miner
-                        break
-                        ;;
-                esac
-                
-                retry_count=$((retry_count + 1))
-            done
-            
-            # Final check after loop
-            if [ $retry_count -eq 5 ]; then
-                echo "$(date): WARNING: Container $name never reached 'paused' state, checking current status"
-                final_status=$(docker inspect --format '{{.State.Status}}' "$name" 2>/dev/null || echo "not_found")
-                if [[ "$final_status" != "running" ]]; then
-                    echo "$(date): Container is $final_status → stop_miner"
-                    stop_miner
-                fi
-            fi
-            ;;
-            
-        *)
-            # Ignore irrelevant Docker events
-            echo "$(date): DEBUG: Unhandled action: $action for $name"
-            ;;
-    esac
-    fi
+    
+    # Wait before retrying
+    echo "$(date): Docker events stream ended, restarting monitor in 5 seconds..."
+    sleep 5
 done
+
+# Final cleanup before exit
+echo "$(date): Performing final cleanup..."
+stop_miner
+echo "$(date): Docker event monitor stopped gracefully"
 EOF
 
 # Make the script executable
 sudo chmod +x /usr/local/bin/docker_events_universal.sh
-
-# service makes sh executable on start
