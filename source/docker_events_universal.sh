@@ -43,8 +43,6 @@ readonly SCRIPT_DIR
 
 echo "[init] SCRIPT_DIR=$SCRIPT_DIR"
 echo "[init] BASE_DIR=$BASE_DIR"
-echo "[init] TARGET_IMAGE=$TARGET_IMAGE"
-echo "[init] TARGET_NAME=$TARGET_NAME"
 
 mkdir -p "$BASE_DIR"
 
