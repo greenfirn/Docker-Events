@@ -7,6 +7,7 @@ sudo systemctl disable docker_events_gpu.service
 sudo systemctl disable docker_events_cpu.service
 
 # -- write docker_events_gpu script --
+
 sudo mkdir -v /usr/local/bin
 
 sudo tee /usr/local/bin/docker_events_gpu.sh > /dev/null <<'EOF'
