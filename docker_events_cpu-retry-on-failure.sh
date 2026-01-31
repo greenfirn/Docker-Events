@@ -10,6 +10,9 @@ sudo systemctl disable docker_events_cpu.service
 # -- write docker_events_cpu script --
 sudo mkdir -v /usr/local/bin
 
+# -- write docker_events_cpu script --
+sudo mkdir -v /usr/local/bin
+
 sudo tee /usr/local/bin/docker_events_cpu.sh > /dev/null <<'EOF'
 #!/bin/bash
 
@@ -33,7 +36,6 @@ fi
 
 TARGET_IMAGE="ubuntu:24.04"
 TARGET_NAME="clore-default-"
-# TARGET_NAME="octa_idle_job"
 
 SCREEN_NAME="cpu"
 
@@ -71,7 +73,6 @@ handle_signal() {
     
     # Kill any docker events process
     pkill -f "docker events" 2>/dev/null || true
-    pkill -f "timeout.*docker events" 2>/dev/null || true
     
     exit 0
 }
@@ -149,7 +150,7 @@ start_miner() {
     
     # Start fresh miner
 	
-	# Apply GPU OC's if configured (for CPU-only mining this might not be needed, but kept for consistency)
+	# Apply GPU OC's if configured
     if [[ "${APPLY_OC,,}" == "true" ]]; then
         echo "$(date): Applying GPU clocks..."
         /usr/local/bin/gpu_apply_ocs.sh
@@ -229,7 +230,7 @@ stop_miner() {
         kill -9 $screen_pids 2>/dev/null 2>&1 || true
     fi
     
-    # 4. Reset GPU if configured (for CPU-only mining this might not be needed)
+    # 4. Reset GPU if configured
     if [[ "${RESET_OC,,}" == "true" ]]; then
         echo "$(date): Resetting GPU clocks and power limits..."
         /usr/local/bin/gpu_reset_poststop.sh
@@ -317,23 +318,17 @@ echo "$(date): Starting Docker event monitor..."
 while [[ $SHUTDOWN_REQUESTED -eq 0 ]]; do
     echo "$(date): Connecting to Docker events stream..."
     
-    # Create a named pipe for docker events output
-    PIPE_FILE="/tmp/docker_events_pipe_$$"
-    mkfifo "$PIPE_FILE"
-    
-    # Start docker events with timestamp suppression
     docker events --format "{{.Type}} {{.Action}} {{.Actor.Attributes.name}} {{.Actor.Attributes.image}}" 2>&1 | \
-        grep -v "^[A-Z][a-z][a-z] [A-Z][a-z][a-z] [0-9]" > "$PIPE_FILE" &
-    
-    DOCKER_EVENTS_PID=$!
-    
-    # Process events from the pipe
-    while [[ $SHUTDOWN_REQUESTED -eq 0 ]] && read -r type action name image < "$PIPE_FILE" 2>/dev/null; do
-        # Check if line contains actual event data (not error messages)
-        if [[ -z "$type" ]] || [[ "$type" == *"error"* ]] || [[ "$type" == *"Error"* ]] || \
+    while read -r type action name image; do
+        # Check for shutdown request
+        if [[ $SHUTDOWN_REQUESTED -eq 1 ]]; then
+            echo "$(date): Shutdown requested, breaking event loop..."
+            break 2  # Break out of both loops
+        fi
+        
+        # Skip malformed lines (timestamps, errors)
+        if [[ -z "$type" ]] || [[ "$type" =~ ^[A-Z][a-z][a-z]\ [A-Z][a-z][a-z]\ [0-9] ]] || \
            [[ "$action" =~ ^[0-9] ]] || [[ "$name" =~ ^[0-9] ]] || [[ "$image" =~ ^[0-9] ]]; then
-            # Skip error messages or malformed lines
-            echo "$(date): Skipping malformed line or error: $type $action $name $image"
             continue
         fi
         
@@ -362,10 +357,8 @@ while [[ $SHUTDOWN_REQUESTED -eq 0 ]]; do
 
         # Process only if image AND name match
         if [[ "$image" == "$TARGET_IMAGE" && "$name_match" -eq 1 ]]; then
-            # Get actual container status for debugging
-            actual_status=$(docker inspect --format '{{.State.Status}}' "$name" 2>/dev/null || echo "not_found")
-            echo "$(date): Current container status: $actual_status"
-
+            echo "$(date): MATCH! Processing event for $name ($action)"
+            
             case "$action" in
                 start|create|unpause)
                     echo "$(date): START event detected → Wait for start to complete"
@@ -384,59 +377,16 @@ while [[ $SHUTDOWN_REQUESTED -eq 0 ]]; do
                         fi
                         
                         retry_count=$((retry_count + 1))
-                        echo "$(date): Start check attempt $retry_count: container not yet running"
                     done
                     
                     if [[ "$started" = false && $SHUTDOWN_REQUESTED -eq 0 ]]; then
                         echo "$(date): WARNING: Container $name never reached 'running' state after $retry_count attempts"
-                        if ! docker inspect "$name" &>/dev/null; then
-                            echo "$(date): Container $name no longer exists"
-                        fi
                     fi
                     ;;
 
-                kill|destroy|stop|die)
+                kill|destroy|stop|die|pause)
                     echo "$(date): STOP event detected ($action) → stop_miner"
                     stop_miner
-                    ;;
-                    
-                pause)
-                    echo "$(date): PAUSE event detected → Wait for pause to complete"
-                    retry_count=0
-                    
-                    while [[ $retry_count -lt 5 && $SHUTDOWN_REQUESTED -eq 0 ]]; do
-                        sleep 0.1
-                        status=$(docker inspect --format '{{.State.Status}}' "$name" 2>/dev/null || echo "not_found")
-                        
-                        case "$status" in
-                            "paused")
-                                echo "$(date): Container confirmed paused → stop_miner"
-                                stop_miner
-                                break
-                                ;;
-                            "not_found")
-                                echo "$(date): Container removed while pausing → stop_miner"
-                                stop_miner
-                                break
-                                ;;
-                            "exited"|"dead")
-                                echo "$(date): Container exited/died instead of pausing → stop_miner"
-                                stop_miner
-                                break
-                                ;;
-                        esac
-                        
-                        retry_count=$((retry_count + 1))
-                    done
-                    
-                    if [[ $retry_count -eq 5 && $SHUTDOWN_REQUESTED -eq 0 ]]; then
-                        echo "$(date): WARNING: Container $name never reached 'paused' state, checking current status"
-                        final_status=$(docker inspect --format '{{.State.Status}}' "$name" 2>/dev/null || echo "not_found")
-                        if [[ "$final_status" != "running" ]]; then
-                            echo "$(date): Container is $final_status → stop_miner"
-                            stop_miner
-                        fi
-                    fi
                     ;;
                     
                 *)
@@ -446,14 +396,7 @@ while [[ $SHUTDOWN_REQUESTED -eq 0 ]]; do
         fi
     done
     
-    # Clean up the pipe
-    rm -f "$PIPE_FILE" 2>/dev/null || true
-    
-    # Kill docker events process if still running
-    if kill -0 "$DOCKER_EVENTS_PID" 2>/dev/null; then
-        kill -TERM "$DOCKER_EVENTS_PID" 2>/dev/null
-        wait "$DOCKER_EVENTS_PID" 2>/dev/null || true
-    fi
+    # Docker events stream ended
     
     # Check if shutdown was requested
     if [[ $SHUTDOWN_REQUESTED -eq 1 ]]; then
