@@ -33,6 +33,7 @@ fi
 
 TARGET_IMAGE="ubuntu:24.04"
 TARGET_NAME="clore-default-"
+# TARGET_NAME="octa_idle_job"
 
 SCREEN_NAME="gpu"
 

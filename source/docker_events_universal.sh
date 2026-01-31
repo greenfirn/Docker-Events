@@ -342,7 +342,7 @@ start_miner() {
             echo "$(date): Miner process PID: $miner_pid"
         fi
         
-		        # Wait for API to come up if enabled
+		# Wait for API to come up if enabled
         if [[ "$API_PORT" -gt 0 ]]; then
 			echo "$(date): Waiting for API to start (max 30 seconds)..."
             local max_wait=30
