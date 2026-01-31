@@ -325,12 +325,6 @@ while [[ $SHUTDOWN_REQUESTED -eq 0 ]]; do
             break 2  # Break out of both loops
         fi
         
-        # Skip malformed lines (timestamps, errors)
-        if [[ -z "$type" ]] || [[ "$type" =~ ^[A-Z][a-z][a-z]\ [A-Z][a-z][a-z]\ [0-9] ]] || \
-           [[ "$action" =~ ^[0-9] ]] || [[ "$name" =~ ^[0-9] ]] || [[ "$image" =~ ^[0-9] ]]; then
-            continue
-        fi
-        
         # Log the event
         echo "$(date): Docker event - Type: $type, Action: $action, Name: $name, Image: $image"
 
