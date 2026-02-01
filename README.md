@@ -3,7 +3,7 @@
 - testing new 'nosana_monitor-1.sh'
 - ** use extreme caution when using any type of custom scripts **
 - ** your risking host/account being banned **
-- added -retry-on-failure versions, not tested yet
+- added -retry-on-failure versions, docker events in a loop in case fails
 - 'sudo docker ps' shows current running images/containers
 - start/stop/pause idle job and watch logs to test, confirm all working as expected
 - follow logs: sudo journalctl -u docker_events_gpu.service -f
