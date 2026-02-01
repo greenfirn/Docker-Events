@@ -1,9 +1,10 @@
 -- Docker Events watcher -- 
 - ... start/stop mining with active idle job Clore / Octaspace
 - testing new 'nosana_monitor-1.sh'
+- ... 15 second some type of server test happens between benchmarks, maybe is confirming server specs
 - ** use extreme caution when using any type of custom scripts **
 - ** your risking host/account being banned **
-- added -retry-on-failure versions, not tested yet
+- added -retry-on-failure versions, docker events in a loop in case fails/disconnects
 - 'sudo docker ps' shows current running images/containers
 - start/stop/pause idle job and watch logs to test, confirm all working as expected
 - follow logs: sudo journalctl -u docker_events_gpu.service -f
