@@ -653,18 +653,10 @@ log_info "  Podman children: $CHILD_CONTAINERS"
     
     # Process a single Podman event
     process_podman_event() {
-        local event_line="$1"
-        local event_time status container_name event_type event_hms
-        
-        [ -z "$event_line" ] && return
-        
-        # Parse: "2026-02-01 21:35:10.123456789 +0000 UTC start container_name"
-        event_time=$(echo "$event_line" | awk '{print $1" "$2" "$3" "$4" "$5}')
-        status=$(echo "$event_line" | awk '{print $6}')
-        container_name=$(echo "$event_line" | awk '{print $7}')
-        
-        # Handle container names that might have spaces
-        [ -z "$container_name" ] && container_name=$(echo "$event_line" | cut -d' ' -f7-)
+        local container_name="$1"
+        local status="$2"
+        local event_time="$3"
+        local event_type event_hms
         
         [ -z "$container_name" ] && return
         [[ "$container_name" =~ ^(tunnel-api-|frpc-api-) ]] && return
@@ -722,19 +714,23 @@ log_info "  Podman children: $CHILD_CONTAINERS"
             continue
         fi
         
-        # Stream Podman events
+        # Stream Podman events with pipe delimiter - SAFE for container names with spaces
         docker exec podman podman events \
             --filter 'type=container' \
-            --format '{{.Time}} {{.Status}} {{.Name}}' 2>&1 | \
-        while IFS= read -r event_line; do
+            --format '{{.Time}}|{{.Status}}|{{.Name}}' 2>&1 | \
+        while IFS='|' read -r event_time status container_name; do
             # Check if Docker/Podman still running
             if ! is_docker_running || ! is_podman_container_running; then
                 log_error "Docker/Podman stopped!"
                 break
             fi
             
+            # Skip empty lines or malformed events
+            [ -z "$status" ] && continue
+            [ -z "$container_name" ] && continue
+            
             # Process the event
-            process_podman_event "$event_line"
+            process_podman_event "$container_name" "$status" "$event_time"
         done
         
         log_info "🔄 Events stream ended, restarting..."
