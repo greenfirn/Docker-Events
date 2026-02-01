@@ -651,55 +651,49 @@ log_info "  Podman children: $CHILD_CONTAINERS"
     log_info "📡 Starting Podman events monitor..."
     trap 'exit 0' SIGINT SIGTERM
     
-    # Function to process Podman events
+    # Process a single Podman event
     process_podman_event() {
         local event_line="$1"
-        local event_time
-        local status
-        local container_name
-        local event_type
-        local event_hms
+        local event_time status container_name event_type event_hms
         
         [ -z "$event_line" ] && return
         
-        # Try to parse the event line
-        # Format: "2026-02-01 14:56:32.123456789 +0000 UTC start container_name"
+        # Parse: "2026-02-01 21:35:10.123456789 +0000 UTC start container_name"
         event_time=$(echo "$event_line" | awk '{print $1" "$2" "$3" "$4" "$5}')
         status=$(echo "$event_line" | awk '{print $6}')
         container_name=$(echo "$event_line" | awk '{print $7}')
         
-        # If parsing failed, try alternative
-        if [ -z "$container_name" ]; then
-            # Maybe format is different
-            event_time=$(echo "$event_line" | cut -d' ' -f1-5)
-            status=$(echo "$event_line" | cut -d' ' -f6)
-            container_name=$(echo "$event_line" | cut -d' ' -f7-)
-        fi
+        # Handle container names that might have spaces
+        [ -z "$container_name" ] && container_name=$(echo "$event_line" | cut -d' ' -f7-)
         
         [ -z "$container_name" ] && return
         [[ "$container_name" =~ ^(tunnel-api-|frpc-api-) ]] && return
         
-        log_info "📦 PODMAN EVENT: $status $container_name (time: $event_time)"
+        log_info "📦 PODMAN EVENT: $status $container_name"
         
-        # Determine event type
-        event_type=0
+        # Map event to type (1=start-like, 0=stop-like)
+        case "$status" in
+            create|start|unpause|restart)
+                event_type=1
+                
+                # Capture actual start time on first start event
+                if [ -z "$ACTUAL_JOB_START_TIME_FROM_EVENTS" ]; then
+                    event_hms=$(echo "$event_time" | awk '{print $2}' | cut -d'.' -f1)
+                    [ -z "$event_hms" ] && event_hms=$(date '+%H:%M:%S')
+                    ACTUAL_JOB_START_TIME_FROM_EVENTS="$event_hms"
+                    log_info "📦 JOB START: $ACTUAL_JOB_START_TIME_FROM_EVENTS"
+                fi
+                ;;
+            stop|die|pause|kill|remove)
+                event_type=0
+                ;;
+            *)
+                # Ignore other events (attach, detach, exec, etc.)
+                return
+                ;;
+        esac
         
-        if [[ "$status" == "create" || "$status" == "start" || "$status" == "unpause" || "$status" == "restart" ]]; then
-            event_type=1
-            
-            if [[ -z "$ACTUAL_JOB_START_TIME_FROM_EVENTS" ]]; then
-                # Extract just HH:MM:SS from timestamp
-                event_hms=$(echo "$event_time" | grep -o '[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}' || echo "$(date '+%H:%M:%S')")
-                ACTUAL_JOB_START_TIME_FROM_EVENTS="$event_hms"
-                log_info "📦 ACTUAL JOB START TIME: $ACTUAL_JOB_START_TIME_FROM_EVENTS"
-            fi
-        elif [[ "$status" == "stop" || "$status" == "die" || "$status" == "pause" || "$status" == "kill" || "$status" == "remove" ]]; then
-            event_type=0
-        else
-            return
-        fi
-        
-        # Update state
+        # Update system state with event type
         if update_system_state "$event_type"; then
             log_info "📦 Processed $status event"
         else
@@ -707,7 +701,9 @@ log_info "  Podman children: $CHILD_CONTAINERS"
         fi
     }
     
+    # Main events loop
     while true; do
+        # Wait for Docker and Podman to be ready
         if ! is_docker_running; then
             log_error "Docker daemon stopped!"
             sleep 5
@@ -721,25 +717,27 @@ log_info "  Podman children: $CHILD_CONTAINERS"
         fi
         
         if ! docker exec podman podman version >/dev/null 2>&1; then
-            log_warn "Podman inside container not responding..."
+            log_warn "Podman not responding..."
             sleep 5
             continue
         fi
         
-        # Use simpler format that's easier to parse
+        # Stream Podman events
         docker exec podman podman events \
             --filter 'type=container' \
             --format '{{.Time}} {{.Status}} {{.Name}}' 2>&1 | \
         while IFS= read -r event_line; do
+            # Check if Docker/Podman still running
             if ! is_docker_running || ! is_podman_container_running; then
-                log_error "Docker/Podman stopped during events!"
+                log_error "Docker/Podman stopped!"
                 break
             fi
             
+            # Process the event
             process_podman_event "$event_line"
         done
         
-        log_info "🔄 Podman events stream ended, restarting..."
+        log_info "🔄 Events stream ended, restarting..."
         sleep 2
     done
 ) &
