@@ -1,0 +1,53 @@
+
+nano ~/nosana-screen.sh
+
+#!/bin/bash
+# Run Nosana inside a detached screen session
+
+SCREEN_NAME="nosana"
+
+if screen -ls | grep -q "\.${SCREEN_NAME}\s"; then
+    exit 0
+fi
+
+/usr/bin/screen -dmS "$SCREEN_NAME" bash -c "bash <(wget -qO- https://nosana.io/start.sh)"
+
+chmod +x ~/nosana-screen.sh
+
+sudo nano /etc/systemd/system/nosana.service
+
+[Unit]
+Description=Nosana AI Node in Screen
+After=docker.service
+Requires=docker.service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+User=user
+WorkingDirectory=/home/user
+Environment="HOME=/home/user"
+Environment="PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin"
+ExecStartPre=/bin/sleep 5
+ExecStart=/home/user/nosana-screen.sh
+ExecStop=/usr/bin/screen -S nosana -X quit
+Restart=always
+RestartSec=10
+StartLimitInterval=60
+StartLimitBurst=3
+
+[Install]
+WantedBy=multi-user.target
+
+sudo systemctl daemon-reload
+sudo systemctl enable nosana
+sudo systemctl start nosana
+
+sudo journalctl -u nosana -f
+
+sudo systemctl status nosana
+
+screen -r nosana
+
+#sudo systemctl stop nosana; sudo systemctl disable nosana
