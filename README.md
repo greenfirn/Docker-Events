@@ -1,6 +1,6 @@
 -- Docker Events watcher -- 
 - ... start/stop mining with active idle job Clore / Octaspace / Nosana
-- testing new Nosana podman ... 'source/docker_events_universal-docker-podman.sh'
+- testing new Nosana podman, use 'podman' as TARGET_NAME in rig configs ... 'source/docker_events_universal-docker-podman.sh'
 - ... 15 second some type of server test happens between benchmarks, maybe is confirming server specs
 - ... PODMAN_IDLE_CONFIRM_LOOPS, IDLE_CONFIRMATION_THRESHOLD should be at least 4 to safely cover time between container load/unload etc
 - ** use extreme caution when using any type of custom scripts **
