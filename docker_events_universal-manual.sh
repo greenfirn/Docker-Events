@@ -765,6 +765,8 @@ Requires=docker.service
 Type=simple
 User=root
 Environment="OC_FILE=/home/user/rig-gpu.conf"
+Environment="MINER_CONF=/home/user/miner.conf"
+Environment="API_CONF=/home/user/api.conf"
 Environment="DOCKER_RUNNING_CONFIRM_LOOPS=2"
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
 ExecStart=/usr/local/bin/docker_events_universal.sh
@@ -794,6 +796,8 @@ Requires=docker.service
 Type=simple
 User=root
 Environment="OC_FILE=/home/user/rig-cpu.conf"
+Environment="MINER_CONF=/home/user/miner.conf"
+Environment="API_CONF=/home/user/api.conf"
 Environment="DOCKER_RUNNING_CONFIRM_LOOPS=2"
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
 ExecStart=/usr/local/bin/docker_events_universal.sh
