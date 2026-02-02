@@ -787,6 +787,7 @@ WorkingDirectory=/usr/local/bin
 ExecStart=/usr/local/bin/complete_monitor.sh
 Restart=always
 RestartSec=10
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 [Install]
 WantedBy=multi-user.target
