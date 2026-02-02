@@ -87,7 +87,7 @@ LAST_NOSANA_NODE_STATUS=""
 LAST_PODMAN_STATUS=""
 ALL_PIDS=""
 IDLE_CONFIRMATION_COUNT=0
-IDLE_CONFIRMATION_THRESHOLD=10
+IDLE_CONFIRMATION_THRESHOLD=7
 MINING_ENABLED=true
 MINING_STARTED=false
 LAST_ACTIVE_TIME=0
@@ -759,10 +759,11 @@ while true; do
     # Update state EVERY 5 seconds (polling - no event type)
     if [ $((HEARTBEAT % 5)) -eq 0 ]; then
         update_system_state  # No event type = check current state
+        update_status_display
     fi
     
     # Update status display (clean output for journal)
-    update_status_display
+    # update_status_display
     
     sleep 1
 done
