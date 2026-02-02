@@ -62,20 +62,10 @@ echo "[init] BASE_DIR=$BASE_DIR"
 mkdir -p "$BASE_DIR"
 
 # -------------------------------------------------
-# Default rig config resolution
+# Rig config (must be set by service)
 # -------------------------------------------------
-default_oc_file="/home/user/rig-cpu.conf"
-readonly default_oc_file
-
-if [[ -n "${oc_file:-}" ]]; then
-    cfg_file="$oc_file"
-elif [[ -n "${OC_FILE:-}" ]]; then
-    cfg_file="$OC_FILE"
-else
-    cfg_file="$default_oc_file"
-fi
-
-CFG_FILE="$cfg_file"
+: "${OC_FILE:?OC_FILE is not set}"
+CFG_FILE="$OC_FILE"
 export CFG_FILE
 
 [[ -f "$CFG_FILE" ]] || {
@@ -84,9 +74,9 @@ export CFG_FILE
 }
 
 # -------------------------------------------------
-# Miner config (required)
+# Miner config (with default location)
 # -------------------------------------------------
-: "${MINER_CONF:?MINER_CONF is not set}"
+: "${MINER_CONF:=/home/user/miner.conf}"
 [[ -f "$MINER_CONF" ]] || {
     echo "Missing miner.conf: $MINER_CONF"
     exit 1
@@ -883,6 +873,8 @@ Requires=docker.service
 Type=simple
 User=root
 Environment="OC_FILE=/home/user/rig-gpu.conf"
+#Environment="MINER_CONF=/home/user/miner.conf"
+#Environment="API_CONF=/home/user/api.conf"
 Environment="PODMAN_IDLE_CONFIRM_LOOPS=7"
 Environment="DOCKER_RUNNING_CONFIRM_LOOPS=2"
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
@@ -913,6 +905,8 @@ Requires=docker.service
 Type=simple
 User=root
 Environment="OC_FILE=/home/user/rig-cpu.conf"
+#Environment="MINER_CONF=/home/user/miner.conf"
+#Environment="API_CONF=/home/user/api.conf"
 Environment="PODMAN_IDLE_CONFIRM_LOOPS=7"
 Environment="DOCKER_RUNNING_CONFIRM_LOOPS=2"
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
