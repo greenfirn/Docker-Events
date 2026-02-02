@@ -3,15 +3,8 @@ sudo tee /usr/local/bin/docker_events_universal.sh > /dev/null <<'EOF'
 
 # ===================================================================
 # DEFAULT SETTINGS (Fallback when config files don't exist)
-# This script always runs via systemd service, but if the config files
+# This script is meant to be run via systemd service, but if the config files
 # specified in the service don't exist, these default settings are used.
-# 
-# Service files MUST set these environment variables:
-# - OC_FILE=/home/user/rig-cpu.conf (or rig-gpu.conf) - REQUIRED
-# - MINER_CONF=/home/user/miner.conf
-# - API_CONF=/home/user/api.conf
-# 
-# If config files are missing, these default settings are used instead.
 # ===================================================================
 
 # === DEFAULT CPU THREADS AND AFFINITY ===
@@ -60,14 +53,14 @@ else
     WORKER_NAME="rig1"
 fi
 
-WALLET="42GU81wqj8jfJqN9nCGfqo1v1iXQNzgUG31kqafwTTWbja1v9wzhpbtJByixLHJ14TGuihEgTzd6E9YPt3BtaLA93nUexEx"
+WALLET="wallet-address"
 
 POOL="pool.supportxmr.com:9000"
 
 PASS="x"
 
 # Using %CPU_THREADS% placeholder
-ARGS="-a rx/0 -k -t %CPU_THREADS% --randomx-1gb-pages --huge-pages -p %WORKER_NAME% -u $WALLET --tls -o $POOL"
+ARGS="-a rx/0 -k -t %CPU_THREADS% --randomx-1gb-pages --huge-pages -p %WORKER_NAME% -u %WALLET% --tls -o %POOL%"
 
 SCREEN_NAME="cpu"
 
