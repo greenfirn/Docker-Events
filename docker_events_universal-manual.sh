@@ -59,7 +59,7 @@ POOL="pool.supportxmr.com:9000"
 
 PASS="x"
 
-# Using %CPU_THREADS% placeholder
+# Using placeholders for substitution
 ARGS="-a rx/0 -k -t %CPU_THREADS% --randomx-1gb-pages --huge-pages -p %WORKER_NAME% -u %WALLET% --tls -o %POOL%"
 
 SCREEN_NAME="cpu"
@@ -289,11 +289,15 @@ if [[ -n "$WARTHOG_TARGET" ]]; then
     ARGS="${ARGS//%WARTHOG_TARGET%/$WARTHOG_TARGET}"
 fi
 
-# Replace %WORKER_NAME% placeholder in ARGS, WALLET, PASS, POOL
-ARGS="${ARGS//%WORKER_NAME%/$WORKER_NAME}"
+# First, replace %WORKER_NAME% in WALLET, PASS, POOL
 WALLET="${WALLET//%WORKER_NAME%/$WORKER_NAME}"
 PASS="${PASS//%WORKER_NAME%/$WORKER_NAME}"
 POOL="${POOL//%WORKER_NAME%/$WORKER_NAME}"
+
+# Then replace all placeholders in ARGS
+ARGS="${ARGS//%WORKER_NAME%/$WORKER_NAME}"
+ARGS="${ARGS//%WALLET%/$WALLET}"
+ARGS="${ARGS//%POOL%/$POOL}"
 
 # Add miner-specific API flags
 if [[ "$API_PORT" -gt 0 ]]; then
@@ -320,6 +324,9 @@ echo "$(date):   MINER_NAME: $MINER_NAME"
 echo "$(date):   SCREEN_NAME: $SCREEN_NAME"
 echo "$(date):   WORKER_NAME: $WORKER_NAME"
 echo "$(date):   API: $API_HOST:$API_PORT"
+echo "$(date):   WALLET: $WALLET"
+echo "$(date):   POOL: $POOL"
+echo "$(date):   ARGS: $ARGS"
 
 # ---------------------------------------------------------
 # API HEALTH CHECK FUNCTION
