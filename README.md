@@ -2,7 +2,7 @@
 - ... start/stop mining with active idle job Clore / Octaspace
 - testing new 'nosana_monitor-1.sh'
 - ... 15 second some type of server test happens between benchmarks, maybe is confirming server specs
-- ... IDLE_CONFIRMATION_THRESHOLD=10 could be lowered to 5-6
+- ... IDLE_CONFIRMATION_THRESHOLD=7 should be at least 4 to safely cover time between container load/unload etc
 - ** use extreme caution when using any type of custom scripts **
 - ** your risking host/account being banned **
 - added -retry-on-failure versions, docker events in a loop in case fails/disconnects
