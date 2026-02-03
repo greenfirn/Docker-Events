@@ -379,7 +379,7 @@ process_podman_event() {
     # - Start events → IMMEDIATE stop miner (Podman busy)
     # - Stop events → Confirm Podman idle, then start miner
     case "$status" in
-        start|create|unpause|restart)
+        init|start|create|unpause|restart)
             echo "$(date): IMMEDIATE REACTION to Podman $status event → Podman busy → INSTANT stop_miner"
             stop_miner
             ;;
