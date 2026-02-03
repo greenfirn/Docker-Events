@@ -367,7 +367,7 @@ process_podman_event() {
     local status="$2"
     local event_time="$3"
     
-    echo "$(date): Podman event - Container: $container_name, Status: $status, Time: $event_time"
+    # echo "$(date): Podman event - Container: $container_name, Status: $status, Time: $event_time"
     
     # Skip tunnel-api and frpc-api containers
     if [[ "$container_name" == tunnel-api-* ]] || [[ "$container_name" == frpc-api-* ]]; then
@@ -401,7 +401,7 @@ process_podman_event() {
         
         *)
             # Ignore irrelevant Podman events
-            echo "$(date): DEBUG: Unhandled Podman status: $status for $container_name"
+            # echo "$(date): DEBUG: Unhandled Podman status: $status for $container_name"
             ;;
     esac
 }
@@ -500,7 +500,7 @@ process_docker_event() {
     local status="$2"
     local image="$3"
     
-    echo "$(date): Docker event - Container: $container_name, Action: $status, Image: $image"
+    # echo "$(date): Docker event - Container: $container_name, Action: $status, Image: $image"
     
     # DOCKER-SPECIFIC LOGIC: Name matching with image
     name_match=0
@@ -545,7 +545,7 @@ process_docker_event() {
         
         *)
             # Ignore irrelevant Docker events
-            echo "$(date): DEBUG: Unhandled Docker action: $status for $container_name"
+            # echo "$(date): DEBUG: Unhandled Docker action: $status for $container_name"
             ;;
     esac
 }
