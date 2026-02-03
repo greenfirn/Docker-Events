@@ -15,7 +15,7 @@ USE_PODMAN_EVENTS=false
 # CONFIGURABLE SETTINGS
 # ---------------------------------------------------------
 # Number of times to check for idle state for Podman
-: "${PODMAN_IDLE_CONFIRM_LOOPS:=3}"
+: "${PODMAN_IDLE_CONFIRM_LOOPS:=7}"
 
 # Number of times to check for running state for Docker  
 : "${DOCKER_RUNNING_CONFIRM_LOOPS:=2}"
