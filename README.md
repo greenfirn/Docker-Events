@@ -2,7 +2,7 @@
 - ** use extreme caution when using any type of custom scripts **
 - ** your risking host/account being banned **
 - ... start/stop mining with active idle job Clore / Octaspace / Nosana
-- testing new nosana_monitor-1.sh and Nosana podman,
+- testing new nosana_monitor-1.sh and source/podman_events_monitor.sh,
 - use 'podman' as TARGET_NAME in rig configs
 - ... 15 second some type of server test happens between benchmarks, maybe is confirming server specs
 - ... PODMAN_IDLE_CONFIRM_LOOPS, IDLE_CONFIRMATION_THRESHOLD should be at least 4 to safely cover time between container load/unload etc
