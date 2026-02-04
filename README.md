@@ -3,6 +3,7 @@
 - ** your risking host/account being banned **
 - ... start/stop mining with active idle job Clore / Octaspace / Nosana
 - start/stop/pause idle job and watch logs to confirm all working as expected
+- see source for complete package, install miners, rig configs, etc
 - testing new nosana_monitor-1.sh and source/podman_events_monitor.sh,
 - use 'podman' as TARGET_NAME in rig configs
 - ... some type of short server test happens around benchmark times, maybe is confirming server specs
@@ -14,6 +15,5 @@
 - ctrl+c to leave logs
 - nvidia gpus nvtop : sudo apt install -y nvtop
 - amd gpus rocm-smi
-- see source for complete package, install miners, rig configs, etc
 
 Some portions of this project were developed with assistance from ChatGPT and Deepseek
