@@ -2,13 +2,13 @@
 - ** use extreme caution when using any type of custom scripts **
 - ** your risking host/account being banned **
 - ... start/stop mining with active idle job Clore / Octaspace / Nosana
+- start/stop/pause idle job and watch logs to test, confirm all working as expected
 - testing new nosana_monitor-1.sh and source/podman_events_monitor.sh,
 - use 'podman' as TARGET_NAME in rig configs
 - ... some type of short server test happens around benchmark times, maybe is confirming server specs
 - ... PODMAN_IDLE_CONFIRM_LOOPS, IDLE_CONFIRMATION_THRESHOLD should be at least 4 to safely cover time between container load/unload etc
 - added -retry-on-failure versions, docker events in a loop in case fails/disconnects
 - 'sudo docker ps' shows current running images/containers
-- start/stop/pause idle job and watch logs to test, confirm all working as expected
 - follow logs: sudo journalctl -u docker_events_gpu.service -f
 - show more history: sudo journalctl -u docker_events_gpu.service -e
 - ctrl+c to leave logs
