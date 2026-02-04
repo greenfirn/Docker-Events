@@ -14,6 +14,6 @@
 - ctrl+c to leave logs
 - nvidia gpus nvtop : sudo apt install -y nvtop
 - amd gpus rocm-smi
-- see source/ for complete package, install miners, rig configs, etc
+- see source for complete package, install miners, rig configs, etc
 
 Some portions of this project were developed with assistance from ChatGPT and Deepseek
