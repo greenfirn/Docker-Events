@@ -1,4 +1,4 @@
-# Clore-Octaspace-docker_events_monitor.sh
+# idle-image-docker_events_monitor.sh
 
 sudo tee /usr/local/bin/docker_events_universal.sh > /dev/null <<'EOF'
 #!/bin/bash
