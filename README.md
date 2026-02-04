@@ -16,4 +16,4 @@
 - amd gpus rocm-smi
 - see rig conf examples...
 
-Some portions of this project were developed with assistance from ChatGPT.
+Some portions of this project were developed with assistance from ChatGPT and Deepseek
