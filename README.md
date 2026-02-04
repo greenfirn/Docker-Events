@@ -2,7 +2,7 @@
 - ** use extreme caution when using any type of custom scripts **
 - ** your risking host/account being banned **
 - ... start/stop mining with active idle job Clore / Octaspace / Nosana
-- start/stop/pause idle job and watch logs to test, confirm all working as expected
+- start/stop/pause idle job and watch logs to confirm all working as expected
 - testing new nosana_monitor-1.sh and source/podman_events_monitor.sh,
 - use 'podman' as TARGET_NAME in rig configs
 - ... some type of short server test happens around benchmark times, maybe is confirming server specs
