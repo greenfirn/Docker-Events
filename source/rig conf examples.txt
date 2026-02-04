@@ -33,6 +33,25 @@ sudo systemctl restart docker_events_gpu
 
 #========================================================================================================
 
+# -- xmrig write Nosana rig-cpu.conf --
+
+tee /home/user/rig-cpu.conf > /dev/null <<'EOF'
+TARGET_IMAGE 0 ""
+TARGET_NAME 0 "podman"
+APPLY_OC 0 "false"
+RESET_OC 0 "false"
+SCREEN_NAME 0 "cpu"
+CUSTOM_MINER 0 ""
+MINER 0 "xmrig"
+ALGO 0 "rx/0"
+POOL 0 "pool.supportxmr.com:9000"
+WALLET 0 "wallet-address"
+PASS 0 "%WORKER_NAME%"
+ARGS 0 "-t %CPU_THREADS% --tls -k"
+EOF
+
+#========================================================================================================
+
 # -- xmrig write octa rig-cpu.conf --
 
 tee /home/user/rig-cpu.conf > /dev/null <<'EOF'
