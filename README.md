@@ -13,7 +13,7 @@
 - follow logs: sudo journalctl -u docker_events_gpu.service -f
 - show more history: sudo journalctl -u docker_events_gpu.service -e
 - ctrl+c to leave logs
-- nvidia gpus nvtop : sudo apt install -y nvtop
-- amd gpus rocm-smi
+- nvidia gpu nvtop : sudo apt install -y nvtop
+- amd gpu rocm-smi
 
 Some portions of this project were developed with assistance from ChatGPT and Deepseek
