@@ -346,13 +346,13 @@ process_docker_event() {
     # - ANY start event → IMMEDIATE stop miner
     # - ALL stop events → wait, then check if no containers, then start miner
     case "$status" in
-        start|create|unpause|restart|attach|exec_create|exec_start|health_status: healthy)
+        init|start|create|unpause|restart)
             # ANY container starting → IMMEDIATE stop miner
             echo "$(date): ANY Docker START event ($status) → IMMEDIATE stop_miner"
             stop_miner
             ;;
         
-        stop|die|destroy|kill|pause|oom|health_status: unhealthy|health_status: starting)
+        kill|destroy|stop|die|died|pause)
             # Container stopped → wait a bit, then check if no containers are running
             echo "$(date): Docker STOP event ($status) → Checking if all containers stopped..."
             
