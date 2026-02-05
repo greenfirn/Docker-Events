@@ -1,5 +1,5 @@
 -- Docker Events watcher -- 
-- Clore / Octaspace / Nosana(podman) / Vast(testing-ignore test containers)
+- Clore / Octaspace / Nosana(podman) / Vast(testing cpu mining-ignore test containers)
 - ** use extreme caution when using any type of custom scripts **
 - ** your risking host/account being banned **
 - ... start/stop mining with active idle container job
