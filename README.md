@@ -8,6 +8,7 @@
 - start/stop/pause idle job and watch logs to confirm all working as expected
 - see source for complete package, install miners, rig configs, etc
 - testing source/no-container-docker_events_monitor-vast.sh for idle cpu mining
+- use 'vast' as TARGET_NAME in rig configs
 - testing new nosana_monitor-1.sh and source/podman_events_monitor.sh,
 - use 'podman' as TARGET_NAME in rig configs
 - ... some type of short server test happens around benchmark times, maybe is confirming server specs
