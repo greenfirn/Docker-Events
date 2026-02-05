@@ -7,8 +7,16 @@ set -Eeuo pipefail
 shopt -s inherit_errexit
 
 # ---------------------------------------------------------
-# GLOBAL VARIABLES FOR SIGNAL HANDLING
+# GLOBAL VARIABLES
 # ---------------------------------------------------------
+
+# Global list of ignored images
+IGNORED_IMAGES=(
+    "vastai/test:bandwidth-test-nvidia"
+    "vastai/test:speedtest"
+    "vastai/test:common"
+)
+
 SHUTDOWN_REQUESTED=0
 
 # ---------------------------------------------------------
@@ -295,26 +303,18 @@ is_docker_running() {
 }
 
 # Function to check if an image should be ignored
-# Returns: 0 (success/true) if image should be ignored, 1 (failure/false) if not
+# Returns: 0 (true) if image should be ignored, 1 (false) if not
 should_ignore_image() {
     local image="$1"
-    
-    # List of images to ignore
-    local -a IGNORED_IMAGES=(
-        "vastai/test:bandwidth-test-nvidia"
-        "vastai/test:speedtest"
-        "vastai/test:common"
-        # Add more images as needed
-    )
     
     # Check if image is in the ignore list
     for ignored_image in "${IGNORED_IMAGES[@]}"; do
         if [[ "$image" == "$ignored_image" ]]; then
-            return 0  # Image should be ignored (success/true)
+            return 0  # Image should be ignored (true)
         fi
     done
     
-    return 1  # Image should NOT be ignored (failure/false)
+    return 1  # Image should NOT be ignored (false)
 }
 
 # Check if ANY container is running with exclusions
