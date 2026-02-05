@@ -627,7 +627,7 @@ while [[ $SHUTDOWN_REQUESTED -eq 0 ]]; do
         
         # Skip events from ignored images using the helper function
         if should_ignore_image "$image"; then
-            echo "$(date): Skipping image: $image (container: $name, action: $action)"
+            echo "$(date): Skipping: $image (container: $name, $action)"
             continue
         fi
 		
