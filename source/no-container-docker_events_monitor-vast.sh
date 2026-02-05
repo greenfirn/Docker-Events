@@ -294,16 +294,34 @@ is_docker_running() {
     return $?
 }
 
-# Check if ANY container is running
+# Check if ANY container is running with exclusions
 any_container_running() {
-    local running_count=$(docker ps -q 2>/dev/null | wc -l)
-    if [[ $running_count -gt 0 ]]; then
-        echo "$(date): Found $running_count running container(s)"
-        return 0  # Containers are running
-    else
-        echo "$(date): No containers running"
-        return 1  # No containers running
+    # Get list of running containers
+    local containers=$(docker ps --format "{{.Names}}:{{.Image}}" 2>/dev/null)
+    
+    # If no containers, return false (no containers running)
+    if [ -z "$containers" ]; then
+        return 1
     fi
+    
+    # Check each container
+    while IFS= read -r container_info; do
+        local container_name=$(echo "$container_info" | cut -d':' -f1)
+        local image_name=$(echo "$container_info" | cut -d':' -f2)
+        
+        # Check if this is a container to ignore (either image)
+        if [[ "$image_name" == "vastai/test:bandwidth-test-nvidia" ]] || [[ "$image_name" == "vastai/test:speedtest" ]] || [[ "$image_name" == "vastai/test:common" ]]; then
+            echo "$(date): Ignoring: $container_name with $image_name"
+            continue
+        fi
+        
+        # If any other container is found, return true
+        echo "$(date): Found: $container_name with $image_name"
+        return 0
+    done <<< "$containers"
+    
+    # No non-ignored containers found
+    return 1
 }
 
 # Confirm NO containers are running (for multiple checks)
@@ -552,12 +570,12 @@ stop_miner() {
 echo "$(date): Performing initial Docker container check..."
 
 # Check if any containers are running at startup
-if any_container_running; then
-    echo "$(date): Containers found running at startup → stop_miner (do not start miner)"
-    stop_miner
-else
+if confirm_no_containers_running; then
     echo "$(date): No containers running at startup → start_miner"
     start_miner
+else
+    echo "$(date): Containers found running at startup → stop_miner (do not start miner)"
+    stop_miner
 fi
 
 ###############################################
@@ -585,7 +603,7 @@ while [[ $SHUTDOWN_REQUESTED -eq 0 ]]; do
         fi
         
 		# Skip events from containers with image "vastai/test:bandwidth-test-nvidia" "vastai/test:common" "vastai/test:speedtest"
-        if [[ "$image" == "vastai/test:bandwidth-test-nvidia" ]] || [[ "$image" == "vastai/test:common" ]] || [[ "$image" == "vastai/test:speedtest" ]]; then
+        if [[ "$image_name" == "vastai/test:bandwidth-test-nvidia" ]] || [[ "$image_name" == "vastai/test:speedtest" ]] || [[ "$image_name" == "vastai/test:common" ]]; then
             echo "$(date): Skipping image: $image (container: $name, action: $action)"
             continue
         fi
