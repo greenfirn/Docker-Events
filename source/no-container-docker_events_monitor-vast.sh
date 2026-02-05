@@ -294,6 +294,29 @@ is_docker_running() {
     return $?
 }
 
+# Function to check if an image should be ignored
+# Returns: 0 (success/true) if image should be ignored, 1 (failure/false) if not
+should_ignore_image() {
+    local image="$1"
+    
+    # List of images to ignore
+    local -a IGNORED_IMAGES=(
+        "vastai/test:bandwidth-test-nvidia"
+        "vastai/test:speedtest"
+        "vastai/test:common"
+        # Add more images as needed
+    )
+    
+    # Check if image is in the ignore list
+    for ignored_image in "${IGNORED_IMAGES[@]}"; do
+        if [[ "$image" == "$ignored_image" ]]; then
+            return 0  # Image should be ignored (success/true)
+        fi
+    done
+    
+    return 1  # Image should NOT be ignored (failure/false)
+}
+
 # Check if ANY container is running with exclusions
 any_container_running() {
     # Get list of running containers
@@ -309,8 +332,8 @@ any_container_running() {
         local container_name=$(echo "$container_info" | cut -d':' -f1)
         local image_name=$(echo "$container_info" | cut -d':' -f2)
         
-        # Check if this is a container to ignore (either image)
-        if [[ "$image_name" == "vastai/test:bandwidth-test-nvidia" ]] || [[ "$image_name" == "vastai/test:speedtest" ]] || [[ "$image_name" == "vastai/test:common" ]]; then
+        # Check if this is a container to ignore using the helper function
+        if should_ignore_image "$image_name"; then
             echo "$(date): Ignoring: $container_name with $image_name"
             continue
         fi
@@ -602,8 +625,8 @@ while [[ $SHUTDOWN_REQUESTED -eq 0 ]]; do
             continue
         fi
         
-		# Skip events from containers with image "vastai/test:bandwidth-test-nvidia" "vastai/test:common" "vastai/test:speedtest"
-        if [[ "$image_name" == "vastai/test:bandwidth-test-nvidia" ]] || [[ "$image_name" == "vastai/test:speedtest" ]] || [[ "$image_name" == "vastai/test:common" ]]; then
+        # Skip events from ignored images using the helper function
+        if should_ignore_image "$image"; then
             echo "$(date): Skipping image: $image (container: $name, action: $action)"
             continue
         fi
