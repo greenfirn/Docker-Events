@@ -1,7 +1,7 @@
 -- Docker Events watcher -- 
 - ** use extreme caution when using any type of custom scripts **
 - ** your risking host/account being banned **
-- Clore / Octaspace / Nosana / Vast
+- Clore / Octaspace / Nosana(podman) / Vast(ignore test containers)
 - ... start/stop mining with active idle container job
 - ... start/stop mining with no containers running
 - ... apply/reset overclocks
