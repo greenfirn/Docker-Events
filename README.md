@@ -2,7 +2,7 @@
 - Clore / Octaspace / Nosana(podman) / Vast(testing cpu mining-ignore test containers)
 - ** use extreme caution when using any type of custom scripts **
 - ** your risking host/account being banned **
-- ... start/stop mining with active idle container job
+- ... start/stop mining with active idle container
 - ... start/stop mining with no containers running
 - ... apply/reset overclocks
 - start/stop/pause idle job and watch logs to confirm all working as expected
