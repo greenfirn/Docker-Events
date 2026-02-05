@@ -1,8 +1,10 @@
 -- Docker Events watcher -- 
 - ** use extreme caution when using any type of custom scripts **
 - ** your risking host/account being banned **
-- ... start/stop mining with active idle container job Clore / Octaspace / Nosana
+- Clore / Octaspace / Nosana / Vast
+- ... start/stop mining with active idle container job
 - ... start/stop mining with no containers running
+- ... apply/reset overclocks
 - start/stop/pause idle job and watch logs to confirm all working as expected
 - see source for complete package, install miners, rig configs, etc
 - testing source/no-container-docker_events_monitor-vast.sh for idle cpu mining
