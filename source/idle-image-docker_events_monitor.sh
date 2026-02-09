@@ -18,7 +18,7 @@ SHUTDOWN_REQUESTED=0
 # CONFIGURABLE SETTINGS
 # ---------------------------------------------------------
 # Number of times to check for running state for Docker  
-: "${DOCKER_RUNNING_CONFIRM_LOOPS:=2}"
+: "${IDLE_CONFIRM_LOOPS:=2}"
 
 # ---------------------------------------------------------
 # SIGNAL HANDLER
@@ -94,7 +94,7 @@ done
 # ---------------------------------------------------------
 echo "$(date): Using Docker events monitor"
 echo "$(date): Target Image: ${TARGET_IMAGE}"
-echo "$(date): Docker running confirm loops: $DOCKER_RUNNING_CONFIRM_LOOPS"
+echo "$(date): Docker running confirm loops: $IDLE_CONFIRM_LOOPS"
 
 # ---------------------------------------------------------
 # API SETTINGS - from API_CONF or default location
@@ -334,7 +334,7 @@ check_docker_target_container() {
 }
 
 confirm_docker_container_running() {
-    local loops=${1:-$DOCKER_RUNNING_CONFIRM_LOOPS}
+    local loops=${1:-$IDLE_CONFIRM_LOOPS}
     local check_interval=2  # seconds
     
     echo "$(date): Confirming Docker target container is running (checking $loops times, $check_interval second intervals)..."
@@ -409,7 +409,7 @@ process_docker_event() {
             sleep 1
             
             # Confirm container is actually running (not just transient)
-            if confirm_docker_container_running $DOCKER_RUNNING_CONFIRM_LOOPS; then
+            if confirm_docker_container_running $IDLE_CONFIRM_LOOPS; then
                 echo "$(date): Docker container confirmed running → START miner"
                 start_miner
             else
@@ -596,7 +596,7 @@ echo "$(date): Performing initial Docker container check..."
 # DOCKER MODE: Check if target container is running, confirm, then start miner
 echo "$(date): Checking Docker target container..."
 
-if confirm_docker_container_running $DOCKER_RUNNING_CONFIRM_LOOPS; then
+if confirm_docker_container_running $IDLE_CONFIRM_LOOPS; then
     echo "$(date): Docker target container confirmed running at startup → start_miner"
     start_miner
 else
@@ -672,11 +672,11 @@ Requires=docker.service
 Type=simple
 User=root
 Environment="OC_FILE=/home/user/rig-cpu.conf"
-#Environment="MINER_CONF=/home/user/miner.conf"
-#Environment="API_CONF=/home/user/api.conf"
-Environment="DOCKER_RUNNING_CONFIRM_LOOPS=2"
+Environment="IDLE_CONFIRM_LOOPS=3"
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
 ExecStart=/usr/local/bin/docker_events_universal.sh
+#Environment="MINER_CONF=/home/user/miner.conf"
+#Environment="API_CONF=/home/user/api.conf"
 Restart=always
 RestartSec=10
 KillSignal=SIGTERM
@@ -705,13 +705,13 @@ Requires=docker.service
 Type=simple
 User=root
 Environment="OC_FILE=/home/user/rig-gpu.conf"
+Environment="IDLE_CONFIRM_LOOPS=3"
 Environment="POWER_LIMIT=150"
-#Environment="MINER_CONF=/home/user/miner.conf"
-#Environment="API_CONF=/home/user/api.conf"
-Environment="DOCKER_RUNNING_CONFIRM_LOOPS=2"
+ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh 150
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
 ExecStart=/usr/local/bin/docker_events_universal.sh
-#ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh 150
+#Environment="MINER_CONF=/home/user/miner.conf"
+#Environment="API_CONF=/home/user/api.conf"
 Restart=always
 RestartSec=10
 KillSignal=SIGTERM
