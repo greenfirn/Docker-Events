@@ -714,8 +714,10 @@ Requires=docker.service
 [Service]
 Type=simple
 User=root
-Environment="OC_FILE=/home/user/rig-cpu.conf"
+Environment="OC_FILE=/home/user/rig-gpu.conf"
 Environment="IDLE_CONFIRM_LOOPS=7"
+Environment="POWER_LIMIT=150"
+ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh 150
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
 ExecStart=/usr/local/bin/docker_events_universal.sh
 #Environment="MINER_CONF=/home/user/miner.conf"

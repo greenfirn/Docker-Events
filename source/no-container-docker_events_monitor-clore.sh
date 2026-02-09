@@ -729,8 +729,6 @@ EOF
 
 sudo systemctl daemon-reload
 
-sudo systemctl restart docker_events_gpu.service
-
 sudo systemctl restart docker_events_cpu.service
 sudo systemctl restart docker_events_gpu.service
 sudo systemctl enable docker_events_cpu.service
