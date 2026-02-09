@@ -9,6 +9,8 @@ shopt -s inherit_errexit
 # ---------------------------------------------------------
 # GLOBAL VARIABLES
 # ---------------------------------------------------------
+# Power limit for GPU reset (default 150W, can be overridden by service)
+: "${POWER_LIMIT:=150}"
 
 # Global list of ignored images
 IGNORED_IMAGES=(
@@ -562,7 +564,7 @@ stop_miner() {
     # 4. Reset GPU if configured
     if [[ "${RESET_OC,,}" == "true" ]]; then
         echo "$(date): Resetting GPU clocks and power limits..."
-        /usr/local/bin/gpu_reset_poststop.sh
+        /usr/local/bin/gpu_reset_poststop.sh "$POWER_LIMIT"
     fi
     
     # 5. Final verification
@@ -704,13 +706,15 @@ Requires=docker.service
 [Service]
 Type=simple
 User=root
+Environment="SERVICE_TYPE=gpu"
 Environment="OC_FILE=/home/user/rig-gpu.conf"
+Environment="POWER_LIMIT=150"
 #Environment="MINER_CONF=/home/user/miner.conf"
 #Environment="API_CONF=/home/user/api.conf"
 Environment="NO_CONTAINER_CONFIRM_LOOPS=3"
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
 ExecStart=/usr/local/bin/docker_events_universal.sh
-#ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh
+ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh 150
 Restart=always
 RestartSec=10
 KillSignal=SIGTERM
