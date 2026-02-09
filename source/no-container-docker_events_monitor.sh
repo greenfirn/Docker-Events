@@ -17,7 +17,7 @@ SHUTDOWN_REQUESTED=0
 # CONFIGURABLE SETTINGS
 # ---------------------------------------------------------
 # Number of times to check for no running containers
-: "${NO_CONTAINER_CONFIRM_LOOPS:=3}"
+: "${IDLE_CONFIRM_LOOPS:=3}"
 
 # ---------------------------------------------------------
 # SIGNAL HANDLER
@@ -294,7 +294,7 @@ any_container_running() {
 
 # Confirm NO containers are running (for multiple checks)
 confirm_no_containers_running() {
-    local loops=${1:-$NO_CONTAINER_CONFIRM_LOOPS}
+    local loops=${1:-$IDLE_CONFIRM_LOOPS}
     local check_interval=2  # seconds
     
     echo "$(date): Confirming no containers are running (checking $loops times, $check_interval second intervals)..."
@@ -359,7 +359,7 @@ process_docker_event() {
             sleep 3
             
             # Confirm NO containers are running
-            if confirm_no_containers_running $NO_CONTAINER_CONFIRM_LOOPS; then
+            if confirm_no_containers_running $IDLE_CONFIRM_LOOPS; then
                 echo "$(date): Confirmed no containers running → START miner"
                 start_miner
             else
@@ -614,13 +614,12 @@ Requires=docker.service
 [Service]
 Type=simple
 User=root
-Environment="SERVICE_TYPE=cpu"
 Environment="OC_FILE=/home/user/rig-cpu.conf"
-#Environment="MINER_CONF=/home/user/miner.conf"
-#Environment="API_CONF=/home/user/api.conf"
-Environment="NO_CONTAINER_CONFIRM_LOOPS=3"
+Environment="IDLE_CONFIRM_LOOPS=3"
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
 ExecStart=/usr/local/bin/docker_events_universal.sh
+#Environment="MINER_CONF=/home/user/miner.conf"
+#Environment="API_CONF=/home/user/api.conf"
 Restart=always
 RestartSec=10
 KillSignal=SIGTERM
@@ -648,15 +647,14 @@ Requires=docker.service
 [Service]
 Type=simple
 User=root
-Environment="SERVICE_TYPE=gpu"
 Environment="OC_FILE=/home/user/rig-gpu.conf"
+Environment="IDLE_CONFIRM_LOOPS=3"
 Environment="POWER_LIMIT=150"
-#Environment="MINER_CONF=/home/user/miner.conf"
-#Environment="API_CONF=/home/user/api.conf"
-Environment="NO_CONTAINER_CONFIRM_LOOPS=3"
+ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh 150
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
 ExecStart=/usr/local/bin/docker_events_universal.sh
-ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh 150
+#Environment="MINER_CONF=/home/user/miner.conf"
+#Environment="API_CONF=/home/user/api.conf"
 Restart=always
 RestartSec=10
 KillSignal=SIGTERM

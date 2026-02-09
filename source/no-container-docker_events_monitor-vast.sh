@@ -25,7 +25,7 @@ SHUTDOWN_REQUESTED=0
 # CONFIGURABLE SETTINGS
 # ---------------------------------------------------------
 # Number of times to check for no running containers
-: "${NO_CONTAINER_CONFIRM_LOOPS:=3}"
+: "${IDLE_CONFIRM_LOOPS:=3}"
 
 # ---------------------------------------------------------
 # SIGNAL HANDLER
@@ -103,7 +103,7 @@ echo "$(date): Confirming Vast config..."
 
 if [ "$TARGET_NAME" = "vast" ]; then
     echo "$(date): Using Vast events monitor"
-    echo "$(date): Vast idle confirm loops: $NO_CONTAINER_CONFIRM_LOOPS"
+    echo "$(date): Vast idle confirm loops: $IDLE_CONFIRM_LOOPS"
 else
     echo "$(date): Exiting... TARGET_NAME in conf should be vast"
 	exit 1
@@ -348,7 +348,7 @@ any_container_running() {
 
 # Confirm NO containers are running (for multiple checks)
 confirm_no_containers_running() {
-    local loops=${1:-$NO_CONTAINER_CONFIRM_LOOPS}
+    local loops=${1:-$IDLE_CONFIRM_LOOPS}
     local check_interval=2  # seconds
     
     echo "$(date): Confirming no containers are running (checking $loops times, $check_interval second intervals)..."
@@ -412,7 +412,7 @@ process_docker_event() {
             sleep 3
             
             # Confirm NO containers are running
-            if confirm_no_containers_running $NO_CONTAINER_CONFIRM_LOOPS; then
+            if confirm_no_containers_running $IDLE_CONFIRM_LOOPS; then
                 echo "$(date): Confirmed no containers running → START miner"
                 start_miner
             else
@@ -663,40 +663,6 @@ EOF
 # Make the script executable
 sudo chmod +x /usr/local/bin/docker_events_universal.sh
 
-# -- write GPU service --
-sudo tee /etc/systemd/system/docker_events_gpu.service > /dev/null <<'EOF'
-[Unit]
-Description=Docker Events GPU Miner Monitor
-After=docker.service
-Requires=docker.service
-
-[Service]
-Type=simple
-User=root
-Environment="SERVICE_TYPE=gpu"
-Environment="OC_FILE=/home/user/rig-gpu.conf"
-Environment="POWER_LIMIT=150"
-#Environment="MINER_CONF=/home/user/miner.conf"
-#Environment="API_CONF=/home/user/api.conf"
-Environment="NO_CONTAINER_CONFIRM_LOOPS=3"
-ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
-ExecStart=/usr/local/bin/docker_events_universal.sh
-ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh 150
-Restart=always
-RestartSec=10
-KillSignal=SIGTERM
-TimeoutStopSec=30
-StandardOutput=journal
-StandardError=journal
-
-# Allow up to 10 seconds for graceful shutdown
-TimeoutStopSec=10
-SendSIGKILL=no
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
 # -- write CPU service --
 sudo tee /etc/systemd/system/docker_events_cpu.service > /dev/null <<'EOF'
 [Unit]
@@ -708,11 +674,11 @@ Requires=docker.service
 Type=simple
 User=root
 Environment="OC_FILE=/home/user/rig-cpu.conf"
-#Environment="MINER_CONF=/home/user/miner.conf"
-#Environment="API_CONF=/home/user/api.conf"
-Environment="NO_CONTAINER_CONFIRM_LOOPS=3"
+Environment="IDLE_CONFIRM_LOOPS=3"
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
 ExecStart=/usr/local/bin/docker_events_universal.sh
+#Environment="MINER_CONF=/home/user/miner.conf"
+#Environment="API_CONF=/home/user/api.conf"
 Restart=always
 RestartSec=10
 KillSignal=SIGTERM
@@ -729,6 +695,42 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl daemon-reload
+
+# -- write GPU service --
+sudo tee /etc/systemd/system/docker_events_gpu.service > /dev/null <<'EOF'
+[Unit]
+Description=Docker Events GPU Miner Monitor
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=root
+Environment="OC_FILE=/home/user/rig-gpu.conf"
+Environment="IDLE_CONFIRM_LOOPS=3"
+Environment="POWER_LIMIT=150"
+ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh 150
+ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
+ExecStart=/usr/local/bin/docker_events_universal.sh
+#Environment="MINER_CONF=/home/user/miner.conf"
+#Environment="API_CONF=/home/user/api.conf"
+Restart=always
+RestartSec=10
+KillSignal=SIGTERM
+TimeoutStopSec=30
+StandardOutput=journal
+StandardError=journal
+
+# Allow up to 10 seconds for graceful shutdown
+TimeoutStopSec=10
+SendSIGKILL=no
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+
 sudo systemctl restart docker_events_cpu.service
 sudo systemctl restart docker_events_gpu.service
 sudo systemctl enable docker_events_cpu.service

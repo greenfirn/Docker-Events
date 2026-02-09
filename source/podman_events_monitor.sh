@@ -19,7 +19,7 @@ PODMAN_READY=false
 # CONFIGURABLE SETTINGS
 # ---------------------------------------------------------
 # Number of times to check for idle state for Podman
-: "${PODMAN_IDLE_CONFIRM_LOOPS:=7}"
+: "${IDLE_CONFIRM_LOOPS:=7}"
 
 # ---------------------------------------------------------
 # SIGNAL HANDLER
@@ -97,7 +97,7 @@ echo "$(date): Confirming Podman config..."
 
 if [ "$TARGET_NAME" = "podman" ]; then
     echo "$(date): Using Podman events monitor"
-    echo "$(date): Podman idle confirm loops: $PODMAN_IDLE_CONFIRM_LOOPS"
+    echo "$(date): Podman idle confirm loops: $IDLE_CONFIRM_LOOPS"
 else
     echo "$(date): Exiting... TARGET_NAME in conf should be podman"
 	exit 1
@@ -311,7 +311,7 @@ get_podman_child_containers() {
 }
 
 confirm_podman_idle() {
-    local loops=${1:-$PODMAN_IDLE_CONFIRM_LOOPS}
+    local loops=${1:-$IDLE_CONFIRM_LOOPS}
     local check_interval=5  # seconds
     
     echo "$(date): Confirming Podman is idle (checking $loops times, $check_interval second intervals)..."
@@ -381,7 +381,7 @@ process_podman_event() {
             sleep 1
             
             # Confirm Podman is actually idle
-            if confirm_podman_idle $PODMAN_IDLE_CONFIRM_LOOPS; then
+            if confirm_podman_idle $IDLE_CONFIRM_LOOPS; then
                 echo "$(date): Podman confirmed IDLE → start_miner"
                 start_miner
             else
@@ -576,7 +576,7 @@ done
 
 if [ "$PODMAN_READY" = true ]; then
     # Initial idle confirmation for Podman
-    if confirm_podman_idle $PODMAN_IDLE_CONFIRM_LOOPS; then
+    if confirm_podman_idle $IDLE_CONFIRM_LOOPS; then
         echo "$(date): Podman confirmed IDLE at startup → start_miner"
         start_miner
     else
@@ -682,11 +682,11 @@ Requires=docker.service
 Type=simple
 User=root
 Environment="OC_FILE=/home/user/rig-cpu.conf"
-#Environment="MINER_CONF=/home/user/miner.conf"
-#Environment="API_CONF=/home/user/api.conf"
-Environment="PODMAN_IDLE_CONFIRM_LOOPS=7"
+Environment="IDLE_CONFIRM_LOOPS=7"
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
 ExecStart=/usr/local/bin/docker_events_universal.sh
+#Environment="MINER_CONF=/home/user/miner.conf"
+#Environment="API_CONF=/home/user/api.conf"
 Restart=always
 RestartSec=10
 KillSignal=SIGTERM
@@ -714,14 +714,12 @@ Requires=docker.service
 [Service]
 Type=simple
 User=root
-Environment="OC_FILE=/home/user/rig-gpu.conf"
-Environment="POWER_LIMIT=150"
-#Environment="MINER_CONF=/home/user/miner.conf"
-#Environment="API_CONF=/home/user/api.conf"
-Environment="PODMAN_IDLE_CONFIRM_LOOPS=7"
+Environment="OC_FILE=/home/user/rig-cpu.conf"
+Environment="IDLE_CONFIRM_LOOPS=7"
 ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
 ExecStart=/usr/local/bin/docker_events_universal.sh
-#ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh 150
+#Environment="MINER_CONF=/home/user/miner.conf"
+#Environment="API_CONF=/home/user/api.conf"
 Restart=always
 RestartSec=10
 KillSignal=SIGTERM
