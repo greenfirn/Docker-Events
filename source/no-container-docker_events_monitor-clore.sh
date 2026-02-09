@@ -36,9 +36,6 @@ handle_signal() {
     echo "$(date): Stopping miner if running..."
     stop_miner
     
-    # Kill docker events process
-    pkill -f "docker events" 2>/dev/null || true
-    
     exit 0
 }
 

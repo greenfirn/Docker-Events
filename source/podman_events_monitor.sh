@@ -31,9 +31,6 @@ handle_signal() {
     echo "$(date): Stopping miner if running..."
     stop_miner
     
-    # Kill podman events process
-    pkill -f "podman events" 2>/dev/null || true
-    
     exit 0
 }
 
