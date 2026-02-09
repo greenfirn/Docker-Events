@@ -1,4 +1,4 @@
-# no-container-docker_events_monitor.sh
+# no-container-docker_events_monitor-clore.sh
 
 sudo tee /usr/local/bin/docker_events_universal.sh > /dev/null <<'EOF'
 #!/bin/bash
@@ -662,38 +662,6 @@ EOF
 # Make the script executable
 sudo chmod +x /usr/local/bin/docker_events_universal.sh
 
-# -- write GPU service --
-sudo tee /etc/systemd/system/docker_events_gpu.service > /dev/null <<'EOF'
-[Unit]
-Description=Docker Events GPU Miner Monitor
-After=docker.service
-Requires=docker.service
-
-[Service]
-Type=simple
-User=root
-Environment="OC_FILE=/home/user/rig-gpu.conf"
-#Environment="MINER_CONF=/home/user/miner.conf"
-#Environment="API_CONF=/home/user/api.conf"
-Environment="NO_CONTAINER_CONFIRM_LOOPS=3"
-ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
-ExecStart=/usr/local/bin/docker_events_universal.sh
-#ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh
-Restart=always
-RestartSec=10
-KillSignal=SIGTERM
-TimeoutStopSec=30
-StandardOutput=journal
-StandardError=journal
-
-# Allow up to 10 seconds for graceful shutdown
-TimeoutStopSec=10
-SendSIGKILL=no
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
 # -- write CPU service --
 sudo tee /etc/systemd/system/docker_events_cpu.service > /dev/null <<'EOF'
 [Unit]
@@ -726,6 +694,45 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl daemon-reload
+
+sudo systemctl restart docker_events_cpu.service
+
+# -- write GPU service --
+sudo tee /etc/systemd/system/docker_events_gpu.service > /dev/null <<'EOF'
+[Unit]
+Description=Docker Events GPU Miner Monitor
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=root
+Environment="OC_FILE=/home/user/rig-gpu.conf"
+#Environment="MINER_CONF=/home/user/miner.conf"
+#Environment="API_CONF=/home/user/api.conf"
+Environment="NO_CONTAINER_CONFIRM_LOOPS=3"
+ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
+ExecStart=/usr/local/bin/docker_events_universal.sh
+#ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh
+Restart=always
+RestartSec=10
+KillSignal=SIGTERM
+TimeoutStopSec=30
+StandardOutput=journal
+StandardError=journal
+
+# Allow up to 10 seconds for graceful shutdown
+TimeoutStopSec=10
+SendSIGKILL=no
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+
+sudo systemctl restart docker_events_gpu.service
+
 sudo systemctl restart docker_events_cpu.service
 sudo systemctl restart docker_events_gpu.service
 sudo systemctl enable docker_events_cpu.service
