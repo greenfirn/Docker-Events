@@ -10,7 +10,7 @@ shopt -s inherit_errexit
 # GLOBAL VARIABLES
 # ---------------------------------------------------------
 # Power limit for GPU reset (default 150W, can be overridden by service)
-: "${POWER_LIMIT:=150}"
+: "${POWER_LIMIT:=}"
 
 # Global list of ignored images
 IGNORED_IMAGES=(

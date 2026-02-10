@@ -10,7 +10,7 @@ shopt -s inherit_errexit
 # GLOBAL VARIABLES
 # ---------------------------------------------------------
 # Power limit for GPU reset (default 150W, can be overridden by service)
-: "${POWER_LIMIT:=150}"
+: "${POWER_LIMIT:=}"
 
 # Global list of ignored images
 IGNORED_IMAGES=(
@@ -535,8 +535,8 @@ stop_miner() {
     echo "$(date): Sending clean quit to screen session..."
     screen -S "$SCREEN_NAME" -X quit
     
-    echo "$(date): Waiting 5 seconds for miner cleanup..."
-    sleep 5
+    echo "$(date): Waiting 10 seconds for miner cleanup..."
+    sleep 10
     
     # 2. CHECK: If miner process still exists after clean quit
     local pid_file="/tmp/${SCREEN_NAME}_miner.pid"
