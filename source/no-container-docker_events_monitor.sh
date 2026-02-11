@@ -626,9 +626,6 @@ KillSignal=SIGTERM
 TimeoutStopSec=30
 StandardOutput=journal
 StandardError=journal
-
-# Allow up to 10 seconds for graceful shutdown
-TimeoutStopSec=10
 SendSIGKILL=no
 
 [Install]
@@ -661,9 +658,6 @@ KillSignal=SIGTERM
 TimeoutStopSec=30
 StandardOutput=journal
 StandardError=journal
-
-# Allow up to 10 seconds for graceful shutdown
-TimeoutStopSec=10
 SendSIGKILL=no
 
 [Install]
