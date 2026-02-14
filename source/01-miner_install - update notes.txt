@@ -1,0 +1,16 @@
+* installs only miner in rig conf, can be run manually with miner names in command line
+
+# Case 1: MINER="xmrig" in rig.conf, run with no args
+./01-miner_install.sh
+# Output: "Using MINER=xmrig from rig.conf"
+# Installs: Only XMRig
+
+# Case 2: No MINER in rig.conf, run with no args
+./01-miner_install.sh
+# Output: "No miner specified in config or arguments - installing all"
+# Installs: All miners
+
+# Case 3: Override config with command line
+./01-miner_install.sh bzminer wildrig
+# Output: "Installing: bzminer wildrig"
+# Installs: Only BzMiner and WildRig (ignores config)
