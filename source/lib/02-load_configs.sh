@@ -109,6 +109,7 @@ get_start_cmd() {
 WORKER_NAME="$(cat /etc/hostname)"
 WORKER_NAME="${WORKER_NAME//x/X}"
 WORKER_NAME="${WORKER_NAME//t/T}"
+WORKER_NAME="${WORKER_NAME//s/S}"
 
 TARGET_IMAGE=$(get_rig_conf "TARGET_IMAGE" "0")
 TARGET_NAME=$(get_rig_conf "TARGET_NAME" "0")

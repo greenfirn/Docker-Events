@@ -1,4 +1,3 @@
-
 ###############################################
 #  MINER INSTALL
 ###############################################
@@ -19,6 +18,35 @@ GMINER_VERSION=$(get_rig_conf "$MINER_CONF" "GMINER_VERSION" "0")
 TEAMREDMINER_VERSION=$(get_rig_conf "$MINER_CONF" "TEAMREDMINER_VERSION" "0")
 TREXMINER_VERSION=$(get_rig_conf "$MINER_CONF" "TREXMINER_VERSION" "0")
 
+###########################################
+# Parse command line arguments
+###########################################
+INSTALL_ALL=false
+REQUESTED_MINERS=()
+
+if [ $# -eq 0 ]; then
+    # No arguments - check MINER_NAME from config
+    CONFIG_MINER=$(get_rig_conf "$CFG_FILE" "MINER" "0")
+	echo "$CONFIG_MINER from rig.conf"
+    if [ -n "$CONFIG_MINER" ] && [ "$CONFIG_MINER" != "0" ]; then
+        # Install only the miner specified in config
+        REQUESTED_MINERS+=("$CONFIG_MINER")
+        echo "Using MINER=$CONFIG_MINER from rig.conf"
+    else
+        # No config miner specified - install all
+        INSTALL_ALL=true
+        echo "No miner specified in config or arguments - installing all"
+    fi
+else
+    # Use command line arguments
+    for miner in "$@"; do
+        REQUESTED_MINERS+=("$miner")
+    done
+fi
+
+###########################################
+# Display configuration
+###########################################
 echo ""
 echo "==============================================="
 echo "  Miner Versions Loaded from rig.conf"
@@ -33,6 +61,13 @@ echo "  OneZeroMiner: $ONEZEROMINER_VERSION"
 echo "  GMiner:       $GMINER_VERSION"
 echo "  TeamRedMiner: $TEAMREDMINER_VERSION"
 echo "  TRex:         $TREXMINER_VERSION"
+echo "==============================================="
+
+if [ "$INSTALL_ALL" = true ]; then
+    echo "  Installing: ALL miners"
+else
+    echo "  Installing: ${REQUESTED_MINERS[*]}"
+fi
 echo "==============================================="
 echo ""
 
@@ -121,116 +156,136 @@ install_miner() {
 }
 
 ###########################################
-# Install: XMRIG
+# Helper — Check if miner should be installed
 ###########################################
-XMRIG_TAR="xmrig-${XMRIG_VERSION}-linux-static-x64.tar.gz"
-install_miner "xmrig" "$XMRIG_VERSION" \
-  "https://github.com/xmrig/xmrig/releases/download/v${XMRIG_VERSION}/${XMRIG_TAR}" \
-  "$XMRIG_TAR" "--strip-components=1" "xmrig"
-
-
-###########################################
-# Install: WildRig
-###########################################
-WILDRIG_TAR="wildrig-multi-linux-${WILDRIG_VERSION}.tar.gz"
-install_miner "wildrig" "$WILDRIG_VERSION" \
-  "https://github.com/andru-kun/wildrig-multi/releases/download/${WILDRIG_VERSION}/${WILDRIG_TAR}" \
-  "$WILDRIG_TAR" "" "wildrig-multi"
-
-
-###########################################
-# Install: BzMiner
-###########################################
-BZ_TAR="bzminer_${BZMINER_VERSION}_linux.tar.gz"
-install_miner "bzminer" "$BZMINER_VERSION" \
-  "https://github.com/bzminer/bzminer/releases/download/${BZMINER_VERSION}/${BZ_TAR}" \
-  "$BZ_TAR" "--strip-components=1" "bzminer"
-
+should_install() {
+    local miner="$1"
+    
+    if [ "$INSTALL_ALL" = true ]; then
+        return 0
+    fi
+    
+    for requested in "${REQUESTED_MINERS[@]}"; do
+        if [ "$requested" = "$miner" ]; then
+            return 0
+        fi
+    done
+    
+    return 1
+}
 
 ###########################################
-# Install: SRBMiner
+# Install miners based on selection
 ###########################################
-SRB_DASH="${SRBMINER_VERSION//./-}"
-SRB_TAR="SRBMiner-Multi-${SRB_DASH}-Linux.tar.gz"
-install_miner "srbminer" "$SRBMINER_VERSION" \
-  "https://github.com/doktor83/SRBMiner-Multi/releases/download/${SRBMINER_VERSION}/${SRB_TAR}" \
-  "$SRB_TAR" "--strip-components=1" "SRBMiner-MULTI"
 
+# XMRIG
+if should_install "xmrig"; then
+    XMRIG_TAR="xmrig-${XMRIG_VERSION}-linux-static-x64.tar.gz"
+    install_miner "xmrig" "$XMRIG_VERSION" \
+      "https://github.com/xmrig/xmrig/releases/download/v${XMRIG_VERSION}/${XMRIG_TAR}" \
+      "$XMRIG_TAR" "--strip-components=1" "xmrig"
+fi
+
+# WildRig
+if should_install "wildrig"; then
+    WILDRIG_TAR="wildrig-multi-linux-${WILDRIG_VERSION}.tar.gz"
+    install_miner "wildrig" "$WILDRIG_VERSION" \
+      "https://github.com/andru-kun/wildrig-multi/releases/download/${WILDRIG_VERSION}/${WILDRIG_TAR}" \
+      "$WILDRIG_TAR" "" "wildrig-multi"
+fi
+
+# BzMiner
+if should_install "bzminer"; then
+    BZ_TAR="bzminer_${BZMINER_VERSION}_linux.tar.gz"
+    install_miner "bzminer" "$BZMINER_VERSION" \
+      "https://github.com/bzminer/bzminer/releases/download/${BZMINER_VERSION}/${BZ_TAR}" \
+      "$BZ_TAR" "--strip-components=1" "bzminer"
+fi
+
+# SRBMiner
+if should_install "srbminer"; then
+    SRB_DASH="${SRBMINER_VERSION//./-}"
+    SRB_TAR="SRBMiner-Multi-${SRB_DASH}-Linux.tar.gz"
+    install_miner "srbminer" "$SRBMINER_VERSION" \
+      "https://github.com/doktor83/SRBMiner-Multi/releases/download/${SRBMINER_VERSION}/${SRB_TAR}" \
+      "$SRB_TAR" "--strip-components=1" "SRBMiner-MULTI"
+fi
+
+# Rigel
+if should_install "rigel"; then
+    RIGEL_TAR="rigel-${RIGEL_VERSION}-linux.tar.gz"
+    install_miner "rigel" "$RIGEL_VERSION" \
+      "https://github.com/rigelminer/rigel/releases/download/${RIGEL_VERSION}/${RIGEL_TAR}" \
+      "$RIGEL_TAR" "--strip-components=1" "rigel"
+fi
+
+# lolMiner
+if should_install "lolminer"; then
+    LOL_TAR="lolMiner_v${LOLMINER_VERSION}_Lin64.tar.gz"
+    install_miner "lolminer" "$LOLMINER_VERSION" \
+      "https://github.com/Lolliedieb/lolMiner-releases/releases/download/${LOLMINER_VERSION}/${LOL_TAR}" \
+      "$LOL_TAR" "--strip-components=1" "lolMiner"
+fi
+
+# OneZeroMiner
+if should_install "onezerominer"; then
+    ONEZERO_TAR="onezerominer-linux-${ONEZEROMINER_VERSION}.tar.gz"
+    install_miner "onezerominer" "$ONEZEROMINER_VERSION" \
+      "https://github.com/OneZeroMiner/OneZeroMiner/releases/download/v${ONEZEROMINER_VERSION}/${ONEZERO_TAR}" \
+      "$ONEZERO_TAR" "--strip-components=1" "onezerominer"
+fi
+
+# GMiner
+if should_install "gminer"; then
+    GM_U="${GMINER_VERSION//./_}"
+    GM_TAR="gminer_${GM_U}_linux64.tar.xz"
+    install_miner "gminer" "$GMINER_VERSION" \
+      "https://github.com/develsoftware/GMinerRelease/releases/download/${GMINER_VERSION}/${GM_TAR}" \
+      "$GM_TAR" "" "miner"
+fi
+
+# TeamRedMiner
+if should_install "teamredminer"; then
+    TEAMRED_TAR="teamredminer-v${TEAMREDMINER_VERSION}-linux.tgz"
+    install_miner "teamredminer" "$TEAMREDMINER_VERSION" \
+      "https://github.com/todxx/teamredminer/releases/download/v${TEAMREDMINER_VERSION}/${TEAMRED_TAR}" \
+      "$TEAMRED_TAR" "--strip-components=1" "teamredminer"
+fi
+
+# T-Rex Miner
+if should_install "trex"; then
+    TREX_TAR="t-rex-${TREXMINER_VERSION}-linux.tar.gz"
+    install_miner "trexminer" "$TREXMINER_VERSION" \
+      "https://github.com/trexminer/T-Rex/releases/download/${TREXMINER_VERSION}/${TREX_TAR}" \
+      "$TREX_TAR" "" "t-rex"
+fi
 
 ###########################################
-# Install: Rigel
-###########################################
-RIGEL_TAR="rigel-${RIGEL_VERSION}-linux.tar.gz"
-install_miner "rigel" "$RIGEL_VERSION" \
-  "https://github.com/rigelminer/rigel/releases/download/${RIGEL_VERSION}/${RIGEL_TAR}" \
-  "$RIGEL_TAR" "--strip-components=1" "rigel"
-
-
-###########################################
-# Install: lolMiner
-###########################################
-LOL_TAR="lolMiner_v${LOLMINER_VERSION}_Lin64.tar.gz"
-install_miner "lolminer" "$LOLMINER_VERSION" \
-  "https://github.com/Lolliedieb/lolMiner-releases/releases/download/${LOLMINER_VERSION}/${LOL_TAR}" \
-  "$LOL_TAR" "--strip-components=1" "lolMiner"
-
-
-###########################################
-# Install: OneZeroMiner (correct Linux build)
-###########################################
-ONEZERO_TAR="onezerominer-linux-${ONEZEROMINER_VERSION}.tar.gz"
-install_miner "onezerominer" "$ONEZEROMINER_VERSION" \
-  "https://github.com/OneZeroMiner/OneZeroMiner/releases/download/v${ONEZEROMINER_VERSION}/${ONEZERO_TAR}" \
-  "$ONEZERO_TAR" "--strip-components=1" "onezerominer"
-
-
-###########################################
-# Install: GMiner
-###########################################
-GM_U="${GMINER_VERSION//./_}"
-GM_TAR="gminer_${GM_U}_linux64.tar.xz"
-install_miner "gminer" "$GMINER_VERSION" \
-  "https://github.com/develsoftware/GMinerRelease/releases/download/${GMINER_VERSION}/${GM_TAR}" \
-  "$GM_TAR" "" "miner"
-
-###########################################
-# Install: TeamRedMiner
-###########################################
-TEAMRED_TAR="teamredminer-v${TEAMREDMINER_VERSION}-linux.tgz"
-install_miner "teamredminer" "$TEAMREDMINER_VERSION" \
-  "https://github.com/todxx/teamredminer/releases/download/v${TEAMREDMINER_VERSION}/${TEAMRED_TAR}" \
-  "$TEAMRED_TAR" "--strip-components=1" "teamredminer"
-
-###########################################
-# Install: T-Rex Miner
-###########################################
-TREX_TAR="t-rex-${TREXMINER_VERSION}-linux.tar.gz"
-install_miner "trexminer" "$TREXMINER_VERSION" \
-  "https://github.com/trexminer/T-Rex/releases/download/${TREXMINER_VERSION}/${TREX_TAR}" \
-  "$TREX_TAR" "" "t-rex"
-
-###########################################
-# Export paths
+# Export paths (only for installed miners)
 ###########################################
 cat <<EXPORTS > "$BASE_DIR/miner_paths.env"
 # Source this file:
 #   source "$BASE_DIR/miner_paths.env"
 
-XMRIG_BIN="$BASE_DIR/xmrig/current/xmrig"
-WILDRIG_BIN="$BASE_DIR/wildrig/current/wildrig-multi"
-BZMINER_BIN="$BASE_DIR/bzminer/current/bzminer"
-SRBMINER_BIN="$BASE_DIR/srbminer/current/SRBMiner-MULTI"
-RIGEL_BIN="$BASE_DIR/rigel/current/rigel"
-LOLMINER_BIN="$BASE_DIR/lolminer/current/lolMiner"
-ONEZEROMINER_BIN="$BASE_DIR/onezerominer/current/onezerominer"
-GMINER_BIN="$BASE_DIR/gminer/current/miner"
-TEAMREDMINER_BIN="$BASE_DIR/teamredminer/current/teamredminer"
-TREXMINER_BIN="$BASE_DIR/trexminer/current/t-rex"
+$(if [ -f "$BASE_DIR/xmrig/current/xmrig" ]; then echo 'XMRIG_BIN="$BASE_DIR/xmrig/current/xmrig"'; fi)
+$(if [ -f "$BASE_DIR/wildrig/current/wildrig-multi" ]; then echo 'WILDRIG_BIN="$BASE_DIR/wildrig/current/wildrig-multi"'; fi)
+$(if [ -f "$BASE_DIR/bzminer/current/bzminer" ]; then echo 'BZMINER_BIN="$BASE_DIR/bzminer/current/bzminer"'; fi)
+$(if [ -f "$BASE_DIR/srbminer/current/SRBMiner-MULTI" ]; then echo 'SRBMINER_BIN="$BASE_DIR/srbminer/current/SRBMiner-MULTI"'; fi)
+$(if [ -f "$BASE_DIR/rigel/current/rigel" ]; then echo 'RIGEL_BIN="$BASE_DIR/rigel/current/rigel"'; fi)
+$(if [ -f "$BASE_DIR/lolminer/current/lolMiner" ]; then echo 'LOLMINER_BIN="$BASE_DIR/lolminer/current/lolMiner"'; fi)
+$(if [ -f "$BASE_DIR/onezerominer/current/onezerominer" ]; then echo 'ONEZEROMINER_BIN="$BASE_DIR/onezerominer/current/onezerominer"'; fi)
+$(if [ -f "$BASE_DIR/gminer/current/miner" ]; then echo 'GMINER_BIN="$BASE_DIR/gminer/current/miner"'; fi)
+$(if [ -f "$BASE_DIR/teamredminer/current/teamredminer" ]; then echo 'TEAMREDMINER_BIN="$BASE_DIR/teamredminer/current/teamredminer"'; fi)
+$(if [ -f "$BASE_DIR/trexminer/current/t-rex" ]; then echo 'TREXMINER_BIN="$BASE_DIR/trexminer/current/t-rex"'; fi)
 EXPORTS
 
 echo ""
 echo "Miner paths saved to: $BASE_DIR/miner_paths.env"
 echo "Load them with: source $BASE_DIR/miner_paths.env"
 
-source $BASE_DIR/miner_paths.env
+if [ -f "$BASE_DIR/miner_paths.env" ]; then
+    source "$BASE_DIR/miner_paths.env"
+fi
 
+echo ""
+echo "Installation complete!"
