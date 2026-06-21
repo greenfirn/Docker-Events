@@ -1,10 +1,10 @@
 # to update miner versions write miner.conf 
 
 tee /home/user/miner.conf > /dev/null <<'EOF'
-XMRIG_VERSION        ALL "6.25.0"
-BZMINER_VERSION      ALL "v23.0.2"
-WILDRIG_VERSION      ALL "0.47.9"
-SRBMINER_VERSION     ALL "3.0.6"
+XMRIG_VERSION        ALL "6.26.0"
+BZMINER_VERSION      ALL "v25.0.0b6"
+WILDRIG_VERSION      ALL "0.48.7"
+SRBMINER_VERSION     ALL "3.3.9"
 RIGEL_VERSION        ALL "1.23.1"
 LOLMINER_VERSION     ALL "1.98"
 ONEZEROMINER_VERSION ALL "1.7.3"
