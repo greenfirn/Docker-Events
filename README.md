@@ -4,7 +4,7 @@
 
 ---
 
-## What it can do
+## What the scripts can do
 
 - Watch Docker/Podman container events on a rig and automatically starts/stops mining and/or apply overclocks based on container state — Clore, Octaspace, Nosana (Podman), VastAI (CPU mining only, testing)
 - more recent files in source, easiest to use 'no-container-docker_events_monitor'
