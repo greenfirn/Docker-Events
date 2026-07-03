@@ -1,6 +1,3 @@
-# -- ** gpu_reset not used for clore when using oc profiles ** --
-# -- leave commented out in service ... #ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh
-
 # -- write gpu reset script --
 
 sudo tee /usr/local/bin/gpu_reset_poststop.sh > /dev/null <<'EOF'
@@ -76,3 +73,6 @@ sudo chmod +x /usr/local/bin/gpu_reset_poststop.sh
 
 # test proper power limit etc is applied
 sudo /usr/local/bin/gpu_reset_poststop.sh
+
+# to apply custom power limit 150 watts
+sudo /usr/local/bin/gpu_reset_poststop.sh 150
