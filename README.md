@@ -22,10 +22,10 @@ See the `source/` folder for the full package: install scripts, miners, and rig 
 
 | Platform | Script | `TARGET_NAME` |
 |---|---|---|
-| Vast (CPU mining, testing) | `source/no-container-docker_events_monitor-vast.sh` | `vast` |
+| VastAI (CPU mining, testing) | `source/no-container-docker_events_monitor-vast.sh` | `vast` |
 | Nosana / Podman (testing) | `nosana_monitor-1.sh`, `source/podman_events_monitor.sh` | `podman` |
 
-> Note: a short server test seems to run around benchmark time — likely the platform confirming host specs.
+> VastAI Note: a short server test seems to run around benchmark time — likely the platform confirming host specs.
 
 For Podman idle detection, keep `PODMAN_IDLE_CONFIRM_LOOPS` and `IDLE_CONFIRMATION_THRESHOLD` at **4 or higher** to safely cover the gap between container load/unload.
 
