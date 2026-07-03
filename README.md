@@ -1,6 +1,6 @@
 # Docker Events
 
-> ⚠️ **Use extreme caution with any custom scripts here — you're risking your host or account being banned.** Test thoroughly before relying on this in production.
+> ⚠️ **Use extreme caution with any custom scripts — you're risking your host or account being banned.** Test thoroughly before relying on this.
 
 ---
 
