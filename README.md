@@ -6,7 +6,8 @@
 
 ## What it can do
 
-- Watch Docker/Podman container events on a rig and automatically starts/stops mining or applies overclocks based on container state — Clore, Octaspace, Nosana (Podman), VastAI (CPU mining, testing)... more recent files in source
+- Watch Docker/Podman container events on a rig and automatically starts/stops mining or applies overclocks based on container state — Clore, Octaspace, Nosana (Podman), VastAI (CPU mining, testing)
+- more recent files in source, easiest to use 'no-container-docker_events_monitor'
 - Starts/stops mining when an active idle container appears or disappears
 - Starts/stops mining when no containers are running
 - Applies or resets GPU overclocks based on container state
