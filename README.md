@@ -1,12 +1,12 @@
 # Docker Events Watcher
 
-Watches Docker/Podman container events on a rig and automatically starts/stops mining or applies overclocks based on container state — built for Clore, Octaspace, Nosana (Podman), and Vast (CPU mining, testing).
+Watches Docker/Podman container events on a rig and automatically starts/stops mining or applies overclocks based on container state — Clore, Octaspace, Nosana (Podman), VastAI (CPU mining, testing)... more recent files in source
 
 > ⚠️ **Use extreme caution with any custom scripts here — you're risking your host or account being banned.** Test thoroughly before relying on this in production.
 
 ---
 
-## What it does
+## What it can do
 
 - Starts/stops mining when an active idle container appears or disappears
 - Starts/stops mining when no containers are running
