@@ -1,5 +1,14 @@
 https://github.com/Akisoft41/py-nvtool/releases
 
+  -i|--index NUM                Query specified GPU only
+  -a|--all                      Get GPU infos 
+  --setpl NUM                   Set GPU power limit (W), 0 - default
+  --setcore NUM                 Set GPU locked clocks (MHz), 0 - default
+  --setmem NUM                  Set MEM locked clocks (MHz), 0 - default
+  --setfan NUM                  Set fan speed (%), 0 - default
+  --setcoreoffset NUM           Set CORE clocks offset (MHz), 0 - default
+  --setmemoffset NUM            Set MEM clocks offset (MHz), 0 - default
+
 sudo wget https://github.com/Akisoft41/py-nvtool/releases/download/v0.2.0/py-nvtool.py
 sudo chmod +x py-nvtool.py
 sudo cp -v py-nvtool.py /usr/sbin/py-nvtool
