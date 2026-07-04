@@ -1,0 +1,14 @@
+https://github.com/Akisoft41/py-nvtool/releases
+
+sudo wget https://github.com/Akisoft41/py-nvtool/releases/download/v0.2.0/py-nvtool.py
+sudo chmod +x py-nvtool.py
+sudo cp -v py-nvtool.py /usr/sbin/py-nvtool
+
+#5070Ti:
+sudo py-nvtool --setcoreoffset 150 --setmemoffset 800
+
+#3090:
+sudo py-nvtool --setcoreoffset 150 --setmemoffset 600
+
+#4070TiS:
+sudo py-nvtool --setcoreoffset 150 --setmemoffset 800
