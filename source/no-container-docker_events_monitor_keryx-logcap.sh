@@ -19,6 +19,12 @@ SHUTDOWN_REQUESTED=0
 # Number of times to check for no running containers
 : "${IDLE_CONFIRM_LOOPS:=3}"
 
+# Max size (bytes) the miner log file is allowed to grow to before being
+# trimmed back down to the tail end. Miners can run for weeks at a time
+# without a restart, so we can't rely on truncate-on-start alone.
+: "${MAX_LOG_BYTES:=10485760}"   # 10 MB default, override via env
+: "${LOG_CHECK_INTERVAL:=60}"    # seconds between size checks
+
 # ---------------------------------------------------------
 # SIGNAL HANDLER
 # ---------------------------------------------------------
@@ -427,11 +433,21 @@ start_miner() {
     mkdir -p /tmp/miner_pids
     
     # Start in screen session
+    LOG_FILE="/tmp/${SCREEN_NAME}_miner.log"
+    : > "$LOG_FILE"   # truncate/reset on each fresh start
+
     screen -fn -dmS "$SCREEN_NAME" bash -c \
         'echo "Miner starting at $(date)"; \
          echo "API: '"$API_HOST:$API_PORT"'"; \
          echo "$$" > "'"/tmp/${SCREEN_NAME}_miner.pid"'"; \
          trap '\''echo "Miner exiting at $(date)"; rm -f "'"/tmp/${SCREEN_NAME}_miner.pid"'"'\'' EXIT; \
+         ( while true; do \
+             sleep '"$LOG_CHECK_INTERVAL"'; \
+             sz=$(stat -c%s "'"$LOG_FILE"'" 2>/dev/null || echo 0); \
+             if [ "$sz" -gt '"$MAX_LOG_BYTES"' ]; then \
+                 tail -c '"$MAX_LOG_BYTES"' "'"$LOG_FILE"'" > "'"$LOG_FILE"'.tmp" 2>/dev/null && mv "'"$LOG_FILE"'.tmp" "'"$LOG_FILE"'"; \
+             fi; \
+           done ) & \
          '"$START_CMD"' 2>&1 | tee -a "'"$LOG_FILE"'"'
     
     # Wait a moment for PID file creation
