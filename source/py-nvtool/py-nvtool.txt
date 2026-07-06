@@ -13,4 +13,8 @@ sudo cp -v py-nvtool.py /usr/sbin/py-nvtool
   --setcoreoffset NUM           Set CORE clocks offset (MHz), 0 - default
   --setmemoffset NUM            Set MEM clocks offset (MHz), 0 - default
 
+sudo wget https://github.com/Akisoft41/py-nvtool/releases/download/v0.2.0/py-nvtool.py
+sudo chmod +x py-nvtool.py
+sudo cp -v py-nvtool.py /usr/sbin/py-nvtool
+
 sudo py-nvtool --setcoreoffset 150 --setmemoffset 800
