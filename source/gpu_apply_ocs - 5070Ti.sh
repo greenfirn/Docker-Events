@@ -2,7 +2,7 @@ sudo tee /usr/local/bin/gpu_apply_ocs.sh > /dev/null <<'EOF'
 #!/bin/bash
 echo "Setting 5070Ti for mining... Keryx"
 
-py-nvtool --setcoreoffset 150 --setmemoffset 800
+py-nvtool --setcore 2490 --setcoreoffset 250 --setmemoffset 1000
 
 EOF
 
