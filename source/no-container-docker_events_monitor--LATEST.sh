@@ -427,7 +427,7 @@ start_miner() {
     mkdir -p /tmp/miner_pids
     
     # Start in screen session
-    screen -dmS "$SCREEN_NAME" bash -c \
+    screen -fn -dmS "$SCREEN_NAME" bash -c \
         'echo "Miner starting at $(date)"; \
          echo "API: '"$API_HOST:$API_PORT"'"; \
          echo "$$" > "'"/tmp/${SCREEN_NAME}_miner.pid"'"; \
