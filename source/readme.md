@@ -1,1 +1,1 @@
-still figuring out screen parsing for keryx ... screen session 'sleeps' its output after a while
+now using log file for parsing keryx
