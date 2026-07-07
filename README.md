@@ -11,7 +11,7 @@
 - Starts/stops mining when no containers are running / when an active idle container appears or disappears
 - Applies or resets GPU overclocks based on container state
 - for testing: start, stop, or pause an idle job on platform, watch logs etc to confirm expected behavior
-- Includes `-retry-on-failure` versions that loop on Docker events in case of disconnects/failures
+- Includes `-retry-on-failure` in most examples that loop on Docker events in case of disconnects/failures
 
 See the `source/` folder for the full package: install scripts, miners, and rig configs.
 
