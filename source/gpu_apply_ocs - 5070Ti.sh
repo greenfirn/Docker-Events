@@ -1,3 +1,5 @@
+## https://github.com/Akisoft41/py-nvtool/releases
+
 sudo tee /usr/local/bin/gpu_apply_ocs.sh > /dev/null <<'EOF'
 #!/bin/bash
 echo "Setting 5070Ti for mining... Keryx"
