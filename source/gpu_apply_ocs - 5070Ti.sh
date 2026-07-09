@@ -2,7 +2,7 @@ sudo tee /usr/local/bin/gpu_apply_ocs.sh > /dev/null <<'EOF'
 #!/bin/bash
 echo "Setting 5070Ti for mining... Keryx"
 
-py-nvtool --setcore 2490 --setcoreoffset 250 --setmemoffset 1000
+py-nvtool --setcore 2490 --setcoreoffset 225 --setmemoffset 1500
 
 EOF
 
@@ -11,3 +11,19 @@ sudo chmod +x /usr/local/bin/gpu_apply_ocs.sh
 
 # manual test
 sudo /usr/local/bin/gpu_apply_ocs.sh
+
+
+sudo tee /usr/local/bin/gpu_apply_ocs.sh > /dev/null <<'EOF'
+#!/bin/bash
+echo "Setting 5070Ti for mining... Keryx"
+
+py-nvtool --setcore 2490 --setcoreoffset 250 --setmemoffset 1500
+
+EOF
+
+# make it executable
+sudo chmod +x /usr/local/bin/gpu_apply_ocs.sh
+
+# manual test
+sudo /usr/local/bin/gpu_apply_ocs.sh
+
