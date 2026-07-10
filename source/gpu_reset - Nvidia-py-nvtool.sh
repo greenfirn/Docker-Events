@@ -1,3 +1,5 @@
+## https://github.com/Akisoft41/py-nvtool/releases
+
 # -- write gpu reset script --
 
 sudo tee /usr/local/bin/gpu_reset_poststop.sh > /dev/null <<'EOF'
