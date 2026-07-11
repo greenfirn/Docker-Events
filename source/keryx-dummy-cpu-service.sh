@@ -23,7 +23,7 @@ set -o pipefail; \
         tail -c "$MAX_LOG_BYTES" "$LOG_FILE" > "$tmp" 2>/dev/null && cat "$tmp" > "$LOG_FILE" && rm -f "$tmp"; \
     fi; \
   done ) & \
-/home/user/miners/keryx-miner/keryx-miner --mining-address keryx:qz0qun5xt8vr7qkqxyq87dxtfwrskz4va7y4xlvnkmtnrpruwrcuzdw2fzkwg --keryxd-address 127.0.0.1:22110 2>&1 | tee -a "$LOG_FILE"'
+/home/user/miners/keryx-miner/keryx-miner --mining-address keryx:**************** --keryxd-address 127.0.0.1:22110 2>&1 | tee -a "$LOG_FILE"'
 Restart=on-failure
 RestartSec=5
 StandardOutput=journal
