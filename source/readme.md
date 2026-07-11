@@ -1,4 +1,4 @@
-run idle job parallel with clore idle job (empty script ubuntu image etc) ... no-container-docker_events_monitor-clore.sh
+no-container-docker_events_monitor-clore.sh ... run idle job parallel with clore idle job (empty script ubuntu image etc)
 
 no-docker_launcher.sh
 
