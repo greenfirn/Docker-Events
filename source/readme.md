@@ -1,6 +1,8 @@
+-- naming/layout might have changed --
+
 no-container-docker_events_monitor-clore.sh ... run idle job parallel with clore idle job (empty script ubuntu image etc)
 
-podman_events_monitor.sh ... Nosana, havnt used in a while, naming/layout might have changed
+podman_events_monitor.sh ... Nosana podman containers
 
 no-docker_launcher.sh
 
