@@ -1,7 +1,3 @@
-now using log file for parsing keryx
-
-Added:
-
 no-docker_launcher.sh
 
 -- same miner conf,api,etc for no docker systems
