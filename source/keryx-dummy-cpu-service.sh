@@ -11,6 +11,7 @@ WorkingDirectory=/home/user/miners/keryx-miner
 Environment="LOG_FILE=/tmp/gpu_miner.log"
 Environment="MAX_LOG_BYTES=10485760"
 Environment="LOG_CHECK_INTERVAL=60"
+#ExecStopPost=/usr/local/bin/gpu_reset_poststop.sh
 #ExecStartPre=/usr/local/bin/gpu_apply_ocs.sh
 ExecStart=/bin/bash -c '\
 set -o pipefail; \
