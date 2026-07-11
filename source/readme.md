@@ -1,5 +1,7 @@
 no-container-docker_events_monitor-clore.sh ... run idle job parallel with clore idle job (empty script ubuntu image etc)
 
+podman_events_monitor.sh ... Nosana, havnt used in a while
+
 no-docker_launcher.sh
 
 -- same miner conf,api,etc for no docker systems
