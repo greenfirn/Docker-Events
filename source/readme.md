@@ -1,3 +1,5 @@
+run idle job parallel with clore idle job (empty script ubuntu image etc) ... no-container-docker_events_monitor-clore.sh
+
 no-docker_launcher.sh
 
 -- same miner conf,api,etc for no docker systems
