@@ -1,4 +1,4 @@
--- naming/layout might have changed --
+-- naming/layout may have changed --
 
 no-container-docker_events_monitor-clore.sh ... run idle job parallel with clore idle job (empty script ubuntu image etc)
 
