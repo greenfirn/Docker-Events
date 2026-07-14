@@ -52,4 +52,4 @@ rocm-smi                    # AMD
 
 ## Credits
 
-Some portions of this project were developed with assistance from ChatGPT and DeepSeek.
+Some portions of this project were developed with assistance from ChatGPT, DeepSeek, Claude AI.
