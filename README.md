@@ -71,7 +71,7 @@ Built with assistance from ChatGPT, DeepSeek, Claude ai
 
 ## Support
 
-If this project's useful to you, donations (ETH network) are appreciated:
+If you find this project useful consider donating, donations (ETH network) are appreciated:
 
 <img src="https://assets.coingecko.com/coins/images/279/standard/ethereum.png?1696501628" width="20" height="20" /> <img src="https://raw.githubusercontent.com/octaspace/logos/main/logo.svg" width="16" height="16" /> <img src="https://assets.coingecko.com/coins/images/30959/standard/CLORE_Logo_200x200_PNG.png?1696529798" width="16" height="16" />
 
