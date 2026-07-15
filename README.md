@@ -17,7 +17,7 @@
 - for testing: start, stop, or pause an idle job on platform, watch logs etc to confirm expected behavior
 - Includes `-retry-on-failure` in most examples that loop on Docker events in case of disconnects/failures
 
-See the `source/` folder for the full package: install scripts, miners, and rig configs.
+See `source` for latest examples and the full package: install scripts, miners, and rig configs.
 
 ---
 
