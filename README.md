@@ -4,6 +4,10 @@
 
 ---
 
+'source/no-container-docker_events_monitor--LATEST...' is most recent updated, others may not work as is
+
+-- naming/layout may have changed for clore, nosana, etc --
+
 ## Updates
 
 - custom miner example '[source/peakminer-custom-gpu.sh](https://github.com/greenfirn/Docker-Events/blob/main/source/peakminer-custom-gpu.sh)'
