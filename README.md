@@ -1,6 +1,6 @@
 # Docker Events
 
-> ⚠️ **Use extreme caution with any custom scripts — you're risking your host or account being banned.** Test thoroughly before relying on this... not a good option for VastAI
+> ⚠️ **Use extreme caution with any custom scripts — you're risking your host or account being banned.** Test thoroughly before relying on this... not a good option for VastAI ... keep in mind power limit while idle mining will be what is shown in marketplace
 
 ---
 
