@@ -1,3 +1,6 @@
+1. 'write - script files--LATEST'
+2. 
+
 -- naming/layout may have changed --
 
 no-container-docker_events_monitor-clore.sh ... run idle job parallel with clore idle job (empty script ubuntu image etc)
