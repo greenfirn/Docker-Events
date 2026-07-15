@@ -6,7 +6,7 @@
 
 ## Updates
 
-- custom miner example 'source/peakminer-custom-gpu.sh'
+- custom miner example '[source/peakminer-custom-gpu.sh](https://github.com/greenfirn/Docker-Events/blob/main/source/peakminer-custom-gpu.sh)'
 
 ## What the scripts can do
 
