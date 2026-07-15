@@ -10,14 +10,14 @@
 
 ## What the scripts can do
 
+See `source` for latest examples and the full package: install scripts, miners, and rig configs.
+
 - Watch Docker/Podman container events on a rig and automatically start/stop mining and/or apply overclocks based on container state — Clore, Octaspace, Nosana (Podman), VastAI (CPU mining only, testing)
 - more recent files in source, easiest to use 'no-container-docker_events_monitor'
 - Start/stop mining when no containers are running / when an active idle container appears or disappears
 - Applies or resets GPU overclocks based on container state
 - for testing: start, stop, or pause an idle job on platform, watch logs etc to confirm expected behavior
 - Includes `-retry-on-failure` in most examples that loop on Docker events in case of disconnects/failures
-
-See `source` for latest examples and the full package: install scripts, miners, and rig configs.
 
 ---
 
