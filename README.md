@@ -6,9 +6,9 @@
 
 ## Notes
 
-See `source` for latest examples and the full package: install scripts, miners, and rig configs.
+-- See `source` for latest examples and the full package: install scripts, miners, and rig configs. --
 
-'source/no-container-docker_events_monitor--LATEST...' is most recent updated, others may not work as is
+-- 'source/no-container-docker_events_monitor--LATEST...' is most recent updated, others may not work as is --
 
 -- naming/layout may have changed for clore, nosana, etc --
 
