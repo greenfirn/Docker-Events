@@ -7,6 +7,8 @@
 
 -- naming/layout may have changed for clore, nosana, etc --
 
+'no-container-docker_events_monitor--LATEST...' for octaspace
+
 'source/manual_start_gpu.sh', 'source/manual_stop_gpu.sh' another option for octaspace start/stop idle miner (sudo manual_...)
 
 'no-container-docker_events_monitor-clore.sh' ... run idle job parallel with clore idle job (empty script ubuntu image etc)
