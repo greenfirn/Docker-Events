@@ -1,7 +1,7 @@
 1. 'write - script files--LATEST...'
 2. 'write - api.conf'
 3. 'write - miner_conf.sh'
-4. 'no-container-docker_events_monitor--LATEST...', clore, etc
+4. 'no-container-docker_events_monitor--LATEST...', clore, etc or 'no-docker_launcher.sh'
 5. 'write - rig-gpu.sh' / 'keryx-custom_miner-rig-gpu.sh' / 'peakminer-custom-gpu.sh' ... rig conf examples
 6. 'py-nvtool/py-nvtool.txt' -- 'gpu_reset - Nvidia-py-nvtool.sh', if needed 'gpu_apply_ocs - 5070Ti.sh'
 
