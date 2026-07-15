@@ -4,6 +4,10 @@
 
 ---
 
+## Updates
+
+- custom miner example 'source/peakminer-custom-gpu.sh'
+
 ## What the scripts can do
 
 - Watch Docker/Podman container events on a rig and automatically start/stop mining and/or apply overclocks based on container state — Clore, Octaspace, Nosana (Podman), VastAI (CPU mining only, testing)
