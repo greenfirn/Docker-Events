@@ -4,6 +4,10 @@
 
 ---
 
+## Notes
+
+See `source` for latest examples and the full package: install scripts, miners, and rig configs.
+
 'source/no-container-docker_events_monitor--LATEST...' is most recent updated, others may not work as is
 
 -- naming/layout may have changed for clore, nosana, etc --
@@ -16,8 +20,6 @@
 - may need 'sudo apt install unzip' for custom miner zip archieves
 
 ## What the scripts can do
-
-See `source` for latest examples and the full package: install scripts, miners, and rig configs.
 
 - Watch Docker/Podman container events on a rig and automatically start/stop mining and/or apply overclocks based on container state — Clore, Octaspace, Nosana (Podman), VastAI (CPU mining only, testing)
 - more recent files in source, easiest to use 'no-container-docker_events_monitor'
