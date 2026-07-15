@@ -1,4 +1,4 @@
-1. 'write - script files--LATEST'
+1. 'write - script files--LATEST...'
 2. 'write - api.conf'
 3. 'write - miner_conf.sh'
 4. 'no-container-docker_events_monitor--LATEST_keryx-logcap.sh', clore, etc
