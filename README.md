@@ -8,6 +8,8 @@
 
 -- naming/layout may have changed for clore, nosana, etc --
 
+-- oc reset/apply using nvidia-smi may not be reliable under all situations --
+
 ## Updates
 
 - custom miner example '[source/peakminer-custom-gpu.sh](https://github.com/greenfirn/Docker-Events/blob/main/source/peakminer-custom-gpu.sh)'
