@@ -5,7 +5,7 @@
 5. 'write - rig-gpu.sh' / 'keryx-custom_miner-rig-gpu.sh' / 'peakminer-custom-gpu.sh' ... rig conf examples
 6. 'py-nvtool/py-nvtool.txt' -- 'gpu_reset - Nvidia-py-nvtool.sh', if needed 'gpu_apply_ocs - 5070Ti.sh'
 
--- naming/layout may have changed --
+-- naming/layout may have changed for clore, nosana, etc --
 
 no-container-docker_events_monitor-clore.sh ... run idle job parallel with clore idle job (empty script ubuntu image etc)
 
