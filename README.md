@@ -8,7 +8,7 @@
 
 -- naming/layout may have changed for clore, nosana, etc --
 
--- oc reset/apply using nvidia-smi may not be reliable under all situations --
+-- oc reset/apply using 'nvidia-smi' may not be reliable under all situations --
 
 ## Updates
 
