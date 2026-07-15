@@ -693,42 +693,6 @@ sudo systemctl daemon-reload
 sudo systemctl enable docker_events_cpu.service
 sudo systemctl restart docker_events_cpu.service
 
-sudo systemctl restart docker_events_gpu.service
-
-# -- write CPU service --
-sudo tee /etc/systemd/system/docker_events_cpu.service > /dev/null <<'EOF'
-[Unit]
-Description=Docker Events CPU Miner Monitor
-After=docker.service
-Requires=docker.service
-
-[Service]
-Type=simple
-User=root
-Environment="OC_FILE=/home/user/rig-cpu.conf"
-Environment="IDLE_CONFIRM_LOOPS=3"
-ExecStartPre=/bin/chmod +x /usr/local/bin/docker_events_universal.sh
-ExecStart=/usr/local/bin/docker_events_universal.sh
-#Environment="MINER_CONF=/home/user/miner.conf"
-#Environment="API_CONF=/home/user/api.conf"
-Restart=always
-RestartSec=10
-KillSignal=SIGTERM
-TimeoutStopSec=30
-StandardOutput=journal
-StandardError=journal
-SendSIGKILL=no
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-sudo systemctl daemon-reload
-
-sudo systemctl enable docker_events_cpu.service
-
-sudo systemctl restart docker_events_cpu.service
-
 # follow logs
 sudo journalctl -u docker_events_gpu.service -f
 sudo journalctl -u docker_events_cpu.service -f
