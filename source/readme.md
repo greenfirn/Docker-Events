@@ -2,7 +2,7 @@
 2. 'write - api.conf'
 3. 'write - miner_conf.sh'
 4. 'no-container-docker_events_monitor--LATEST_keryx-logcap.sh', clore, etc
-5. 'write - rig-gpu.sh' ... rig conf examples
+5. 'write - rig-gpu.sh' / 'keryx-custom_miner-rig-gpu.sh' ... rig conf examples
 
 -- naming/layout may have changed --
 
