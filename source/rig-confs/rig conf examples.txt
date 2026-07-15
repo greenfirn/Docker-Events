@@ -8,7 +8,10 @@
 # -- %WARTHOG_TARGET%        auto set WARTHOG_TARGET in ARGS (24/32 thread CPU)                             --
 # -- %CPU_THREADS%           cpu total threads -1 (and affinity when xmrig) in ARGS see '03-cpu_threads.sh' --
 # -- SCREEN_NAME 0 "gpu"     different screen name than miner name                                          --
-# -- CUSTOM_MINER 0 "path"   custom binary file                                                             --
+# custom miner download url
+# -- CUSTOM_MINER_URL 0 ""
+# custom miner binary name
+# -- CUSTOM_MINER 0 ""                                                             --
 
 # -- conf files keep as 'tee' without sudo so they can be easily overwritten in home folder using ssh       --
 # -- if write error,change owner back to user: sudo chown $USER:$USER *.conf or sudo chown user:user *.conf --
