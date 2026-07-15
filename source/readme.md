@@ -6,7 +6,7 @@
 2. 'write - api.conf'
 3. 'write - miner_conf.sh'
 4. 'no-docker_launcher.sh' or 'no-container-docker_events_monitor--LATEST...', clore, etc
-5. 'rig-configs'
+5. 'rig-confs'
 6. 'py-nvtool/py-nvtool.txt' -- 'overclocks'
 
 'no-container-docker_events_monitor--LATEST...' for octaspace
