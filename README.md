@@ -11,7 +11,7 @@
 ## Updates
 
 - custom miner example '[source/peakminer-custom-gpu.sh](https://github.com/greenfirn/Docker-Events/blob/main/source/peakminer-custom-gpu.sh)'
-- may need 'sudo apt install unzip' for zip archieves
+- may need 'sudo apt install unzip' for custom miner zip archieves
 
 ## What the scripts can do
 
