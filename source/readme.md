@@ -1,6 +1,7 @@
 1. 'write - script files--LATEST'
 2. 'write - api.conf'
-3. 
+3. 'write - miner_conf.sh'
+4. 
 
 -- naming/layout may have changed --
 
