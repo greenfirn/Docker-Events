@@ -7,7 +7,7 @@
 -- naming/layout may have changed for clore, nosana, etc --
 
 1. 'write - script files--LATEST...' (see source/lib to explore original seperate files)
-2. 'write - api.conf' -- api settings
+2. 'write - api.conf' -- miner api settings
 3. 'write - miner_conf.sh' -- miner versions
 4. 'no-docker_launcher.sh' or 'no-container-docker_events_monitor--LATEST', clore, etc
 5. 'rig-confs' -- "flightsheets"
