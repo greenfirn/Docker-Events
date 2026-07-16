@@ -9,7 +9,7 @@
 1. 'write - script files--LATEST...' (see source/lib to explore original seperate files)
 2. 'write - api.conf'
 3. 'write - miner_conf.sh'
-4. 'no-docker_launcher.sh' or 'no-container-docker_events_monitor--LATEST...', clore, etc
+4. 'no-docker_launcher.sh' or 'no-container-docker_events_monitor--LATEST', clore, etc
 5. 'rig-confs'
 6. 'py-nvtool/py-nvtool.txt' -- 'overclocks'
 
