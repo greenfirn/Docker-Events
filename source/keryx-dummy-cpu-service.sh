@@ -15,7 +15,7 @@ Environment="LOG_CHECK_INTERVAL=60"
 #ExecStartPre=/usr/local/bin/gpu_apply_ocs.sh
 ExecStart=/bin/bash -c '\
 set -o pipefail; \
-: > "$LOG_FILE"; \
+rm -f "$LOG_FILE"; \
 ( while true; do \
     sleep "$LOG_CHECK_INTERVAL"; \
     sz=$(stat -c%%s "$LOG_FILE" 2>/dev/null || echo 0); \
