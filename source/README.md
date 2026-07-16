@@ -11,7 +11,7 @@
 3. 'write - miner_conf.sh' -- miner versions
 4. 'no-docker_launcher.sh' or 'no-container-docker_events_monitor--LATEST', clore, etc
 5. 'rig-confs' -- "flightsheets"
-6. 'py-nvtool/py-nvtool.txt' -- 'overclocks'
+6. 'py-nvtool/py-nvtool.txt' -- 'overclocks' Reset / Apply
 
 'no-container-docker_events_monitor--LATEST...' for octaspace
 
