@@ -7,7 +7,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/home/user/miners/keryx-miner
+WorkingDirectory=/home/user/miners/keryx-miner/current
 Environment="LOG_FILE=/tmp/gpu_miner.log"
 Environment="MAX_LOG_BYTES=10485760"
 Environment="LOG_CHECK_INTERVAL=60"
@@ -24,7 +24,7 @@ set -o pipefail; \
         tail -c "$MAX_LOG_BYTES" "$LOG_FILE" > "$tmp" 2>/dev/null && cat "$tmp" > "$LOG_FILE" && rm -f "$tmp"; \
     fi; \
   done ) & \
-/home/user/miners/keryx-miner/keryx-miner --mining-address keryx:**************** --keryxd-address 127.0.0.1:22110 2>&1 | tee -a "$LOG_FILE"'
+/home/user/miners/keryx-miner/current/keryx-miner --mining-address keryx:**************** --keryxd-address 127.0.0.1:22110 2>&1 | tee -a "$LOG_FILE"'
 Restart=on-failure
 RestartSec=5
 StandardOutput=journal
