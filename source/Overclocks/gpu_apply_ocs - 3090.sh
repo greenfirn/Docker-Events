@@ -1,8 +1,9 @@
 sudo tee /usr/local/bin/gpu_apply_ocs.sh > /dev/null <<'EOF'
 #!/bin/bash
+
 echo "Setting 3090 for mining... Keryx"
 
-py-nvtool --setcore 1650 --setcoreoffset 200 --setmemoffset 1000
+py-nvtool --setcore 1650 --setcoreoffset 200 --setmem 0 --setmemoffset 1000
 
 EOF
 
