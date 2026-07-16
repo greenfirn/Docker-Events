@@ -1,6 +1,6 @@
 ** fixed log trim, was just stopping at 10mb 'no-container-docker_events_monitor--LATEST.sh' **
 
--- rig-confs/keryx-custom-rig-gpu.sh creates huge log file while install/download model --
+-- 'rig-confs/keryx-custom-rig-gpu.sh' creates huge log file while install/download model --
 
 'no-container-docker_events_monitor--LATEST...' is most recent updated, others may not work as is
 
