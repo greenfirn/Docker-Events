@@ -330,7 +330,7 @@ start_miner() {
     
     # Start in screen session
     LOG_FILE="/tmp/${SCREEN_NAME}_miner.log"
-    : > "$LOG_FILE"   # truncate/reset on each fresh start
+    rm -f "$LOG_FILE"   # delete log on each fresh start
 
     screen -fn -dmS "$SCREEN_NAME" bash -c \
         'echo "Miner starting at $(date)"; \
@@ -341,7 +341,7 @@ start_miner() {
              sleep '"$LOG_CHECK_INTERVAL"'; \
              sz=$(stat -c%s "'"$LOG_FILE"'" 2>/dev/null || echo 0); \
              if [ "$sz" -gt '"$MAX_LOG_BYTES"' ]; then \
-                 tail -c '"$MAX_LOG_BYTES"' "'"$LOG_FILE"'" > "'"$LOG_FILE"'.tmp" 2>/dev/null && mv "'"$LOG_FILE"'.tmp" "'"$LOG_FILE"'"; \
+                 tail -c '"$MAX_LOG_BYTES"' "'"$LOG_FILE"'" > "'"$LOG_FILE"'.tmp" 2>/dev/null && cat "'"$LOG_FILE"'.tmp" > "'"$LOG_FILE"'" && rm -f "'"$LOG_FILE"'.tmp"; \
              fi; \
            done ) & \
          '"$START_CMD"' 2>&1 | tee -a "'"$LOG_FILE"'"'
