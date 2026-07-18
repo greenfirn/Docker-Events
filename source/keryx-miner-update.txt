@@ -4,7 +4,7 @@ start flightsheet with new url, stop after it starts downloading model...
 
 download new model to windows pc
 
-# copy model from windows pc to rigs
+# windows cmd window copy model from windows pc to rigs
 scp C:\Users\Username\Downloads\GLM-4-9B-0414.zip user@10.10.0.101:/home/user/
 
 # remove partial downloaded model files
