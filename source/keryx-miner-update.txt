@@ -9,13 +9,10 @@ download new model to windows pc
 # copy model from windows pc to rigs
 scp C:\Users\Username\Downloads\GLM-4-9B-0414.zip user@10.10.0.101:/home/user/
 
-# move zip to models folder
-sudo mv -v /home/user/GLM-4-9B-0414.zip /home/user/miners/keryx-miner/current/models/
-
 # remove partial downloaded model files
 sudo rm -rv /home/user/miners/keryx-miner/current/models/GLM-4-9B-0414
 
 # unzip model
-sudo unzip /home/user/miners/keryx-miner/current/models/GLM-4-9B-0414.zip -d /home/user/miners/keryx-miner/current/models/
+sudo unzip /home/user/GLM-4-9B-0414.zip -d /home/user/miners/keryx-miner/current/models/
 
 sudo ls -lh /home/user/miners/keryx-miner/current/models/
