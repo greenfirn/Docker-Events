@@ -46,16 +46,16 @@ reset_nvidia_gpus() {
         # Set power limit based on user input or default
         if [ -n "$POWER_LIMIT" ]; then
             echo "[GPU-RESET] Setting NVIDIA GPU $id power limit → ${POWER_LIMIT}W (user specified)"
-            nvidia-smi -i "$id" --power-limit="$POWER_LIMIT" >/dev/null 2>&1
-			#py-nvtool -i "$id" --setpl "$POWER_LIMIT"
+            #nvidia-smi -i "$id" --power-limit="$POWER_LIMIT" >/dev/null 2>&1
+			py-nvtool -i "$id" --setpl "$POWER_LIMIT"
         else
             # Query default safe power limit
             default_pl=$(nvidia-smi -i "$id" --query-gpu=power.default_limit --format=csv,noheader,nounits 2>/dev/null)
             
             if [ -n "$default_pl" ]; then
                 echo "[GPU-RESET] Setting NVIDIA GPU $id power limit → ${default_pl}W (default)"
-                nvidia-smi -i "$id" --power-limit="$default_pl" >/dev/null 2>&1
-				#py-nvtool -i "$id" --setpl "$default_pl"
+                #nvidia-smi -i "$id" --power-limit="$default_pl" >/dev/null 2>&1
+				py-nvtool -i "$id" --setpl "$default_pl"
             else
                 echo "[GPU-RESET] Skipping NVIDIA GPU $id power limit (no default PL found)"
             fi
