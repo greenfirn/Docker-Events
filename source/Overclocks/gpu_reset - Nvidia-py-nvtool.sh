@@ -40,14 +40,14 @@ reset_nvidia_gpus() {
         
         # Reset clocks
         py-nvtool -i "$id" --setcore 0 --setmem 0 --setcoreoffset 0 --setmemoffset 0
-		#nvidia-smi -i "$id" -rgc >/dev/null 2>&1
+	    #nvidia-smi -i "$id" -rgc >/dev/null 2>&1
         #nvidia-smi -i "$id" -rmc >/dev/null 2>&1
         
         # Set power limit based on user input or default
         if [ -n "$POWER_LIMIT" ]; then
             echo "[GPU-RESET] Setting NVIDIA GPU $id power limit → ${POWER_LIMIT}W (user specified)"
             #nvidia-smi -i "$id" --power-limit="$POWER_LIMIT" >/dev/null 2>&1
-			py-nvtool -i "$id" --setpl "$POWER_LIMIT"
+	        py-nvtool -i "$id" --setpl "$POWER_LIMIT"
         else
             # Query default safe power limit
             default_pl=$(nvidia-smi -i "$id" --query-gpu=power.default_limit --format=csv,noheader,nounits 2>/dev/null)
@@ -55,7 +55,7 @@ reset_nvidia_gpus() {
             if [ -n "$default_pl" ]; then
                 echo "[GPU-RESET] Setting NVIDIA GPU $id power limit → ${default_pl}W (default)"
                 #nvidia-smi -i "$id" --power-limit="$default_pl" >/dev/null 2>&1
-				py-nvtool -i "$id" --setpl "$default_pl"
+		        py-nvtool -i "$id" --setpl "$default_pl"
             else
                 echo "[GPU-RESET] Skipping NVIDIA GPU $id power limit (no default PL found)"
             fi
@@ -80,4 +80,4 @@ sudo chmod +x /usr/local/bin/gpu_reset_poststop.sh
 sudo /usr/local/bin/gpu_reset_poststop.sh
 
 # to apply custom power limit 150 watts
-sudo /usr/local/bin/gpu_reset_poststop.sh 150
+# sudo /usr/local/bin/gpu_reset_poststop.sh 150
