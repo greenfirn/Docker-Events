@@ -2,8 +2,6 @@ https://github.com/Keryx-Labs/keryx-miner/releases/download/v0.3.7-OPoI/keryx-mi
 
 start flightsheet with new url, stop after it starts downloading model...
 
-# miner update:
-
 download new model to windows pc
 
 # copy model from windows pc to rigs
