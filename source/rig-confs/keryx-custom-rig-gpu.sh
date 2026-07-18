@@ -11,6 +11,7 @@ ALGO 0 ""
 POOL 0 ""
 WALLET 0 ""
 PASS 0 ""
+# add to cmd before first run or save escrow.key to new location and add to cmd... --escrow-key-file /home/user/miners/escrow.key
 ARGS 0 "--mining-address keryx:****************** --keryxd-address 10.20.0.105:22110"
 EOF
 
