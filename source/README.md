@@ -1,3 +1,5 @@
+keryx-miner after fist run move and set location in cmd... --escrow-key-file /home/user/miners/escrow.key
+
 ** fixed log trim, was just stopping at 10mb 'no-container-docker_events_monitor--LATEST.sh' **
 
 -- 'rig-confs/keryx-custom-rig-gpu.sh' creates huge log file while install/download model --
