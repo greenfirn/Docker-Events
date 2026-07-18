@@ -1,6 +1,10 @@
 https://github.com/Keryx-Labs/keryx-miner/releases/download/v0.3.7-OPoI/keryx-miner-v0.3.7-OPoI-linux-gnu-amd64.zip
 
+start flightsheet with new url, stop after it starts downloading model...
+
 # miner update:
+
+download new model to windows pc
 
 # copy model from windows pc
 scp C:\Users\Username\Downloads\GLM-4-9B-0414.zip user@10.10.0.101:/home/user/
