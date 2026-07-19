@@ -3,7 +3,7 @@
 
 keryx-miner:
 
-make copy of models before updating... version change removes old miner folder
+make copy of models before updating... version change removes old miner folder '/home/user/keryx-miner/current'
 
 add to cmd before first run or save escrow.key to new location and add to cmd... --escrow-key-file /home/user/miners/escrow.key
 
