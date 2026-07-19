@@ -7,10 +7,6 @@ make copy of models before updating... version change removes old miner folder
 
 add to cmd before first run or save escrow.key to new location and add to cmd... --escrow-key-file /home/user/miners/escrow.key
 
-** fixed log trim, was just stopping at 10mb 'no-container-docker_events_monitor--LATEST.sh' **
-
--- 'rig-confs/keryx-custom-rig-gpu.sh' creates huge log file while install/download model --
-
 'no-container-docker_events_monitor--LATEST...' is most recent updated, others may not work as is
 
 -- naming/layout may have changed for clore, nosana, etc --
