@@ -1,3 +1,6 @@
+** version update only: stop miner save/move models folder from /home/user/keryx-miner/current to a temperary location like /home/user/miners
+start new miner to create miner files, stop miner remove the partially downloaded model files copy back original, start miner **
+
 https://github.com/Keryx-Labs/keryx-miner/releases/download/v0.3.7-OPoI/keryx-miner-v0.3.7-OPoI-linux-gnu-amd64.zip
 
 start flightsheet with new url, stop after it starts downloading model...
