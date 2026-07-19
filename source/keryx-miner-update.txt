@@ -16,6 +16,9 @@ sudo unzip /home/user/GLM-4-9B-0414.zip -d /home/user/miners/keryx-miner/current
 # check it extracted
 sudo ls -lh /home/user/miners/keryx-miner/current/models/
 
+# check model size
+sudo du -sh /home/user/miners/keryx-miner/current/models/GLM-4-9B-0414
+
 # remove zip
 sudo rm -v /home/user/GLM-4-9B-0414.zip
 
