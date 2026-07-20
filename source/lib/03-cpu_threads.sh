@@ -1,3 +1,4 @@
+sudo tee /usr/local/bin/lib/03-cpu_threads.sh > /dev/null <<'EOF'
 TOTAL_THREADS=$(nproc)
 CPU_THREADS=$((TOTAL_THREADS - 1))
 
@@ -25,3 +26,4 @@ if [[ "$MINER_NAME" == "xmrig" && "$ALGO" == "rx/0" ]]; then
         AUTOFILL_CPU="$RX_THREADS --cpu-affinity=$RX_MASK"
     fi
 fi
+EOF

@@ -1,3 +1,4 @@
+sudo tee /usr/local/bin/lib/04-algo_config.sh > /dev/null <<'EOF'
 WARTHOG_TARGET=""
 
 if [[ "$ALGO" == "warthog" ]]; then
@@ -9,3 +10,6 @@ if [[ "$ALGO" == "warthog" ]]; then
         WARTHOG_TARGET=30000000
     fi
 fi
+
+EOF
+ls -lh /usr/local/bin/lib/

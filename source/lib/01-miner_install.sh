@@ -1,3 +1,4 @@
+sudo tee /usr/local/bin/lib/01-miner_install.sh > /dev/null <<'EOF'
 ###############################################
 #  MINER INSTALL
 ###############################################
@@ -18,6 +19,13 @@ GMINER_VERSION=$(get_rig_conf "$MINER_CONF" "GMINER_VERSION" "0")
 TEAMREDMINER_VERSION=$(get_rig_conf "$MINER_CONF" "TEAMREDMINER_VERSION" "0")
 TREXMINER_VERSION=$(get_rig_conf "$MINER_CONF" "TREXMINER_VERSION" "0")
 
+# Custom miner (download URL + expected binary name) — comes from rig.conf,
+# not miner.conf, since it's rig-specific rather than a tracked build version.
+#   CUSTOM_MINER_URL 0 "http://some-path/miner.tar.gz"
+#   CUSTOM_MINER     0 "miner-binary-name"
+CUSTOM_MINER_URL=$(get_rig_conf "$CFG_FILE" "CUSTOM_MINER_URL" "0")
+CUSTOM_MINER_NAME=$(get_rig_conf "$CFG_FILE" "CUSTOM_MINER" "0")
+
 ###########################################
 # Parse command line arguments
 ###########################################
@@ -34,8 +42,8 @@ if [ $# -eq 0 ]; then
         echo "Using MINER=$CONFIG_MINER from rig.conf"
     else
         # No config miner specified - install all
-        INSTALL_ALL=true
-        echo "No miner specified in config or arguments - installing all"
+        INSTALL_ALL=false
+        echo "No miner specified in config or arguments - skipping install"
     fi
 else
     # Use command line arguments
@@ -61,6 +69,9 @@ echo "  OneZeroMiner: $ONEZEROMINER_VERSION"
 echo "  GMiner:       $GMINER_VERSION"
 echo "  TeamRedMiner: $TEAMREDMINER_VERSION"
 echo "  TRex:         $TREXMINER_VERSION"
+if [ -n "$CUSTOM_MINER_URL" ] && [ "$CUSTOM_MINER_URL" != "0" ]; then
+    echo "  Custom:       ${CUSTOM_MINER_NAME:-<unset>} <- $CUSTOM_MINER_URL"
+fi
 echo "==============================================="
 
 if [ "$INSTALL_ALL" = true ]; then
@@ -156,21 +167,107 @@ install_miner() {
 }
 
 ###########################################
+# Helper — Install a custom miner from CUSTOM_MINER_URL
+#
+# Installs to $BASE_DIR/<bin_name>/<version> (keyed by the binary
+# name itself, same as the built-in miners), NOT a shared "custom"
+# folder — this way multiple different custom miners (each with
+# their own CUSTOM_MINER binary name) can coexist without one
+# install's cleanup evicting another's.
+#
+# Unlike the built-in miners, a custom miner has no known version
+# number and no known archive layout, so this:
+#   - derives a stable pseudo-version from the URL (so it only
+#     re-downloads when the URL actually changes)
+#   - picks the right tar/unzip flags from the file extension
+#   - tries --strip-components=1 first (most releases ship a
+#     top-level folder), then falls back to a flat extract if
+#     the expected binary isn't found afterward
+###########################################
+install_custom_miner() {
+    local url="$1"
+    local bin_name="$2"
+
+    local file
+    file="$(basename "$url")"
+
+    local version
+    version="$(echo -n "$url" | md5sum | cut -d' ' -f1)"
+
+    local miner_dir="$BASE_DIR/$bin_name/$version"
+    local bin_path="$miner_dir/$bin_name"
+
+    if [ ! -f "$bin_path" ]; then
+        echo ""
+        echo "==== Installing CUSTOM_MINER ($bin_name) ===="
+        rm -rf "$miner_dir"
+        mkdir -p "$miner_dir"
+        cd "$miner_dir"
+
+        download_with_retry "$file" "$url"
+
+        echo "  Extracting..."
+        case "$file" in
+            *.tar.gz|*.tgz)  tar -xzf "$file" --strip-components=1 ;;
+            *.tar.xz|*.txz)  tar -xJf "$file" --strip-components=1 ;;
+            *.tar.bz2)       tar -xjf "$file" --strip-components=1 ;;
+            *.tar)           tar -xf  "$file" --strip-components=1 ;;
+            *.zip)           unzip -o -q "$file" ;;
+            *)
+                echo "ERROR: Unrecognized archive extension for '$file' — cannot extract."
+                rm -f "$file"
+                exit 1
+                ;;
+        esac
+
+        # Some archives have no top-level folder, so --strip-components=1
+        # would have eaten real content. Retry as a flat extract if the
+        # expected binary still isn't there.
+        if [ ! -f "$bin_name" ]; then
+            echo "  Binary not found after stripped extract, retrying flat..."
+            case "$file" in
+                *.tar.gz|*.tgz)  tar -xzf "$file" ;;
+                *.tar.xz|*.txz)  tar -xJf "$file" ;;
+                *.tar.bz2)       tar -xjf "$file" ;;
+                *.tar)           tar -xf  "$file" ;;
+            esac
+        fi
+
+        rm -f "$file"
+
+        if [ ! -f "$bin_name" ]; then
+            echo "ERROR: Expected binary '$bin_name' not found after extracting $url!"
+            exit 1
+        fi
+
+        chmod +x "$bin_name" 2>/dev/null
+    else
+        echo ""
+        echo "CUSTOM_MINER already installed (found $bin_name), skipping."
+    fi
+
+    ln -sfn "$miner_dir" "$BASE_DIR/$bin_name/current"
+    echo "  Symlink: $BASE_DIR/$bin_name/current -> $miner_dir"
+
+    cleanup_old_versions "$bin_name" "$version"
+}
+
+###########################################
 # Helper — Check if miner should be installed
 ###########################################
 should_install() {
     local miner="$1"
-    
+
     if [ "$INSTALL_ALL" = true ]; then
         return 0
     fi
-    
+
     for requested in "${REQUESTED_MINERS[@]}"; do
         if [ "$requested" = "$miner" ]; then
             return 0
         fi
     done
-    
+
     return 1
 }
 
@@ -260,6 +357,15 @@ if should_install "trex"; then
       "$TREX_TAR" "" "t-rex"
 fi
 
+# Custom Miner (arbitrary URL + binary name from rig.conf)
+if [ -n "$CUSTOM_MINER_URL" ] && [ "$CUSTOM_MINER_URL" != "0" ]; then
+    if [ -z "$CUSTOM_MINER_NAME" ] || [ "$CUSTOM_MINER_NAME" = "0" ]; then
+        echo "ERROR: CUSTOM_MINER_URL is set but CUSTOM_MINER (binary name) is not — skipping custom miner install." >&2
+    else
+        install_custom_miner "$CUSTOM_MINER_URL" "$CUSTOM_MINER_NAME"
+    fi
+fi
+
 ###########################################
 # Export paths (only for installed miners)
 ###########################################
@@ -277,6 +383,7 @@ $(if [ -f "$BASE_DIR/onezerominer/current/onezerominer" ]; then echo 'ONEZEROMIN
 $(if [ -f "$BASE_DIR/gminer/current/miner" ]; then echo 'GMINER_BIN="$BASE_DIR/gminer/current/miner"'; fi)
 $(if [ -f "$BASE_DIR/teamredminer/current/teamredminer" ]; then echo 'TEAMREDMINER_BIN="$BASE_DIR/teamredminer/current/teamredminer"'; fi)
 $(if [ -f "$BASE_DIR/trexminer/current/t-rex" ]; then echo 'TREXMINER_BIN="$BASE_DIR/trexminer/current/t-rex"'; fi)
+$(if [ -n "$CUSTOM_MINER_NAME" ] && [ "$CUSTOM_MINER_NAME" != "0" ] && [ -f "$BASE_DIR/$CUSTOM_MINER_NAME/current/$CUSTOM_MINER_NAME" ]; then echo "CUSTOM_MINER_BIN=\"\$BASE_DIR/$CUSTOM_MINER_NAME/current/$CUSTOM_MINER_NAME\""; fi)
 EXPORTS
 
 echo ""
@@ -289,3 +396,4 @@ fi
 
 echo ""
 echo "Installation complete!"
+EOF

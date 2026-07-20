@@ -1,3 +1,6 @@
+sudo mkdir -v /usr/local/bin/lib
+
+sudo tee /usr/local/bin/lib/00-get_rig_conf.sh > /dev/null <<'EOF'
 get_rig_conf() {
 
     local key=""
@@ -59,3 +62,4 @@ get_rig_conf() {
 
     echo "$selected_value"
 }
+EOF
