@@ -1,6 +1,6 @@
 '03-cpu_threads.sh': xmrig... %THREADS% in cmd will also add affinity with '0,2,3,etc' 1 off
 
-    if [[ "$MINER_NAME" == "xmrig" && "$ALGO" == "rx/0" ]]; then
+... if [[ "$MINER_NAME" == "xmrig" && "$ALGO" == "rx/0" ]]; then
 
 '04-algo_config.sh': bzminer:  ... some warthog presets
 
