@@ -2,7 +2,7 @@
 
 ... if [[ "$MINER_NAME" == "xmrig" && "$ALGO" == "rx/0" ]]; then
 
-'04-algo_config.sh': bzminer... %WARTHOG_TARGET%
+'04-algo_config.sh': bzminer... %WARTHOG_TARGET% in cmd
 
 '02-load_configs.sh': Worker name from hostname, upper case rig name x,t,s
 
