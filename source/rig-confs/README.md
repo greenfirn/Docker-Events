@@ -1,6 +1,4 @@
-'03-cpu_threads.sh': xmrig... %THREADS% in cmd will also add affinity with '0,2,3,etc' 1 off
-
-... if [[ "$MINER_NAME" == "xmrig" && "$ALGO" == "rx/0" ]]; then
+'03-cpu_threads.sh': xmrig 'rx/0' ... %THREADS% in cmd will also add affinity with '0,2,3,etc' 1 off
 
 '04-algo_config.sh': bzminer... %WARTHOG_TARGET% in cmd
 
