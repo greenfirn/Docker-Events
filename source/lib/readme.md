@@ -1,3 +1,3 @@
-initial setup -- may not have been updated with source folder
+initial setup -- current as of 2026-07-19 not always updated with source folder
 
 see 'write - script files'
