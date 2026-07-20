@@ -106,7 +106,7 @@ if [ $# -eq 0 ]; then
         REQUESTED_MINERS+=("$CONFIG_MINER")
         echo "Using MINER=$CONFIG_MINER from rig.conf"
     else
-        # No config miner specified - install all
+        # No config miner specified - skipping install
         INSTALL_ALL=false
         echo "No miner specified in config or arguments - skipping install"
     fi
