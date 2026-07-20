@@ -1,10 +1,10 @@
-xmrig: '03-cpu_threads.sh' ... %THREADS% in cmd will also add affinity with '0,2,3,etc' 1 off
+'03-cpu_threads.sh': xmrig... %THREADS% in cmd will also add affinity with '0,2,3,etc' 1 off
 
-if [[ "$MINER_NAME" == "xmrig" && "$ALGO" == "rx/0" ]]; then
+    if [[ "$MINER_NAME" == "xmrig" && "$ALGO" == "rx/0" ]]; then
 
-bzminer: '04-algo_config.sh' ... some warthog presets
+'04-algo_config.sh': bzminer:  ... some warthog presets
 
-Worker name from hostname, upper case rig name x,t,s: '02-load_configs.sh'
+'02-load_configs.sh': Worker name from hostname, upper case rig name x,t,s
 
 WORKER_NAME="$(cat /etc/hostname)"
 
