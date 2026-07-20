@@ -4,9 +4,7 @@ if [[ "$MINER_NAME" == "xmrig" && "$ALGO" == "rx/0" ]]; then
 
 bzminer: '04-algo_config.sh' ... some warthog presets
 
-upper case rig names:
-
-Worker name from hostname, normalized:
+Worker name from hostname, upper case rig name x,t,s: '02-load_configs.sh'
 
 WORKER_NAME="$(cat /etc/hostname)"
 
