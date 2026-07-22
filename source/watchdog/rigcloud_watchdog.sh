@@ -5,13 +5,15 @@ rigcloud_watchdog.py - Watches GPU power draw and mining hashrate, and
 restarts the corresponding docker_events_{gpu,cpu}.service if a miner
 looks dead (hashrate/watts below its configured threshold for too long).
 
-Only active when no docker containers are running. docker_events_universal.sh
-stops the local miner whenever a docker workload takes over the GPU/CPU, and
-its wrapper service stays "active" throughout that handoff - so a dropped
-hashrate in that state is expected, not a failure. The watchdog checks
-`docker ps -q` itself (same as docker_events_universal.sh's own
-any_container_running()) and skips all checks entirely while containers
-are running, deferring completely to the docker takeover.
+Only backs off while a docker container is actually running.
+docker_events_universal.sh stops the local miner whenever a docker
+workload takes over the GPU/CPU, and its wrapper service stays "active"
+throughout that handoff - so a dropped hashrate in that state is
+expected, not a failure. The watchdog checks `docker ps -q` itself (same
+as docker_events_universal.sh's own any_container_running()) and skips
+all checks entirely while containers are running. If Docker itself isn't
+installed/reachable on this rig, that's treated the same as "no
+containers running" - normal hashrate/watts checks still apply.
 
 This deliberately reuses rigcloud_telemetry.py (the same collector the
 dashboard agent already relies on) instead of re-implementing GPU/miner
@@ -146,23 +148,39 @@ def service_is_active(service_name):
         return False
 
 
-def docker_containers_running():
-    """Mirrors docker_events_universal.sh's own any_container_running()
-    check. While a docker workload has taken over (any container running),
-    docker_events_universal.sh intentionally stops the local miner and
-    docker_events_{gpu,cpu}.service stays "active" the whole time (it's a
-    Type=simple wrapper that never exits) - so checking service_is_active
-    alone can't detect this state. Zero hashrate/watts here is expected,
-    not a failure, so the watchdog has to back off completely."""
+def docker_status():
+    """Returns one of "containers_running", "no_containers", or
+    "unavailable".
+
+    Mirrors docker_events_universal.sh's own is_docker_running() /
+    any_container_running() checks:
+      - "containers_running": a docker workload has taken over - it
+        intentionally stops the local miner, and docker_events_{gpu,cpu}
+        .service stays "active" the whole time (it's a Type=simple wrapper
+        that never exits), so service_is_active alone can't detect this.
+      - "unavailable": the docker CLI isn't installed, or the docker
+        daemon isn't responding. Callers treat this the same as
+        "no_containers" - a rig that simply doesn't use docker should
+        still get normal hashrate/watts checks, not be permanently
+        skipped.
+      - "no_containers": docker is installed and reachable, and nothing
+        is running under it - safe to run the normal hashrate/watts
+        checks."""
     try:
         result = subprocess.run(
             ["docker", "ps", "-q"],
             capture_output=True, text=True, timeout=5
         )
-        return bool(result.stdout.strip())
+    except FileNotFoundError:
+        return "unavailable"
     except Exception as e:
-        log(f"[docker] Error checking running containers: {e}")
-        return False
+        log(f"[docker] Error checking Docker: {e}")
+        return "unavailable"
+
+    if result.returncode != 0:
+        return "unavailable"
+
+    return "containers_running" if result.stdout.strip() else "no_containers"
 
 
 def restart_service(service_name):
@@ -198,7 +216,10 @@ def main():
 
     while True:
         try:
-            if docker_containers_running():
+            # "unavailable" (docker not installed/reachable) is treated the
+            # same as "no_containers" - only an actual running container
+            # should make the watchdog back off.
+            if docker_status() == "containers_running":
                 if consecutive_fails:
                     log("[skip] Docker container(s) running - docker workload has taken over, resetting fail counter")
                 consecutive_fails = 0
