@@ -16,6 +16,7 @@
 
 ## Updates
 
+- [Watchdog](source/watchdog), runs when no docker containers found, not tested...
 - custom miner example '[source/peakminer-custom-gpu.sh](https://github.com/greenfirn/Docker-Events/blob/main/source/peakminer-custom-gpu.sh)'
 - may need 'sudo apt install unzip' for custom miner zip archieves
 
