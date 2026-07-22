@@ -3,8 +3,15 @@ sudo tee /usr/local/bin/rigcloud_watchdog.py > /dev/null <<'EOF'
 """
 rigcloud_watchdog.py - Watches GPU power draw and mining hashrate, and
 restarts the corresponding docker_events_{gpu,cpu}.service if a miner
-looks dead (hashrate/watts below its configured threshold for too long)
-while the service itself is supposed to be actively mining.
+looks dead (hashrate/watts below its configured threshold for too long).
+
+Only active when no docker containers are running. docker_events_universal.sh
+stops the local miner whenever a docker workload takes over the GPU/CPU, and
+its wrapper service stays "active" throughout that handoff - so a dropped
+hashrate in that state is expected, not a failure. The watchdog checks
+`docker ps -q` itself (same as docker_events_universal.sh's own
+any_container_running()) and skips all checks entirely while containers
+are running, deferring completely to the docker takeover.
 
 This deliberately reuses rigcloud_telemetry.py (the same collector the
 dashboard agent already relies on) instead of re-implementing GPU/miner
@@ -139,6 +146,25 @@ def service_is_active(service_name):
         return False
 
 
+def docker_containers_running():
+    """Mirrors docker_events_universal.sh's own any_container_running()
+    check. While a docker workload has taken over (any container running),
+    docker_events_universal.sh intentionally stops the local miner and
+    docker_events_{gpu,cpu}.service stays "active" the whole time (it's a
+    Type=simple wrapper that never exits) - so checking service_is_active
+    alone can't detect this state. Zero hashrate/watts here is expected,
+    not a failure, so the watchdog has to back off completely."""
+    try:
+        result = subprocess.run(
+            ["docker", "ps", "-q"],
+            capture_output=True, text=True, timeout=5
+        )
+        return bool(result.stdout.strip())
+    except Exception as e:
+        log(f"[docker] Error checking running containers: {e}")
+        return False
+
+
 def restart_service(service_name):
     log(f"[systemd] Restarting {service_name} ...")
     try:
@@ -172,9 +198,16 @@ def main():
 
     while True:
         try:
+            if docker_containers_running():
+                if consecutive_fails:
+                    log("[skip] Docker container(s) running - docker workload has taken over, resetting fail counter")
+                consecutive_fails = 0
+                time.sleep(args.interval)
+                continue
+
             if not service_is_active(args.service):
                 if consecutive_fails:
-                    log(f"[skip] {args.service} is not active - assuming intentional (e.g. docker workload took over), resetting fail counter")
+                    log(f"[skip] {args.service} is not active, resetting fail counter")
                 consecutive_fails = 0
                 time.sleep(args.interval)
                 continue
