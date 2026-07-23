@@ -10,7 +10,7 @@
 
 - scripts/services assume path '/home/user' exists
 
-- sudo mkdir -p /home/user
+- create the path if needed... sudo mkdir -p /home/user
 
 ## Notes
 
