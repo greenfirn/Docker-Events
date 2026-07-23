@@ -24,6 +24,9 @@
 
 -- oc reset/apply using 'nvidia-smi' may not be reliable under all situations... see 'source/py-nvtool/py-nvtool.txt' for nvtool oc control --
 
+how i should have organised files: ssh would only allow writing to /home/user
+![how i should have organised files](file-loactions.png)
+
 ## Updates
 
 - [Watchdog](source/watchdog), runs when no docker containers found, not tested...
