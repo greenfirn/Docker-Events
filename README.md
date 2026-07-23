@@ -4,6 +4,12 @@
 
 ---
 
+## Important
+
+- scripts/services assume path '/home/user' exists
+
+- sudo mkdir -p /home/user
+
 ## Notes
 
 -- See `source` for latest examples and the full package: install scripts, miners, and rig configs. --
