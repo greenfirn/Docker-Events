@@ -4,6 +4,16 @@
 
 ---
 
+## Important
+
+- all my ubuntu server rig installs use 'user' as a username
+
+- scripts/services assume path '/home/user' exists
+
+- create the path if needed... sudo mkdir -p /home/user
+
+- will update this to generic paths in future
+
 ## Notes
 
 -- See `source` for latest examples and the full package: install scripts, miners, and rig configs. --
