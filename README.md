@@ -12,6 +12,8 @@
 
 - create the path if needed... sudo mkdir -p /home/user
 
+- will update this to generic paths in future
+
 ## Notes
 
 -- See `source` for latest examples and the full package: install scripts, miners, and rig configs. --
