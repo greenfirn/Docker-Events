@@ -1,4 +1,4 @@
-# RigCloud File Layout
+# Docker Events / Dashboard File Layout
 
 RigCloud's scripts currently hardcode every path under `/home/user/`, regardless of what the rig's actual installed username is. That works as long as a `/home/user/` directory (real account or not) exists on every rig, but it's not the standard Linux layout. This doc lays out where things should live if/when we move to the FHS-standard locations instead.
 
