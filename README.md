@@ -14,6 +14,8 @@
 
 - will update this to generic paths in future
 
+- [README-layout](README-layout.md)
+
 ## Notes
 
 -- See `source` for latest examples and the full package: install scripts, miners, and rig configs. --
