@@ -6,6 +6,8 @@
 
 ## Important
 
+- all my ubuntu server rig installs use 'user' as a username
+
 - scripts/services assume path '/home/user' exists
 
 - sudo mkdir -p /home/user
